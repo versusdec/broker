@@ -1,0 +1,240 @@
+{
+  "users.update": {
+    "required": {
+      "id": "int"
+    },
+    "optional": {
+      "name": "string",
+      "company": "string",
+      "language": {
+        "options": [
+          "ru",
+          "en"
+        ],
+        "type": "enum"
+      },
+      "email": "email",
+      "status": {
+        "options": [
+          "active",
+          "blocked"
+        ],
+        "type": "enum"
+      },
+      "timezone": "int",
+      "avatar": "string",
+      "client_id": "int",
+      "twofa": {
+        "data": {
+          "status": {
+            "options": [
+              "enabled",
+              "disabled"
+            ],
+            "type": "enum"
+          }
+        },
+        "type": "object"
+      },
+      "password": "string",
+      "phone": "phone",
+      "role": {
+        "options": [
+          "admin",
+          "client",
+          "supervisor",
+          "operator"
+        ],
+        "type": "enum"
+      }
+    },
+    "role": [
+      "admin",
+      "client",
+      "supervisor",
+      "operator"
+    ]
+  },
+  "auth.login2fa": {
+    "role": [
+      "public"
+    ],
+    "required": {
+      "password": "string",
+      "email": "email",
+      "code": "string"
+    }
+  },
+  "users.list": {
+    "optional": {
+      "status": {
+        "options": [
+          "active",
+          "blocked"
+        ],
+        "type": "enum"
+      },
+      "offset": "int",
+      "limit": "int",
+      "created": {
+        "data": {
+          "end": "int",
+          "start": "int"
+        },
+        "type": "object"
+      },
+      "role": {
+        "options": [
+          "admin",
+          "client",
+          "supervisor",
+          "operator"
+        ],
+        "type": "enum"
+      }
+    },
+    "role": [
+      "admin",
+      "client",
+      "supervisor"
+    ]
+  },
+  "users.add": {
+    "required": {
+      "name": "string",
+      "password": "string",
+      "email": "email",
+      "role": {
+        "options": [
+          "admin",
+          "client",
+          "supervisor",
+          "operator"
+        ],
+        "type": "enum"
+      }
+    },
+    "optional": {
+      "status": {
+        "options": [
+          "active",
+          "blocked"
+        ],
+        "type": "enum"
+      },
+      "timezone": "int",
+      "avatar": "string",
+      "client_id": "int",
+      "twofa": {
+        "data": {
+          "status": {
+            "options": [
+              "enabled",
+              "disabled"
+            ],
+            "type": "enum"
+          }
+        },
+        "type": "object"
+      },
+      "company": "string",
+      "phone": "phone",
+      "language": {
+        "options": [
+          "ru",
+          "en"
+        ],
+        "type": "enum"
+      }
+    },
+    "role": [
+      "admin",
+      "client"
+    ]
+  },
+  "users.suggest": {
+    "optional": {
+      "status": {
+        "options": [
+          "active",
+          "blocked"
+        ],
+        "type": "enum"
+      },
+      "offset": "int",
+      "limit": "int",
+      "created": {
+        "data": {
+          "end": "int",
+          "start": "int"
+        },
+        "type": "object"
+      },
+      "q": "string",
+      "role": {
+        "options": [
+          "admin",
+          "client",
+          "supervisor",
+          "operator"
+        ],
+        "type": "enum"
+      }
+    },
+    "role": [
+      "admin",
+      "client",
+      "supervisor"
+    ]
+  },
+  "users.me": {
+    "role": [
+      "admin",
+      "client",
+      "supervisor",
+      "operator"
+    ]
+  },
+  "auth.restore": {
+    "role": [
+      "public"
+    ],
+    "required": {
+      "email": "email"
+    }
+  },
+  "auth.login": {
+    "role": [
+      "public"
+    ],
+    "required": {
+      "email": "email",
+      "password": "string"
+    }
+  },
+  "auth.register": {
+    "required": {
+      "name": "string",
+      "password_confirm": "string",
+      "email": "email",
+      "password": "string"
+    },
+    "optional": {
+      "phone": "phone",
+      "company": "string"
+    },
+    "role": [
+      "public"
+    ]
+  },
+  "users.get": {
+    "role": [
+      "admin",
+      "client",
+      "supervisor"
+    ],
+    "required": {
+      "id": "int"
+    }
+  }
+}
