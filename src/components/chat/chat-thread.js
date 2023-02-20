@@ -117,7 +117,6 @@ const useMessagesScroll = (thread) => {
 export const ChatThread = (props) => {
   const { threadKey, ...other } = props;
   const dispatch = useDispatch();
-  const user = useMockedUser();
   const thread = useThread(threadKey);
   const participants = useParticipants(threadKey);
   const { messagesRef } = useMessagesScroll(thread);

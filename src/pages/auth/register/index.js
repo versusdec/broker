@@ -102,11 +102,6 @@ const Page = () => {
   
   return (
     <>
-      <Head>
-        <title>
-          Register
-        </title>
-      </Head>
       <div>
         <Stack
           sx={{mb: 4}}
@@ -251,6 +246,10 @@ const Page = () => {
     </>
   );
 };
+
+Page.defaultProps = {
+  title: 'Register'
+}
 
 Page.getLayout = (page) => (
   <AuthLayout>

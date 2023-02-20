@@ -11,11 +11,6 @@ const Page = () => {
   
   return (
     <>
-      <Head>
-        <title>
-          Dashboard
-        </title>
-      </Head>
       <Box>
         <Typography variant="h4" sx={{mb: 4}}>
           Overview
@@ -38,5 +33,9 @@ const Page = () => {
     </>
   );
 };
+
+Page.defaultProps = {
+  title: 'Dashboard',
+}
 
 export default Page;

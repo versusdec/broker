@@ -72,11 +72,6 @@ const Page = () => {
   
   return (
     <>
-      <Head>
-        <title>
-          Login
-        </title>
-      </Head>
       <div>
         {/*{isFetching && <Loader/>}*/}
         <Stack
@@ -152,6 +147,10 @@ const Page = () => {
     </>
   );
 };
+
+Page.defaultProps = {
+  title: 'Login'
+}
 
 Page.getLayout = (page) => (
   <>

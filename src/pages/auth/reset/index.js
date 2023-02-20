@@ -77,11 +77,6 @@ const Page = () => {
   
   return (
     <>
-      <Head>
-        <title>
-          Reset password
-        </title>
-      </Head>
       <div>
         {/*{isFetching && <Loader/>}*/}
         <Stack
@@ -147,6 +142,10 @@ const Page = () => {
     </>
   );
 };
+
+Page.defaultProps = {
+  title: 'Reset'
+}
 
 Page.getLayout = (page) => (
   <>
