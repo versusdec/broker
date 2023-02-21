@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import Head from "../components/head";
 
-export const Layout = ({props}) => {
+export const Layout = (props) => {
   const {children} = props;
   
   const title = props.title

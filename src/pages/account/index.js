@@ -23,8 +23,6 @@ const tabs = [
 ];
 
 const Page = () => {
-
-  
   const [currentTab, setCurrentTab] = useState('general');
   
   const handleTabsChange = useCallback((event, value) => {

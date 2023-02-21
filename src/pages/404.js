@@ -1,8 +1,7 @@
 import NextLink from 'next/link';
-import Head from 'next/head';
-import { Box, Button, Container, Typography, useMediaQuery } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import { paths } from '../navigation/paths';
+import {Box, Button, Container, Typography, useMediaQuery} from '@mui/material';
+import {useTheme} from '@mui/material/styles';
+import {paths} from '../navigation/paths';
 import {Layout as BlankLayout} from "../layouts/blank";
 
 const Page = () => {
@@ -11,11 +10,6 @@ const Page = () => {
   
   return (
     <>
-      <Head>
-        <title>
-          Error: Not Found
-        </title>
-      </Head>
       <Box
         component="main"
         sx={{
@@ -53,7 +47,7 @@ const Page = () => {
           <Typography
             align="center"
             color="text.secondary"
-            sx={{ mt: 0.5 }}
+            sx={{mt: 0.5}}
           >
             You either tried some shady route or you came here by mistake. Whichever it is, try using the navigation.
           </Typography>
@@ -77,12 +71,14 @@ const Page = () => {
   );
 };
 
+Page.defaultProps = {
+  title: 'Error: Not Found'
+}
+
 Page.getLayout = (page) => (
-  <>
-    <BlankLayout>
-      {page}
-    </BlankLayout>
-  </>
+  <BlankLayout>
+    {page}
+  </BlankLayout>
 );
 
 export default Page;

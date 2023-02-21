@@ -127,6 +127,7 @@
     "optional": {
       "queues": "int",
       "phone": "phone",
+      "password": "string",
       "password_confirm": "string",
       "company": "string",
       "language": {
@@ -158,7 +159,6 @@
         }
       },
       "client_id": "int",
-      "password": "string",
       "timezone": "int",
       "role": {
         "type": "enum",

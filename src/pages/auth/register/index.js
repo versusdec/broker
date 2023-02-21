@@ -162,7 +162,7 @@ const Page = () => {
               onChange={formik.handleChange}
               type={showPass ? 'text' : 'password'}
               value={formik.values.password}
-              InputProps={{ // <-- This is where the toggle button is added.
+              InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton

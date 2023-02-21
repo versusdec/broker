@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import Camera01Icon from '@untitled-ui/icons-react/build/esm/Camera01';
 import User01Icon from '@untitled-ui/icons-react/build/esm/User01';
 import {
@@ -17,9 +16,10 @@ import {
 } from '@mui/material';
 import {alpha} from '@mui/material/styles';
 import {Input} from "../input";
-import {useFormik, useFormikContext} from "formik";
+import {useFormik} from "formik";
 import * as Yup from "yup";
-import {useEffect} from "react";
+import {useCallback, useState} from "react";
+import {FileUploader} from "../file-uploader";
 
 const timezones = [
   {value: 1, label: '+1'},
@@ -67,6 +67,23 @@ const validationSchema = Yup.object({
 
 export const AccountGeneralSettings = (props) => {
   const {user, onSubmit} = props;
+  const [uploaderOpen, setUploaderOpen] = useState(false);
+  
+  const handleOpen = useCallback(()=>{
+    setUploaderOpen(true)
+  }, [])
+  
+  const handleClose = useCallback(()=>{
+    setUploaderOpen(false)
+  }, [])
+  
+  const handleUploader = () => {
+    setUploaderOpen(!uploaderOpen)
+  }
+  
+  const handleUpload = useCallback((val) => {
+    console.log(val)
+  }, [])
   
   const initialValues = {
     name: user?.name || '',
@@ -158,6 +175,7 @@ export const AccountGeneralSettings = (props) => {
                             opacity: 1
                           }
                         }}
+                        onClick={handleOpen}
                       >
                         <Stack
                           alignItems="center"
@@ -192,11 +210,12 @@ export const AccountGeneralSettings = (props) => {
                   <Button
                     color="inherit"
                     size="small"
+                    onClick={handleOpen}
                   >
                     Change
                   </Button>
                 </Stack>
-                <form >
+                <form noValidate>
                   <Stack spacing={3}>
                     <Input
                       fullWidth
@@ -257,7 +276,7 @@ export const AccountGeneralSettings = (props) => {
                       {
                         languageOptions.map(option => {
                           return (
-                            <MenuItem key={option.value} value={option.value} >
+                            <MenuItem key={option.value} value={option.value}>
                               <Stack direction={'row'} spacing={2} alignItems={'center'}>
                                 <img
                                   alt={option.label}
@@ -289,6 +308,11 @@ export const AccountGeneralSettings = (props) => {
           </Grid>
         </CardContent>
       </Card>
+      <FileUploader
+        onClose={handleClose}
+        open={uploaderOpen}
+        onUpload={handleUpload}
+      />
     </Stack>
   );
 };

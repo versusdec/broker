@@ -1,13 +1,12 @@
-import { useCallback, useState } from 'react';
+import {useCallback, useState} from 'react';
 import PropTypes from 'prop-types';
-import { format } from 'date-fns';
+import {format} from 'date-fns';
 import ArrowRightIcon from '@untitled-ui/icons-react/build/esm/ArrowRight';
 import {
   Box,
-  Button,
   Card,
   CardContent,
-  CardHeader,
+  CardHeader, IconButton, InputAdornment,
   Stack,
   SvgIcon,
   Table,
@@ -19,16 +18,61 @@ import {
   Typography,
   Unstable_Grid2 as Grid
 } from '@mui/material';
-import { Scrollbar } from '../scrollbar';
+import {Button} from '../../components/button';
+import * as Yup from "yup";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
+import {Input} from "../input";
+import {useFormik} from "formik";
+import {paths} from "../../navigation/paths";
+
+const initialValues = {
+  old_password: '',
+  password: '',
+  confirm_password: ''
+};
+
+const validationSchema = Yup.object({
+  old_password: Yup
+    .string()
+    .max(255)
+    .required(),
+  password: Yup
+    .string()
+    .min(8)
+    .max(255)
+    .required('Password is required'),
+  confirm_password: Yup
+    .string()
+    .oneOf([Yup.ref('password'), null], 'Passwords must match')
+    .max(255)
+    .required('Password is required')
+});
+
 
 export const AccountSecuritySettings = (props) => {
-  const { loginEvents } = props;
-  const [isEditing, setIsEditing] = useState(false);
-
-  const handleEdit = useCallback(() => {
-    setIsEditing((prevState) => !prevState);
-  }, []);
-
+  const [showPass, setShowPass] = useState(false);
+  
+  const [twa, setTwa] = useState(false);
+  
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+    onSubmit: async (values, helpers) => {
+      try {
+        // register here
+        console.log(values)
+        
+        // open Dialog
+      } catch (err) {
+        console.error(err);
+        helpers.setStatus({success: false});
+        helpers.setErrors({submit: err.message});
+        helpers.setSubmitting(false);
+      }
+    }
+  });
+  
+  
   return (
     <Stack spacing={4}>
       <Card>
@@ -51,35 +95,67 @@ export const AccountSecuritySettings = (props) => {
               md={8}
             >
               <Stack
-                alignItems="center"
-                direction="row"
                 spacing={3}
               >
-                <TextField
-                  disabled={!isEditing}
+                <Input
+                  error={!!(formik.touched.old_password && formik.errors.old_password)}
+                  fullWidth
+                  helperText={formik.touched.old_password && formik.errors.old_password}
                   label="Password"
-                  type="password"
-                  defaultValue="Thebestpasswordever123#"
-                  sx={{
-                    flexGrow: 1,
-                    ...(!isEditing && {
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        borderStyle: 'dotted'
-                      }
-                    })
+                  name="old_password"
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  type={showPass ? 'text' : 'password'}
+                  value={formik.values.old_password}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => {
+                            setShowPass(!showPass)
+                          }}
+                          color={'primary'}
+                        >
+                          {showPass ? <Visibility/> : <VisibilityOff/>}
+                        </IconButton>
+                      </InputAdornment>
+                    )
                   }}
                 />
-                <Button onClick={handleEdit}>
-                  {isEditing ? 'Save' : 'Edit'}
-                </Button>
+                <Input
+                  error={!!(formik.touched.password && formik.errors.password)}
+                  fullWidth
+                  helperText={formik.touched.password && formik.errors.password}
+                  label="New password"
+                  name="password"
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  type="password"
+                  value={formik.values.password}
+                />
+                <Input
+                  error={!!(formik.touched.confirm_password && formik.errors.confirm_password)}
+                  fullWidth
+                  helperText={formik.touched.confirm_password && formik.errors.confirm_password}
+                  label="Confirm password"
+                  name="confirm_password"
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  type="password"
+                  value={formik.values.confirm_password}
+                />
+                <Stack justifyContent={'end'} direction={'row'}>
+                  <Button onClick={formik.handleSubmit}>Save</Button>
+                </Stack>
               </Stack>
             </Grid>
           </Grid>
         </CardContent>
       </Card>
       <Card>
-        <CardHeader title="Multi Factor Authentication" />
-        <CardContent sx={{ pt: 0 }}>
+        <CardHeader title="Two Factor Authentication"/>
+        <CardContent sx={{pt: 0}}>
           <Grid
             container
             spacing={4}
@@ -89,7 +165,7 @@ export const AccountSecuritySettings = (props) => {
               sm={6}
             >
               <Card
-                sx={{ height: '100%' }}
+                sx={{height: '100%'}}
                 variant="outlined"
               >
                 <CardContent>
@@ -102,7 +178,7 @@ export const AccountSecuritySettings = (props) => {
                     <Box
                       sx={{
                         '&::before': {
-                          backgroundColor: 'error.main',
+                          backgroundColor: twa ? 'success.main' : 'error.main',
                           borderRadius: '50%',
                           content: '""',
                           display: 'block',
@@ -116,35 +192,33 @@ export const AccountSecuritySettings = (props) => {
                       }}
                     >
                       <Typography
-                        color="error"
-                        sx={{ pl: 3 }}
+                        color={twa ? "success.main" : "error"}
+                        sx={{pl: 3}}
                         variant="body2"
                       >
-                        Off
+                        {twa ? 'On' : 'Off'}
                       </Typography>
                     </Box>
                   </Box>
                   <Typography
-                    sx={{ mt: 1 }}
+                    sx={{mt: 1}}
                     variant="subtitle2"
                   >
-                    Authenticator App
+                    Google Authentication
                   </Typography>
                   <Typography
                     color="text.secondary"
-                    sx={{ mt: 1 }}
+                    sx={{mt: 1}}
                     variant="body2"
                   >
-                    Use an authenticator app to generate one time security codes.
+                    Use an authenticator app to scan generated QR code.
                   </Typography>
-                  <Box sx={{ mt: 4 }}>
+                  <Box sx={{mt: 4}}>
                     <Button
-                      endIcon={(
-                        <SvgIcon>
-                          <ArrowRightIcon />
-                        </SvgIcon>
-                      )}
                       variant="outlined"
+                      onClick={() => {
+                        setTwa(!twa)
+                      }}
                     >
                       Set Up
                     </Button>
@@ -152,124 +226,23 @@ export const AccountSecuritySettings = (props) => {
                 </CardContent>
               </Card>
             </Grid>
+            {twa &&
             <Grid
               sm={6}
               xs={12}
             >
               <Card
-                sx={{ height: '100%' }}
+                sx={{height: '100%'}}
                 variant="outlined"
               >
                 <CardContent>
-                  <Box sx={{ position: 'relative' }}>
-                    <Box
-                      sx={{
-                        '&::before': {
-                          backgroundColor: 'error.main',
-                          borderRadius: '50%',
-                          content: '""',
-                          display: 'block',
-                          height: 8,
-                          left: 4,
-                          position: 'absolute',
-                          top: 7,
-                          width: 8,
-                          zIndex: 1
-                        }
-                      }}
-                    >
-                      <Typography
-                        color="error"
-                        sx={{ pl: 3 }}
-                        variant="body2"
-                      >
-                        Off
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <Typography
-                    sx={{ mt: 1 }}
-                    variant="subtitle2"
-                  >
-                    Text Message
-                  </Typography>
-                  <Typography
-                    color="text.secondary"
-                    sx={{ mt: 1 }}
-                    variant="body2"
-                  >
-                    Use your mobile phone to receive security codes via SMS.
-                  </Typography>
-                  <Box sx={{ mt: 4 }}>
-                    <Button
-                      endIcon={(
-                        <SvgIcon>
-                          <ArrowRightIcon />
-                        </SvgIcon>
-                      )}
-                      variant="outlined"
-                    >
-                      Set Up
-                    </Button>
-                  </Box>
+                  QR HERE
                 </CardContent>
               </Card>
             </Grid>
+            }
           </Grid>
         </CardContent>
-      </Card>
-      <Card>
-        <CardHeader
-          title="Login history"
-          subheader="Your recent login activity"
-        />
-        <Scrollbar>
-          <Table sx={{ minWidth: 500 }}>
-            <TableHead>
-              <TableRow>
-                <TableCell>
-                  Login type
-                </TableCell>
-                <TableCell>
-                  IP Address
-                </TableCell>
-                <TableCell>
-                  Client
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {loginEvents.map((event) => {
-                const createdAt = format(event.createdAt, 'HH:mm a MM/dd/yyyy');
-
-                return (
-                  <TableRow
-                    key={event.id}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                    <TableCell>
-                      <Typography variant="subtitle2">
-                        {event.type}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="body2"
-                      >
-                        on {createdAt}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      {event.ip}
-                    </TableCell>
-                    <TableCell>
-                      {event.userAgent}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </Scrollbar>
       </Card>
     </Stack>
   );
