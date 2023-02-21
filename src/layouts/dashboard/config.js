@@ -1,9 +1,12 @@
 import {SvgIcon} from '@mui/material';
 import {tokens} from '../../locales/tokens';
 import {paths} from '../../navigation/paths';
-import DashboardIcon from '@mui/icons-material/Dashboard'
-import PortraitOutlinedIcon from '@mui/icons-material/PortraitOutlined';
-import QuestionAnswerOutlinedIcon from '@mui/icons-material/QuestionAnswerOutlined';
+import {
+  Dashboard,
+  PortraitOutlined,
+  QuestionAnswerOutlined,
+  PeopleAltOutlined
+} from '@mui/icons-material';
 
 export const getSections = (t) => [
   {
@@ -13,7 +16,16 @@ export const getSections = (t) => [
         path: paths.index,
         icon: (
           <SvgIcon fontSize="small">
-            <DashboardIcon/>
+            <Dashboard/>
+          </SvgIcon>
+        )
+      },
+            {
+        title: t(tokens.nav.users),
+        path: paths.users.index,
+        icon: (
+          <SvgIcon fontSize="small">
+            <PeopleAltOutlined/>
           </SvgIcon>
         )
       },
@@ -22,7 +34,7 @@ export const getSections = (t) => [
         path: paths.account,
         icon: (
           <SvgIcon fontSize="small">
-            <PortraitOutlinedIcon/>
+            <PortraitOutlined/>
           </SvgIcon>
         )
       },
@@ -31,7 +43,7 @@ export const getSections = (t) => [
         path: paths.support,
         icon: (
           <SvgIcon fontSize="small">
-            <QuestionAnswerOutlinedIcon />
+            <QuestionAnswerOutlined />
           </SvgIcon>
         )
       },

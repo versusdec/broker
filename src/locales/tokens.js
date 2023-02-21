@@ -7,5 +7,6 @@ export const tokens = {
     dashboard: 'nav.dashboard',
     support: 'nav.support',
     billing: 'nav.billing',
+    users: 'nav.users',
   }
 };

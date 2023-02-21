@@ -6,4 +6,5 @@ export const en = {
   [tokens.nav.dashboard]: 'Dashboard',
   [tokens.nav.support]: 'Support',
   [tokens.nav.billing]: 'Billing',
+  [tokens.nav.users]: 'Users',
 };

@@ -3,6 +3,8 @@ import PlusIcon from '@untitled-ui/icons-react/build/esm/Plus';
 import {Box, Button, Card, Container, Stack, SvgIcon, Typography} from '@mui/material';
 import {customersApi} from '../../api/customers'
 import {UserListTable} from '../../components/users/user-list-table';
+import NextLink from "next/link";
+import {paths} from "../../navigation/paths";
 
 const useSearch = () => {
   const [search, setSearch] = useState({
@@ -97,6 +99,8 @@ const Page = () => {
                 spacing={3}
               >
                 <Button
+                  component={NextLink}
+                  href={paths.users.index}
                   startIcon={(
                     <SvgIcon>
                       <PlusIcon/>

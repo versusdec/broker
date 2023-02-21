@@ -5,4 +5,5 @@ export const de = {
   [tokens.nav.account]: 'Konto',
   [tokens.nav.dashboard]: 'Dashboard',
   [tokens.nav.support]: 'Unterstützung',
+  [tokens.nav.users]: 'Benutzer',
 };
