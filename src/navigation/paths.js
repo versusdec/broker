@@ -7,4 +7,8 @@ export const paths = Object.freeze({
   account: '/account',
   billing: '/billing',
   support: '/support',
+  users: {
+    index: '/users',
+    edit: '/users/:userId'
+  },
 });
