@@ -82,53 +82,53 @@ const Page = () => {
   
   return (
     <>
-          <Stack spacing={4}>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              spacing={4}
-            >
-              <Stack spacing={1}>
-                <Typography variant="h4">
-                  Users
-                </Typography>
-              </Stack>
-              <Stack
-                alignItems="center"
-                direction="row"
-                spacing={3}
-              >
-                <Button
-                  component={NextLink}
-                  href={paths.users.index}
-                  startIcon={(
-                    <SvgIcon>
-                      <PlusIcon/>
-                    </SvgIcon>
-                  )}
-                  variant="contained"
-                >
-                  Add
-                </Button>
-              </Stack>
-            </Stack>
-            <Card>
-              <UserListTable
-                users={users}
-                usersCount={usersCount}
-                onPageChange={handlePageChange}
-                onRowsPerPageChange={handleRowsPerPageChange}
-                rowsPerPage={search.rowsPerPage}
-                page={search.page}
-              />
-            </Card>
+      <Stack spacing={4}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          spacing={4}
+        >
+          <Stack spacing={1}>
+            <Typography variant="h4">
+              Users
+            </Typography>
           </Stack>
+          <Stack
+            alignItems="center"
+            direction="row"
+            spacing={3}
+          >
+            <Button
+              component={NextLink}
+              href={paths.users.edit}
+              startIcon={(
+                <SvgIcon>
+                  <PlusIcon/>
+                </SvgIcon>
+              )}
+              variant="contained"
+            >
+              Add
+            </Button>
+          </Stack>
+        </Stack>
+        <Card>
+          <UserListTable
+            users={users}
+            usersCount={usersCount}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+            rowsPerPage={search.rowsPerPage}
+            page={search.page}
+          />
+        </Card>
+      </Stack>
     </>
   );
 };
 
-Page.defaultProps = () => ({
-    title: 'Users'
-  });
+Page.defaultProps = {
+  title: 'Users'
+};
 
 export default Page;

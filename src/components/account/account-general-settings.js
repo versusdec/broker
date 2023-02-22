@@ -58,10 +58,10 @@ const validationSchema = Yup.object({
     .required('Name is required'),
   timezone: Yup
     .number()
-    .oneOf([1, 2, 3]),
+    .oneOf([0, 1, 2, 3]),
   language: Yup
     .string()
-    .oneOf(['en', 'de', 'es'], undefined),
+    .oneOf(['en', 'de', 'es', undefined]),
   
 });
 

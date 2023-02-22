@@ -1,110 +1,432 @@
 {
-  "auth.restore": {
-    "required": {
-      "email": "email"
-    },
+  "users.get": {
     "role": [
-      "public"
-    ]
-  },
-  "auth.login2fa": {
+      "admin",
+      "client",
+      "supervisor"
+    ],
     "required": {
-      "email": "email",
+      "id": "int"
+    }
+  },
+  "users.qr": {
+    "role": [
+      "admin",
+      "client",
+      "supervisor",
+      "operator"
+    ],
+    "optional": {
+      "size": "int"
+    }
+  },
+  "payments.list": {
+    "role": [
+      "admin",
+      "client"
+    ],
+    "optional": {
+      "user_id": "int",
+      "offset": "int",
+      "limit": "int",
+      "timestamp": {
+        "data": {
+          "start": "int",
+          "end": "int"
+        },
+        "type": "object"
+      },
+      "status": {
+        "options": [
+          "new",
+          "pending",
+          "payed",
+          "canceled"
+        ],
+        "type": "enum"
+      },
+      "type": {
+        "options": [
+          "invoice",
+          "bonus"
+        ],
+        "type": "enum"
+      }
+    }
+  },
+  "users.update": {
+    "role": [
+      "admin",
+      "client",
+      "supervisor",
+      "operator"
+    ],
+    "optional": {
+      "name": "string",
+      "timezone": "int",
+      "avatar": "string",
+      "twofa": {
+        "data": {
+          "status": {
+            "options": [
+              "enabled",
+              "disabled"
+            ],
+            "type": "enum"
+          }
+        },
+        "type": "object"
+      },
+      "status": {
+        "options": [
+          "active",
+          "blocked"
+        ],
+        "type": "enum"
+      },
+      "role": {
+        "options": [
+          "admin",
+          "client",
+          "supervisor",
+          "operator"
+        ],
+        "type": "enum"
+      },
+      "queues": "int",
       "password": "string",
-      "code": "string"
+      "client_id": "int",
+      "phone": "phone",
+      "language": {
+        "options": [
+          "ru",
+          "en"
+        ],
+        "type": "enum"
+      },
+      "password_confirm": "string",
+      "company": "string"
     },
-    "role": [
-      "public"
-    ]
-  },
-  "auth.login": {
     "required": {
-      "email": "email",
-      "password": "string"
-    },
+      "id": "int"
+    }
+  },
+  "users.suggest": {
+    "role": [
+      "admin",
+      "client",
+      "supervisor"
+    ],
+    "optional": {
+      "role": {
+        "options": [
+          "admin",
+          "client",
+          "supervisor",
+          "operator"
+        ],
+        "type": "enum"
+      },
+      "offset": "int",
+      "limit": "int",
+      "q": "string",
+      "status": {
+        "options": [
+          "active",
+          "blocked"
+        ],
+        "type": "enum"
+      },
+      "created": {
+        "data": {
+          "start": "int",
+          "end": "int"
+        },
+        "type": "object"
+      }
+    }
+  },
+  "auth.password": {
     "role": [
       "public"
-    ]
+    ],
+    "required": {
+      "token": "string",
+      "password": "string",
+      "password_confirm": "string"
+    }
   },
   "auth.register": {
-    "required": {
-      "email": "email",
-      "name": "string",
-      "password_confirm": "string",
-      "password": "string"
-    },
     "role": [
       "public"
     ],
     "optional": {
       "phone": "phone",
       "company": "string"
+    },
+    "required": {
+      "name": "string",
+      "email": "email",
+      "password": "string",
+      "password_confirm": "string"
     }
   },
-  "auth.password": {
-    "required": {
-      "password": "string",
-      "password_confirm": "string",
-      "token": "string"
-    },
+  "payments.get": {
     "role": [
-      "public"
-    ]
+      "admin",
+      "client"
+    ],
+    "required": {
+      "id": "int"
+    }
   },
-  "users.qr": {
-    "optional": {
-      "size": "int"
-    },
+  "queues.list": {
     "role": [
       "admin",
       "client",
       "supervisor",
       "operator"
-    ]
+    ],
+    "optional": {
+      "client_id": "int",
+      "offset": "int",
+      "limit": "int",
+      "status": {
+        "options": [
+          "active",
+          "archived"
+        ],
+        "type": "enum"
+      }
+    }
   },
-  "users.get": {
+  "auth.restore": {
+    "role": [
+      "public"
+    ],
+    "required": {
+      "email": "email"
+    }
+  },
+  "queues.get": {
+    "role": [
+      "admin",
+      "client",
+      "supervisor",
+      "operator"
+    ],
     "required": {
       "id": "int"
-    },
+    }
+  },
+  "payments.cancel": {
+    "role": [
+      "admin",
+      "client"
+    ],
+    "required": {
+      "id": "int"
+    }
+  },
+  "queues.add": {
     "role": [
       "admin",
       "client",
       "supervisor"
-    ]
-  },
-  "users.list": {
+    ],
     "optional": {
+      "client_id": "int",
+      "users": "int[]",
+      "status": {
+        "options": [
+          "active",
+          "archived"
+        ],
+        "type": "enum"
+      },
+      "description": "int"
+    },
+    "required": {
+      "name": "string"
+    }
+  },
+  "queues.update": {
+    "role": [
+      "admin",
+      "client",
+      "supervisor"
+    ],
+    "optional": {
+      "name": "string",
+      "users": "int[]",
+      "status": {
+        "options": [
+          "active",
+          "archived"
+        ],
+        "type": "enum"
+      },
+      "description": "int"
+    },
+    "required": {
+      "id": "int"
+    }
+  },
+  "auth.login2fa": {
+    "role": [
+      "public"
+    ],
+    "required": {
+      "email": "email",
+      "password": "string",
+      "code": "string"
+    }
+  },
+  "queues.suggest": {
+    "role": [
+      "admin",
+      "client",
+      "supervisor",
+      "operator"
+    ],
+    "optional": {
+      "offset": "int",
+      "limit": "int",
+      "client_id": "int",
+      "status": {
+        "options": [
+          "active",
+          "archived"
+        ],
+        "type": "enum"
+      },
+      "q": "string"
+    }
+  },
+  "auth.login": {
+    "role": [
+      "public"
+    ],
+    "required": {
+      "password": "string",
+      "email": "email"
+    }
+  },
+  "payments.add": {
+    "role": [
+      "admin",
+      "client"
+    ],
+    "optional": {
+      "user_id": "int",
+      "comment": "string"
+    },
+    "required": {
+      "type": {
+        "options": [
+          "invoice",
+          "bonus"
+        ],
+        "type": "enum"
+      },
+      "amount": "float"
+    }
+  },
+  "transactions.list": {
+    "role": [
+      "admin",
+      "client",
+      "supervisor",
+      "operator"
+    ],
+    "optional": {
+      "user_id": "int",
+      "offset": "int",
+      "limit": "int",
+      "timestamp": {
+        "data": {
+          "start": "int",
+          "end": "int"
+        },
+        "type": "object"
+      },
+      "type": "int"
+    }
+  },
+  "transactions.add": {
+    "role": [
+      "admin"
+    ],
+    "optional": {
+      "comment": "string"
+    },
+    "required": {
+      "user_id": "int",
+      "type": "int",
+      "amount": "float"
+    }
+  },
+  "payments.pay": {
+    "role": [
+      "client"
+    ],
+    "required": {
+      "id": "int"
+    }
+  },
+  "users.add": {
+    "role": [
+      "admin",
+      "client"
+    ],
+    "optional": {
+      "language": {
+        "options": [
+          "ru",
+          "en"
+        ],
+        "type": "enum"
+      },
+      "timezone": "int",
+      "avatar": "string",
+      "twofa": {
+        "data": {
+          "status": {
+            "options": [
+              "enabled",
+              "disabled"
+            ],
+            "type": "enum"
+          }
+        },
+        "type": "object"
+      },
+      "status": {
+        "options": [
+          "active",
+          "blocked"
+        ],
+        "type": "enum"
+      },
+      "client_id": "int",
+      "queues": "int[]",
+      "phone": "phone",
+      "company": "string"
+    },
+    "required": {
+      "name": "string",
+      "email": "email",
+      "password": "string",
       "role": {
-        "type": "enum",
         "options": [
           "admin",
           "client",
           "supervisor",
           "operator"
-        ]
-      },
-      "offset": "int",
-      "limit": "int",
-      "created": {
-        "type": "object",
-        "data": {
-          "end": "int",
-          "start": "int"
-        }
-      },
-      "status": {
-        "type": "enum",
-        "options": [
-          "active",
-          "blocked"
-        ]
+        ],
+        "type": "enum"
       }
-    },
-    "role": [
-      "admin",
-      "client",
-      "supervisor"
-    ]
+    }
   },
   "users.me": {
     "role": [
@@ -114,280 +436,38 @@
       "operator"
     ]
   },
-  "users.update": {
-    "required": {
-      "id": "int"
-    },
+  "users.list": {
     "role": [
       "admin",
       "client",
-      "supervisor",
-      "operator"
+      "supervisor"
     ],
     "optional": {
-      "queues": "int",
-      "phone": "phone",
-      "password": "string",
-      "password_confirm": "string",
-      "company": "string",
-      "language": {
-        "type": "enum",
-        "options": [
-          "ru",
-          "en"
-        ]
-      },
-      "status": {
-        "type": "enum",
-        "options": [
-          "active",
-          "blocked"
-        ]
-      },
-      "avatar": "string",
-      "name": "string",
-      "twofa": {
-        "type": "object",
-        "data": {
-          "status": {
-            "type": "enum",
-            "options": [
-              "enabled",
-              "disabled"
-            ]
-          }
-        }
-      },
-      "client_id": "int",
-      "timezone": "int",
       "role": {
-        "type": "enum",
         "options": [
           "admin",
           "client",
           "supervisor",
           "operator"
-        ]
-      }
-    }
-  },
-  "users.add": {
-    "required": {
-      "email": "email",
-      "name": "string",
-      "role": {
-        "type": "enum",
-        "options": [
-          "admin",
-          "client",
-          "supervisor",
-          "operator"
-        ]
+        ],
+        "type": "enum"
       },
-      "password": "string"
-    },
-    "role": [
-      "admin",
-      "client"
-    ],
-    "optional": {
-      "queues": "int[]",
-      "phone": "phone",
-      "company": "string",
-      "language": {
-        "type": "enum",
-        "options": [
-          "ru",
-          "en"
-        ]
-      },
-      "timezone": "int",
-      "avatar": "string",
-      "twofa": {
-        "type": "object",
-        "data": {
-          "status": {
-            "type": "enum",
-            "options": [
-              "enabled",
-              "disabled"
-            ]
-          }
-        }
-      },
-      "client_id": "int",
-      "status": {
-        "type": "enum",
-        "options": [
-          "active",
-          "blocked"
-        ]
-      }
-    }
-  },
-  "users.suggest": {
-    "optional": {
-      "role": {
-        "type": "enum",
-        "options": [
-          "admin",
-          "client",
-          "supervisor",
-          "operator"
-        ]
-      },
-      "q": "string",
       "offset": "int",
       "limit": "int",
+      "status": {
+        "options": [
+          "active",
+          "blocked"
+        ],
+        "type": "enum"
+      },
       "created": {
-        "type": "object",
         "data": {
-          "end": "int",
-          "start": "int"
-        }
-      },
-      "status": {
-        "type": "enum",
-        "options": [
-          "active",
-          "blocked"
-        ]
-      }
-    },
-    "role": [
-      "admin",
-      "client",
-      "supervisor"
-    ]
-  },
-  "queues.update": {
-    "required": {
-      "id": "int"
-    },
-    "role": [
-      "admin",
-      "client",
-      "supervisor"
-    ],
-    "optional": {
-      "description": "int",
-      "name": "string",
-      "users": "int[]",
-      "status": {
-        "type": "enum",
-        "options": [
-          "active",
-          "archived"
-        ]
+          "start": "int",
+          "end": "int"
+        },
+        "type": "object"
       }
     }
-  },
-  "queues.add": {
-    "required": {
-      "name": "string"
-    },
-    "role": [
-      "admin",
-      "client",
-      "supervisor"
-    ],
-    "optional": {
-      "description": "int",
-      "client_id": "int",
-      "users": "int[]",
-      "status": {
-        "type": "enum",
-        "options": [
-          "active",
-          "archived"
-        ]
-      }
-    }
-  },
-  "queues.get": {
-    "required": {
-      "id": "int"
-    },
-    "role": [
-      "admin",
-      "client",
-      "supervisor",
-      "operator"
-    ]
-  },
-  "queues.list": {
-    "optional": {
-      "offset": "int",
-      "limit": "int",
-      "client_id": "int",
-      "status": {
-        "type": "enum",
-        "options": [
-          "active",
-          "archived"
-        ]
-      }
-    },
-    "role": [
-      "admin",
-      "client",
-      "supervisor",
-      "operator"
-    ]
-  },
-  "queues.suggest": {
-    "optional": {
-      "client_id": "int",
-      "offset": "int",
-      "limit": "int",
-      "q": "string",
-      "status": {
-        "type": "enum",
-        "options": [
-          "active",
-          "archived"
-        ]
-      }
-    },
-    "role": [
-      "admin",
-      "client",
-      "supervisor",
-      "operator"
-    ]
-  },
-  "transactions.add": {
-    "required": {
-      "amount": "float",
-      "user_id": "int",
-      "type": "int"
-    },
-    "role": [
-      "admin"
-    ],
-    "optional": {
-      "comment": "string"
-    }
-  },
-  "transactions.list": {
-    "optional": {
-      "timestamp": {
-        "type": "object",
-        "data": {
-          "end": "int",
-          "start": "int"
-        }
-      },
-      "user_id": "int",
-      "type": "int",
-      "offset": "int",
-      "limit": "int"
-    },
-    "role": [
-      "admin",
-      "client",
-      "supervisor",
-      "operator"
-    ]
   }
 }

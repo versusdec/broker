@@ -190,7 +190,9 @@ export const customer = {
   phone: '+55 748 327 439',
   state: 'New York',
   vatRate: 19,
-  zipCode: '240355'
+  zipCode: '240355',
+  language: 'en',
+  status: 'active'
 };
 
 export const emails = [

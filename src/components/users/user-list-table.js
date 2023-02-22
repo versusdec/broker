@@ -203,7 +203,7 @@ export const UserListTable = (props) => {
                         <Link
                           color="inherit"
                           component={NextLink}
-                          href={paths.users.edit}
+                          href={`${paths.users.index}/${user.id}`}
                           variant="subtitle2"
                         >
                           {user.name}
@@ -242,7 +242,7 @@ export const UserListTable = (props) => {
                     <Tooltip title={'Edit'}>
                       <IconButton
                         component={NextLink}
-                        href={paths.users.edit}
+                        href={`${paths.users.index}/${user.id}`}
                       >
                         <SvgIcon color={'primary'}>
                           <EditOutlined/>
