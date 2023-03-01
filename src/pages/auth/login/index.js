@@ -1,24 +1,20 @@
-import Head from 'next/head';
 import {useRouter, useSearchParams} from 'next/navigation';
-import NextLink from 'next/link';
 import * as Yup from 'yup';
 import {useFormik} from 'formik';
 import {
-  Alert, Box,
+  Box,
   Button,
-  Card,
-  CardContent,
-  CardHeader,
-  FormHelperText,
   Link,
   Stack,
-  TextField,
   Typography
 } from '@mui/material';
 import {Layout as AuthLayout} from '../../../layouts/auth';
 import {paths} from '../../../navigation/paths';
 import {Loader} from '../../../components/loader';
 import {Input} from "../../../components/input";
+import toast from 'react-hot-toast';
+import {useAuth} from "../../../hooks/useAuth";
+import {useEffect} from "react";
 
 const useParams = () => {
   const searchParams = useSearchParams();
@@ -49,17 +45,22 @@ const validationSchema = Yup.object({
 const Page = () => {
   const router = useRouter();
   const {returnTo} = useParams();
-  // const {data, isFetching, error, login} = useLogin();
+  const {success, loading, error, login} = useAuth();
+  
+  useEffect(() => {
+    success
+      ? router.push(returnTo || paths.index)
+      : error
+      ? toast(error.message ? error.message
+        : 'En error has occurred') : void 0;
+  }, [success, error])
   
   const formik = useFormik({
     initialValues,
     validationSchema,
-    onSubmit: (values, helpers) => {
+    onSubmit: async (values, helpers) => {
       try {
-        //login here
-        // login(values);
-        
-        // router.push(returnTo || paths.index);
+        await login(values)
       } catch (err) {
         console.error(err);
         
@@ -73,7 +74,7 @@ const Page = () => {
   return (
     <>
       <div>
-        {/*{isFetching && <Loader/>}*/}
+        {loading && <Loader/>}
         <Stack
           sx={{mb: 4}}
           spacing={1}
