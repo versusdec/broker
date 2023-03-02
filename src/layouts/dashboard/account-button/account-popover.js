@@ -17,23 +17,27 @@ import {
   Typography
 } from '@mui/material';
 import { paths } from '../../../navigation/paths';
+import {useAuth} from '../../../hooks/useAuth'
 
 export const AccountPopover = (props) => {
   const { anchorEl, onClose, open, ...other } = props;
   const router = useRouter();
-
+  const auth = useAuth();
+  
+  
   const handleLogout = useCallback(async () => {
     try {
       onClose?.();
   
       // sign out here
+      await auth.logout()
 
-      router.push(paths.index);
+      // router.push(paths.login);
     } catch (err) {
       console.error(err);
       toast.error('Something went wrong!');
     }
-  }, [/*auth,*/ router, onClose]);
+  }, [auth, router, onClose]);
 
   return (
     <Popover

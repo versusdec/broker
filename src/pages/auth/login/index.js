@@ -16,15 +16,6 @@ import toast from 'react-hot-toast';
 import {useAuth} from "../../../hooks/useAuth";
 import {useEffect} from "react";
 
-const useParams = () => {
-  const searchParams = useSearchParams();
-  const returnTo = searchParams.get('returnTo') || undefined;
-  
-  return {
-    returnTo
-  };
-};
-
 const initialValues = {
   email: '',
   password: ''
@@ -44,16 +35,13 @@ const validationSchema = Yup.object({
 
 const Page = () => {
   const router = useRouter();
-  const {returnTo} = useParams();
-  const {success, loading, error, login} = useAuth();
+  const {loading, error, login} = useAuth();
   
   useEffect(() => {
-    success
-      ? router.push(returnTo || paths.index)
-      : error
-      ? toast(error.message ? error.message
+     error
+      ? toast.error(error.message ? error.message
         : 'En error has occurred') : void 0;
-  }, [success, error])
+  }, [error])
   
   const formik = useFormik({
     initialValues,

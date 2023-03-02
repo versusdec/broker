@@ -1,15 +1,8 @@
-import {decode, JWT_EXPIRES_IN, JWT_SECRET, sign} from '../utils/jwt';
 import {root} from './config';
+import {getToken} from "../utils/get-token";
 
 const init = (body) => {
-  let cookies = {};
-  if (document.cookie.split(';')[0] !== "") {
-    document.cookie.split(';').forEach(item => {
-      cookies[item.split('=')[0].trim()] = item.split('=')[1].trim()
-    })
-  }
-  
-  let token = cookies['__token'];
+ const token = getToken()
   
   return {
     credentials: "include",
@@ -27,6 +20,11 @@ export const api = Object.freeze({
     login: async (params) => {
       // const res = await fetch(root, init({params: params, method: 'auth.login'}));
       return await fetch(root, init({params: params, method: 'auth.login'}));
+    }
+  },
+  users: {
+    me: async ()=>{
+      return await fetch(root, init({params: {}, method: 'users.me'})).then(res=>res.json());
     }
   }
 });

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import {VerticalLayout} from './vertical-layout';
 import {getSections} from './config';
 import Head from '../../components/head'
+import {AuthGuard} from "../../guards/authGuard";
 
 const useTranslatedSections = () => {
   const {t} = useTranslation();
@@ -20,12 +21,12 @@ export const Layout = (props) => {
       : false
   
   return (
-    <>
+    <AuthGuard>
       <Head title={title}/>
       <VerticalLayout
         sections={sections}
         {...props} />
-    </>
+    </AuthGuard>
   );
 };
 
