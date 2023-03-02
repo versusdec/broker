@@ -43,8 +43,7 @@ const useModal = () => {
 }
 
 const Page = () => {
-  const router = useRouter();
-  // const {data, isFetching, error, login} = useLogin();
+  const {modalOpen, handleModal} = useModal();
   
   const formik = useFormik({
     initialValues,
@@ -64,8 +63,6 @@ const Page = () => {
       }
     }
   })
-  
-  const {modalOpen, handleModal} = useModal();
   
   return (
     <>

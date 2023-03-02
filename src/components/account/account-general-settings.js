@@ -18,14 +18,14 @@ import {alpha} from '@mui/material/styles';
 import {Input} from "../input";
 import {useFormik} from "formik";
 import * as Yup from "yup";
-import {useCallback, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {FileUploader} from "../file-uploader";
 
-const timezones = [
-  {value: 1, label: '+1'},
-  {value: 2, label: '+2'},
-  {value: 3, label: '+3'},
-]
+/*const timezones = [
+  {value: 1, label: 'UTC +1'},
+  {value: 2, label: 'UTC +2'},
+  {value: 180, label: 'UTC +3'},
+]*/
 
 const languageOptions = [
   {
@@ -34,17 +34,11 @@ const languageOptions = [
     value: 'en'
   },
   {
-    icon: '/assets/flags/flag-de.svg',
-    label: 'German',
-    value: 'de'
-  },
-  {
-    icon: '/assets/flags/flag-es.svg',
-    label: 'Spanish',
-    value: 'es'
+    icon: '/assets/flags/flag-ru.svg',
+    label: 'Russian',
+    value: 'ru'
   }
 ]
-
 
 const validationSchema = Yup.object({
   email: Yup
@@ -57,23 +51,38 @@ const validationSchema = Yup.object({
     .max(255)
     .required('Name is required'),
   timezone: Yup
-    .number()
-    .oneOf([0, 1, 2, 3]),
+    .number(),
   language: Yup
     .string()
-    .oneOf(['en', 'de', 'es', undefined]),
+    .oneOf(['en', 'ru'])
   
 });
 
 export const AccountGeneralSettings = (props) => {
   const {user, onSubmit} = props;
   const [uploaderOpen, setUploaderOpen] = useState(false);
+  const [timezones, setTimezones] = useState(null);
   
-  const handleOpen = useCallback(()=>{
+  useEffect(() => {
+    const getTimezones = async () => {
+      const res = await fetch('/timezones.json').then(res => res.json())
+      const t = [];
+      for (const i in res) {
+        t.push({
+          value: +i,
+          label: res[i]
+        })
+      }
+      setTimezones(t)
+    }
+    getTimezones()
+  }, [timezones])
+  
+  const handleOpen = useCallback(() => {
     setUploaderOpen(true)
   }, [])
   
-  const handleClose = useCallback(()=>{
+  const handleClose = useCallback(() => {
     setUploaderOpen(false)
   }, [])
   
@@ -88,9 +97,9 @@ export const AccountGeneralSettings = (props) => {
   const initialValues = {
     name: user?.name || '',
     email: user?.email || '',
-    avatar: user?.avatar || '',
+    avatar: user?.avatar || '/assets/avatars/avatar-anika-visser.png',
     timezone: user?.timezone || 0,
-    language: user?.language || undefined
+    language: user?.language || 'en'
   };
   
   const formik = useFormik({
@@ -252,10 +261,13 @@ export const AccountGeneralSettings = (props) => {
                       onBlur={formik.handleBlur}
                       onChange={formik.handleChange}
                       select
-                      value={formik.values.timezone}
+                      value={timezones ? formik.values.timezone : ''}
                     >
                       {
-                        timezones.map(option => {
+                        !timezones && <MenuItem value=""></MenuItem>
+                      }
+                      {
+                        timezones && timezones.map(option => {
                           return (
                             <MenuItem key={option.value} value={option.value}>
                               {option.label}
@@ -263,6 +275,7 @@ export const AccountGeneralSettings = (props) => {
                           )
                         })
                       }
+                    
                     </Input>
                     <Input
                       fullWidth

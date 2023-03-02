@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import { useAuth } from '../hooks/useAuth';
 import { paths } from '../navigation/paths';
-import {getToken} from "../hooks/useAuth.copy";
+import {getToken} from "../utils/get-token";
 
 export const AuthGuard = (props) => {
   const { children } = props;

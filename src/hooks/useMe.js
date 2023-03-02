@@ -1,9 +1,5 @@
 import {useDispatch, useSelector} from "../store";
-import {api} from "../api";
-import {useEffect, useState} from "react";
-import {domain} from '../api/config'
-import {useRouter} from 'next/router'
-import {paths} from "../navigation/paths"
+import {useEffect} from "react";
 import {usersMe} from "../slices/usersSlice";
 
 export const useMe = () => {

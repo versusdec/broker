@@ -5,15 +5,7 @@ import {Box, Container, Divider, Stack, Tab, Tabs, Typography} from '@mui/materi
 import {Layout as DashboardLayout} from '../../layouts/dashboard';
 import {AccountGeneralSettings} from '../../components/account/account-general-settings';
 import {AccountSecuritySettings} from '../../components/account/account-security-settings';
-
-const user = {
-  id: '5e86809283e28b96d2d38537',
-  avatar: '/assets/avatars/avatar-anika-visser.png',
-  name: 'Anika Visser',
-  email: 'anika.visser@devias.io',
-  timezone: 2,
-  language: 'en'
-};
+import {useMe} from "../../hooks/useMe";
 
 const now = new Date();
 
@@ -24,6 +16,7 @@ const tabs = [
 
 const Page = () => {
   const [currentTab, setCurrentTab] = useState('general');
+  const user = useMe();
   
   const handleTabsChange = useCallback((event, value) => {
     setCurrentTab(value);
@@ -33,7 +26,7 @@ const Page = () => {
     console.log(values);
   }
   
-  return (
+  return user && (
     <>
       <Box>
         <Stack

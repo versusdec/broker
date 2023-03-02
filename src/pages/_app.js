@@ -12,23 +12,14 @@ import {store} from '../store'
 // Remove if nprogress is not used
 import '../locales/i18n';
 import {AuthProvider, AuthConsumer} from "../contexts/authContext";
-import * as PropTypes from "prop-types";
 import {SplashScreen} from "../components/splash-screen";
-import {getToken} from "../hooks/useAuth.copy";
 
 const getDefaultLayout = (page) => (
   <DashboardLayout>{page}</DashboardLayout>
 )
 
-/*function AuthConsumer(props) {
-  return null;
-}*/
-
-// AuthConsumer.propTypes = {children: PropTypes.func};
 const App = ({Component, pageProps}) => {
   const getLayout = Component.getLayout ?? getDefaultLayout;
-  // const getLayout = Component.getLayout ?? ((page) => page);
-  
   
   const theme = createTheme({
     colorPreset: 'indigo',

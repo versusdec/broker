@@ -18,9 +18,15 @@ const init = (body) => {
 export const api = Object.freeze({
   auth: {
     login: async (params) => {
-      // const res = await fetch(root, init({params: params, method: 'auth.login'}));
       return await fetch(root, init({params: params, method: 'auth.login'}));
-    }
+    },
+    register: async (params) => {
+      return await fetch(root, init({params: params, method: 'auth.register'}));
+    },
+    restore: async (params) => {
+      return await fetch(root, init({params: params, method: 'auth.restore'}));
+    },
+    
   },
   users: {
     me: async ()=>{

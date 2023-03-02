@@ -18,21 +18,21 @@ import {
 } from '@mui/material';
 import { paths } from '../../../navigation/paths';
 import {useAuth} from '../../../hooks/useAuth'
+import {useMe} from "../../../hooks/useMe";
 
 export const AccountPopover = (props) => {
   const { anchorEl, onClose, open, ...other } = props;
   const router = useRouter();
   const auth = useAuth();
+  const user = useMe()
   
   
   const handleLogout = useCallback(async () => {
     try {
       onClose?.();
-  
-      // sign out here
+      
       await auth.logout()
-
-      // router.push(paths.login);
+      
     } catch (err) {
       console.error(err);
       toast.error('Something went wrong!');
@@ -53,13 +53,13 @@ export const AccountPopover = (props) => {
       {...other}>
       <Box sx={{ p: 2 }}>
         <Typography variant="body1">
-          Anika Visser
+          {user && user.name}
         </Typography>
         <Typography
           color="text.secondary"
           variant="body2"
         >
-          demo@devias.io
+          {user && user.email}
         </Typography>
       </Box>
       <Divider />

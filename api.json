@@ -171,6 +171,24 @@
       "password_confirm": "string"
     }
   },
+  "auth.login2fa": {
+    "role": [
+      "public"
+    ],
+    "required": {
+      "email": "email",
+      "password": "string",
+      "code": "string"
+    }
+  },
+  "auth.restore": {
+    "role": [
+      "public"
+    ],
+    "required": {
+      "email": "email"
+    }
+  },
   "payments.get": {
     "role": [
       "admin",
@@ -200,14 +218,7 @@
       }
     }
   },
-  "auth.restore": {
-    "role": [
-      "public"
-    ],
-    "required": {
-      "email": "email"
-    }
-  },
+
   "queues.get": {
     "role": [
       "admin",
@@ -272,16 +283,7 @@
       "id": "int"
     }
   },
-  "auth.login2fa": {
-    "role": [
-      "public"
-    ],
-    "required": {
-      "email": "email",
-      "password": "string",
-      "code": "string"
-    }
-  },
+
   "queues.suggest": {
     "role": [
       "admin",

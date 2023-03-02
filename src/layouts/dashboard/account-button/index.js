@@ -2,14 +2,10 @@ import { useCallback, useRef, useState } from 'react';
 import User01Icon from '@untitled-ui/icons-react/build/esm/User01';
 import { Avatar, Box, ButtonBase, SvgIcon } from '@mui/material';
 import { AccountPopover } from './account-popover';
+import {useMe} from "../../../hooks/useMe";
 
 export const AccountButton = () => {
-  const user = {
-    id: '5e86809283e28b96d2d38537',
-    avatar: '/assets/avatars/avatar-anika-visser.png',
-    name: 'Anika Visser',
-    email: 'anika.visser@devias.io'
-  };
+  const user = useMe();
   
   const anchorRef = useRef(null);
   const [openPopover, setOpenPopover] = useState(false);
@@ -44,8 +40,8 @@ export const AccountButton = () => {
             height: 32,
             width: 32
           }}
-          src={user.avatar}
-        >
+          src={user?.avatar.length ? user.avatar : '/assets/avatars/avatar-anika-visser.png'}
+        > 
           <SvgIcon>
             <User01Icon />
           </SvgIcon>

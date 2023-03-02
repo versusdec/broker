@@ -1,39 +1,30 @@
-import Head from 'next/head';
-import {useRouter, useSearchParams} from 'next/navigation';
 import NextLink from 'next/link';
 import * as Yup from 'yup';
 import {useFormik} from 'formik';
 import Generator from 'generate-password'
 import {
   Box,
-  Button,
+  Button, Dialog, DialogActions, DialogContent, DialogTitle,
   FormHelperText, IconButton, InputAdornment,
   Link,
   Stack,
-  TextField,
   Typography
 } from '@mui/material';
 
 import {Layout as AuthLayout} from '../../../layouts/auth';
 import {paths} from '../../../navigation/paths';
-import {useState} from "react";
-import {Visibility, VisibilityOff} from "@mui/icons-material";
+import {useEffect, useState} from "react";
+import {Close, Visibility, VisibilityOff} from "@mui/icons-material";
 import {Input} from "../../../components/input";
-
-const useParams = () => {
-  const searchParams = useSearchParams();
-  const returnTo = searchParams.get('returnTo') || undefined;
-  
-  return {
-    returnTo
-  };
-};
+import {useAuth} from "../../../hooks/useAuth";
+import toast from "react-hot-toast";
+import {Loader} from "../../../components/loader";
 
 const initialValues = {
   email: '',
   name: '',
   password: '',
-  confirm_password: '',
+  password_confirm: '',
   phone: '',
   company: ''
 };
@@ -53,32 +44,47 @@ const validationSchema = Yup.object({
     .min(8)
     .max(255)
     .required('Password is required'),
-  confirm_password: Yup
+  password_confirm: Yup
     .string()
-    .oneOf([Yup.ref('password'), null], 'Passwords must match')
+    .oneOf([Yup.ref('password')], 'Passwords must match')
     .max(255)
     .required('Password is required'),
   phone: Yup
-    .string()
-    .min(7)
-    .max(15),
+    .string(),
   company: Yup
     .string()
-  
 });
 
+const useModal = () => {
+  const [modalOpen, setModalOpen] = useState(false)
+  const handleModal = () => {
+    setModalOpen(!modalOpen)
+  }
+  return {modalOpen, handleModal}
+}
+
 const Page = () => {
-  const router = useRouter();
-  const {returnTo} = useParams();
   const [showPass, setShowPass] = useState(false);
+  const {loading, error, register} = useAuth();
+  const {modalOpen, handleModal} = useModal();
+  
+  useEffect(() => {
+    error
+      ? toast.error(error.message ? error.message
+      : 'En error has occurred') : void 0;
+  }, [error])
   
   const generatePassword = () => {
     const pass = Generator.generate({
       numbers: true,
       symbols: true
     })
-    formik.setFieldValue('password', pass).then(()=>{formik.setFieldTouched('password', true, true)})
-    formik.setFieldValue('confirm_password', pass).then(()=>{formik.setFieldTouched('confirm_password', true, true)})
+    formik.setFieldValue('password', pass).then(() => {
+      formik.setFieldTouched('password', true, true)
+    })
+    formik.setFieldValue('password_confirm', pass).then(() => {
+      formik.setFieldTouched('password_confirm', true, true)
+    })
   }
   
   const formik = useFormik({
@@ -86,11 +92,17 @@ const Page = () => {
     validationSchema,
     onSubmit: async (values, helpers) => {
       try {
-        // register here
-        console.log(values)
-        
-        router.push(returnTo || paths.index);
-        
+        if (values.phone?.length) {
+          values.phone = values.phone.replace(/[^0-9]/g, '');
+        }
+        for(const key in values) {
+          if( values[key] === '')
+            delete values[key]
+        }
+        const res = await register(values);
+        if (res) {
+          handleModal()
+        }
       } catch (err) {
         console.error(err);
         helpers.setStatus({success: false});
@@ -103,6 +115,41 @@ const Page = () => {
   return (
     <>
       <div>
+        {loading && <Loader/>}
+        <Dialog
+          open={modalOpen}
+          onClose={handleModal}
+          scroll={'paper'}
+          maxWidth={'lg'}
+        >
+          <DialogTitle sx={{pr: 10}}>
+            <IconButton
+              aria-label="close"
+              onClick={handleModal}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.primary.main,
+              }}
+            >
+              <Close/>
+            </IconButton>
+            Registration confirm
+          </DialogTitle>
+          <DialogContent dividers>
+            To complete your registration please check your email.
+          </DialogContent>
+          <DialogActions>
+            <Button
+              type={'button'}
+              variant={'contained'}
+              onClick={handleModal}
+            >
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
         <Stack
           sx={{mb: 4}}
           spacing={1}
@@ -179,15 +226,15 @@ const Page = () => {
               }}
             />
             <Input
-              error={!!(formik.touched.confirm_password && formik.errors.confirm_password)}
+              error={!!(formik.touched.password_confirm && formik.errors.password_confirm)}
               fullWidth
-              helperText={formik.touched.confirm_password && formik.errors.confirm_password}
+              helperText={formik.touched.password_confirm && formik.errors.password_confirm}
               label="Confirm password"
-              name="confirm_password"
+              name="password_confirm"
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
               type="password"
-              value={formik.values.confirm_password}
+              value={formik.values.password_confirm}
             />
             <Button variant={'outlined'} onClick={generatePassword} size={'large'}>Generate password</Button>
             <Input
@@ -196,7 +243,8 @@ const Page = () => {
               name="phone"
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
-              type="text"
+              
+              type="tel"
               value={formik.values.phone}
             />
             <Input
@@ -206,7 +254,7 @@ const Page = () => {
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
               type="text"
-              value={formik.values.phone}
+              value={formik.values.company}
             />
           </Stack>
           <Box

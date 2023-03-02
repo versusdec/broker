@@ -1,4 +1,3 @@
-import {useRouter, useSearchParams} from 'next/navigation';
 import * as Yup from 'yup';
 import {useFormik} from 'formik';
 import {
@@ -34,7 +33,6 @@ const validationSchema = Yup.object({
 });
 
 const Page = () => {
-  const router = useRouter();
   const {loading, error, login} = useAuth();
   
   useEffect(() => {
@@ -48,7 +46,7 @@ const Page = () => {
     validationSchema,
     onSubmit: async (values, helpers) => {
       try {
-        await login(values)
+        await login(values);
       } catch (err) {
         console.error(err);
         

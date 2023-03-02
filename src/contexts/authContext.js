@@ -11,7 +11,8 @@ import {useSearchParams} from "next/navigation";
 let ActionType = {
   'INITIALIZE': 'INITIALIZE',
   'LOGIN': 'LOGIN',
-  'LOGOUT': 'LOGOUT'
+  'LOGOUT': 'LOGOUT',
+  'REGISTER': 'REGISTER'
 }
 
 const initialState = {
@@ -44,7 +45,12 @@ const handlers = {
     ...state,
     isAuthenticated: false,
     user: null
-  })
+  }),
+  REGISTER: (state) => ({
+    ...state,
+    isAuthenticated: false,
+    user: null
+  }),
 };
 
 const reducer = (state, action) => (handlers[action.type]
@@ -54,7 +60,8 @@ const reducer = (state, action) => (handlers[action.type]
 export const AuthContext = createContext({
   ...initialState,
   login: () => Promise.resolve(),
-  logout: () => () => void 0,
+  logout: () => void 0,
+  register: () => Promise.resolve(),
 });
 
 const useParams = () => {
@@ -81,7 +88,7 @@ export const AuthProvider = (props) => {
       if (accessToken) {
         const {result} = await api.users.me();
         const user = result;
-        console.log(user);
+        
         dispatch({
           type: ActionType.INITIALIZE,
           payload: {
@@ -123,15 +130,14 @@ export const AuthProvider = (props) => {
     const response = await res.json();
     setLoading(false);
     const user = response.result
-    if (response.result && !response.result.error) {
+    if (response.result) {
       if (res.headers.get('token') != null) {
         setToken(res.headers.get('token'))
       }
       router.push(returnTo || paths.index)
-    } else if (response.result.error) {
-      setError(response.result.error)
     } else if (response.error) {
       console.table(response.error)
+      setError(response.error)
     }
     
     dispatch({
@@ -149,12 +155,29 @@ export const AuthProvider = (props) => {
     router.push(paths.login);
   }, [dispatch])
   
+  const register = useCallback(async (values) => {
+    setLoading(true);
+    setError(false);
+    const res = await api.auth.register(values);
+    const response = await res.json();
+    setLoading(false);
+    if (response.result) {
+      dispatch({type: ActionType.REGISTER});
+      return true
+    } else if (response.error) {
+      console.table(response.error)
+      setError(response.error)
+    }
+  }, [dispatch]);
+  
+  
   return (
     <AuthContext.Provider
       value={{
         ...state,
         login,
         logout,
+        register,
         error,
         loading
       }}
