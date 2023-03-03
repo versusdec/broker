@@ -12,7 +12,7 @@ import {store} from '../store'
 // Remove if nprogress is not used
 import '../locales/i18n';
 import {AuthProvider, AuthConsumer} from "../contexts/authContext";
-import {SplashScreen} from "../components/splash-screen";
+import {SplashAnimation} from "../components/splash-animation";
 
 const getDefaultLayout = (page) => (
   <DashboardLayout>{page}</DashboardLayout>
@@ -59,7 +59,7 @@ const App = ({Component, pageProps}) => {
                         <CssBaseline/>
                         
                         {showSlashScreen
-                          ? <SplashScreen /> :
+                          ? <SplashAnimation /> :
                           getLayout(
                           <Component {...pageProps} />
                         )}
