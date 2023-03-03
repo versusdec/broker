@@ -11,6 +11,7 @@ import {useSearchParams} from "next/navigation";
 let ActionType = {
   'INITIALIZE': 'INITIALIZE',
   'LOGIN': 'LOGIN',
+  'LOGIN2FA': 'LOGIN2FA',
   'LOGOUT': 'LOGOUT',
   'REGISTER': 'REGISTER'
 }
@@ -41,6 +42,15 @@ const handlers = {
       user
     };
   },
+  LOGIN2FA: (state, action) => {
+    const {user} = action.payload;
+    
+    return {
+      ...state,
+      isAuthenticated: true,
+      user
+    };
+  },
   LOGOUT: (state) => ({
     ...state,
     isAuthenticated: false,
@@ -60,6 +70,7 @@ const reducer = (state, action) => (handlers[action.type]
 export const AuthContext = createContext({
   ...initialState,
   login: () => Promise.resolve(),
+  login2fa: () => Promise.resolve(),
   logout: () => void 0,
   register: () => Promise.resolve(),
 });
@@ -131,22 +142,50 @@ export const AuthProvider = (props) => {
     setLoading(false);
     const user = response.result
     if (response.result) {
-      if (res.headers.get('token') != null) {
-        setToken(res.headers.get('token'))
+      if (response.result.method === 'login2fa') {
+        return response.result
+      } else {
+        if (res.headers.get('token') != null) {
+          setToken(res.headers.get('token'))
+          dispatch({
+            type: ActionType.LOGIN,
+            payload: {
+              user
+            }
+          });
+          router.push(returnTo || paths.index);
+        }
       }
-      router.push(returnTo || paths.index)
     } else if (response.error) {
       console.table(response.error)
       setError(response.error)
     }
-    
-    dispatch({
-      type: ActionType.LOGIN,
-      payload: {
-        user
-      }
-    });
   }, [dispatch]);
+  
+  const login2fa = useCallback(async (values) => {
+    setLoading(true);
+    setError(false);
+    const res = await api.auth.login2fa(values);
+    const response = await res.json();
+    setLoading(false);
+    const user = response.result
+    if (response.result) {
+        if (res.headers.get('token') != null) {
+          setToken(res.headers.get('token'))
+          dispatch({
+            type: ActionType.LOGIN,
+            payload: {
+              user
+            }
+          });
+          router.push(returnTo || paths.index);
+      }
+    } else if (response.error) {
+      console.table(response.error)
+      setError(response.error)
+    }
+  }, [dispatch]);
+  
   
   const logout = useCallback(() => {
     setError(false);
@@ -176,6 +215,7 @@ export const AuthProvider = (props) => {
       value={{
         ...state,
         login,
+        login2fa,
         logout,
         register,
         error,

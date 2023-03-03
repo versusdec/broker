@@ -20,6 +20,9 @@ export const api = Object.freeze({
     login: async (params) => {
       return await fetch(root, init({params: params, method: 'auth.login'}));
     },
+    login2fa: async (params) => {
+      return await fetch(root, init({params: params, method: 'auth.login2fa'}));
+    },
     register: async (params) => {
       return await fetch(root, init({params: params, method: 'auth.register'}));
     },
