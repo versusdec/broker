@@ -1,5 +1,6 @@
 import Camera01Icon from '@untitled-ui/icons-react/build/esm/Camera01';
 import User01Icon from '@untitled-ui/icons-react/build/esm/User01';
+import PropTypes from 'prop-types';
 import {
   Avatar,
   Box,
@@ -20,12 +21,6 @@ import {useFormik} from "formik";
 import * as Yup from "yup";
 import {useCallback, useEffect, useState} from "react";
 import {FileUploader} from "../file-uploader";
-
-/*const timezones = [
-  {value: 1, label: 'UTC +1'},
-  {value: 2, label: 'UTC +2'},
-  {value: 180, label: 'UTC +3'},
-]*/
 
 const languageOptions = [
   {
@@ -55,11 +50,10 @@ const validationSchema = Yup.object({
   language: Yup
     .string()
     .oneOf(['en', 'ru'])
-  
 });
 
 export const AccountGeneralSettings = (props) => {
-  const {user, onSubmit} = props;
+  const {user, onSubmit, updateAvatar} = props;
   const [uploaderOpen, setUploaderOpen] = useState(false);
   const [timezones, setTimezones] = useState(null);
   
@@ -76,7 +70,7 @@ export const AccountGeneralSettings = (props) => {
       setTimezones(t)
     }
     getTimezones()
-  }, [timezones])
+  }, [])
   
   const handleOpen = useCallback(() => {
     setUploaderOpen(true)
@@ -84,14 +78,6 @@ export const AccountGeneralSettings = (props) => {
   
   const handleClose = useCallback(() => {
     setUploaderOpen(false)
-  }, [])
-  
-  const handleUploader = () => {
-    setUploaderOpen(!uploaderOpen)
-  }
-  
-  const handleUpload = useCallback((val) => {
-    console.log(val)
   }, [])
   
   const initialValues = {
@@ -324,8 +310,21 @@ export const AccountGeneralSettings = (props) => {
       <FileUploader
         onClose={handleClose}
         open={uploaderOpen}
-        onUpload={handleUpload}
+        onUpload={(files) => {
+          updateAvatar(files)
+          handleClose()
+        }
+        }
+        multiple={false}
       />
     </Stack>
   );
 };
+
+
+AccountGeneralSettings.propTypes = {
+  user: PropTypes.object,
+  onSubmit: PropTypes.func,
+  updateAvatar: PropTypes.func
+  
+}

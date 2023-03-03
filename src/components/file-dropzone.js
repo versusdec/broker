@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useDropzone } from 'react-dropzone';
+import {useDropzone} from 'react-dropzone';
 import Upload01Icon from '@untitled-ui/icons-react/build/esm/Upload01';
 import XIcon from '@untitled-ui/icons-react/build/esm/X';
 import {
@@ -16,15 +16,39 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import { bytesToSize } from '../utils/bytes-to-size';
-import { FileIcon } from './file-icon';
+import {bytesToSize} from '../utils/bytes-to-size';
+import {FileIcon} from './file-icon';
+import {root} from '../api/config';
+import toast from "react-hot-toast";
+import {useCallback} from "react";
+
 
 export const FileDropzone = (props) => {
-  const { caption, files = [], onRemove, onRemoveAll, onUpload, ...other } = props;
-  const { getRootProps, getInputProps, isDragActive } = useDropzone(other);
-
+  const {caption, files = [], onRemove, onRemoveAll, onUpload, ...other} = props;
+  const {getRootProps, getInputProps, isDragActive} = useDropzone(other);
+  
   const hasAnyFiles = files.length > 0;
-
+  
+  const upload = useCallback(async (files) => {
+    const data = new FormData();
+    files.forEach((file, i) => {
+      data.append(`file${i}`, file);
+    })
+    
+    try {
+      let response = await fetch(root + '/upload', {
+        method: 'POST',
+        body: data,
+      }).then((res) => res.json());
+      if (response) {
+        onUpload(response)
+      }
+    } catch (e) {
+      console.log(e)
+      toast.error('Something went wrong. Try again')
+    }
+  }, [files])
+  
   return (
     <div>
       <Box
@@ -63,7 +87,7 @@ export const FileDropzone = (props) => {
             }}
           >
             <SvgIcon>
-              <Upload01Icon />
+              <Upload01Icon/>
             </SvgIcon>
           </Avatar>
           <Stack spacing={1}>
@@ -89,11 +113,11 @@ export const FileDropzone = (props) => {
         </Stack>
       </Box>
       {hasAnyFiles && (
-        <Box sx={{ mt: 2 }}>
+        <Box sx={{mt: 2}}>
           <List>
             {files.map((file) => {
               const extension = file.name.split('.').pop();
-
+              
               return (
                 <ListItem
                   key={file.path}
@@ -107,11 +131,11 @@ export const FileDropzone = (props) => {
                   }}
                 >
                   <ListItemIcon>
-                    <FileIcon extension={extension} />
+                    <FileIcon extension={extension}/>
                   </ListItemIcon>
                   <ListItemText
                     primary={file.name}
-                    primaryTypographyProps={{ variant: 'subtitle2' }}
+                    primaryTypographyProps={{variant: 'subtitle2'}}
                     secondary={bytesToSize(file.size)}
                   />
                   <Tooltip title="Remove">
@@ -120,7 +144,7 @@ export const FileDropzone = (props) => {
                       onClick={() => onRemove?.(file)}
                     >
                       <SvgIcon>
-                        <XIcon />
+                        <XIcon/>
                       </SvgIcon>
                     </IconButton>
                   </Tooltip>
@@ -133,7 +157,7 @@ export const FileDropzone = (props) => {
             direction="row"
             justifyContent="flex-end"
             spacing={2}
-            sx={{ mt: 2 }}
+            sx={{mt: 2}}
           >
             <Button
               color="inherit"
@@ -144,7 +168,9 @@ export const FileDropzone = (props) => {
               Remove All
             </Button>
             <Button
-              onClick={onUpload}
+              onClick={() => {
+                upload(files)
+              }}
               size="small"
               type="button"
               variant="contained"

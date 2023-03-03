@@ -4,7 +4,6 @@ import {api} from "../api";
 export const usersMe = createAsyncThunk('users/me', async () => {
   const {result} = await api.users.me();
   return result
-  // dispatch(usersSlice.actions.fillMe(res))
 })
 
 export const usersSlice = createSlice({
@@ -14,8 +13,7 @@ export const usersSlice = createSlice({
   },
   reducers: {
     fillMe: (state, action) => {
-      // console.log(action.payload);
-      state.users.me = action.payload;
+      state.me = action.payload;
     }
   },
   extraReducers(builder) {

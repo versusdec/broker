@@ -1,33 +1,37 @@
-import { useCallback, useEffect, useState } from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
-import { Dialog, DialogContent, IconButton, Stack, SvgIcon, Typography } from '@mui/material';
-import { FileDropzone } from '../file-dropzone';
+import {Dialog, DialogContent, IconButton, Stack, SvgIcon, Typography} from '@mui/material';
+import {FileDropzone} from '../file-dropzone';
 import XIcon from '@untitled-ui/icons-react/build/esm/X';
 
 export const FileUploader = (props) => {
-  const { onClose, open = false, onUpload } = props;
+  const {onClose, open = false, onUpload} = props;
   const [files, setFiles] = useState([]);
-
+  const multiple = !props.multiple ? props.multiple : true;
+  const deny = Boolean(!multiple && files.length);
+  
   useEffect(() => {
     setFiles([]);
   }, [open]);
-
+  
   const handleDrop = useCallback((newFiles) => {
-    setFiles((prevFiles) => {
-      return [...prevFiles, ...newFiles];
-    });
-  }, []);
-
+    if (!deny) {
+      setFiles((prevFiles) => {
+        return [...prevFiles, ...newFiles];
+      });
+    }
+  }, [deny]);
+  
   const handleRemove = useCallback((file) => {
     setFiles((prevFiles) => {
       return prevFiles.filter((_file) => _file.path !== file.path);
     });
   }, []);
-
+  
   const handleRemoveAll = useCallback(() => {
     setFiles([]);
   }, []);
-
+  
   return (
     <Dialog
       fullWidth
@@ -53,7 +57,7 @@ export const FileUploader = (props) => {
           onClick={onClose}
         >
           <SvgIcon>
-            <XIcon />
+            <XIcon/>
           </SvgIcon>
         </IconButton>
       </Stack>
@@ -63,7 +67,7 @@ export const FileUploader = (props) => {
           onDrop={handleDrop}
           onRemove={handleRemove}
           onRemoveAll={handleRemoveAll}
-          onUpload={()=>{
+          onUpload={() => {
             onClose();
             onUpload(files)
           }}

@@ -1,11 +1,14 @@
 import {useCallback, useState} from 'react';
-import Head from 'next/head';
 import {subDays, subHours, subMinutes, subMonths} from 'date-fns';
-import {Box, Container, Divider, Stack, Tab, Tabs, Typography} from '@mui/material';
-import {Layout as DashboardLayout} from '../../layouts/dashboard';
+import {Box, Divider, Stack, Tab, Tabs, Typography} from '@mui/material';
 import {AccountGeneralSettings} from '../../components/account/account-general-settings';
 import {AccountSecuritySettings} from '../../components/account/account-security-settings';
 import {useMe} from "../../hooks/useMe";
+import {api} from "../../api";
+import {root} from "../../api/config";
+import {actions} from "../../slices/usersSlice";
+import toast from "react-hot-toast";
+import {useDispatch} from "../../store";
 
 const now = new Date();
 
@@ -14,16 +17,50 @@ const tabs = [
   {label: 'Security', value: 'security'}
 ];
 
+const setUserUpdate = (user, newValues) => {
+  const newUser = {...user, ...newValues}
+  for (const i in newUser) {
+    if (newUser[i] === '')
+      delete newUser[i]
+  }
+  //todo remove after cleaning up stepka mistakes for all users queues
+  delete newUser.queues;
+  newUser.queues = [];
+  //------------------
+  return newUser
+}
+
+const userUpdate = async (user, newValues, dispatch)=>{
+  const u = setUserUpdate(user, newValues)
+  const res = await api.users.update(u)
+  if (!res.error) {
+    dispatch(actions.fillMe(u))
+  } else {
+    toast.error('Something went wrong')
+  }
+}
+
 const Page = () => {
   const [currentTab, setCurrentTab] = useState('general');
   const user = useMe();
+  const dispatch = useDispatch()
   
   const handleTabsChange = useCallback((event, value) => {
     setCurrentTab(value);
   }, []);
   
-  const handleGeneralSubmit = (values) => {
-    console.log(values);
+  const handleGeneralSubmit = useCallback((values) => {
+    userUpdate(user, values, dispatch)
+  }, [user, dispatch])
+  
+  const handleAvatarUpload = useCallback((files) => {
+    userUpdate(user, {
+      avatar: root + files[0].path
+    }, dispatch)
+  }, [user, dispatch])
+  
+  const accountGeneralSettingsProps = {
+    user:user, onSubmit: handleGeneralSubmit, updateAvatar: handleAvatarUpload
   }
   
   return user && (
@@ -58,7 +95,7 @@ const Page = () => {
         </Stack>
         {currentTab === 'general' && (
           <AccountGeneralSettings
-            user={user} onSubmit={handleGeneralSubmit}
+            {...accountGeneralSettingsProps}
           />
         )}
         {currentTab === 'security' && (

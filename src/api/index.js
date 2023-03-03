@@ -34,6 +34,9 @@ export const api = Object.freeze({
   users: {
     me: async ()=>{
       return await fetch(root, init({params: {}, method: 'users.me'})).then(res=>res.json());
+    },
+    update: async (params)=>{
+      return await fetch(root, init({params: params, method: 'users.update'})).then(res=>res.json());
     }
   }
 });
