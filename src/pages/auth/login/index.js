@@ -1,10 +1,11 @@
 import * as Yup from 'yup';
 import {useFormik} from 'formik';
+import NextLink from 'next/link';
 import {
   Box,
   Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton,
-  Link,
   Stack,
+  Link,
   Typography
 } from '@mui/material';
 import {Layout as AuthLayout} from '../../../layouts/auth';
@@ -58,7 +59,7 @@ const Page = () => {
     onSubmit: async (values, helpers) => {
       try {
         const res = await login(values);
-        if (res.method === 'login2fa') {
+        if (res && res.method === 'login2fa') {
           setTfaValues(values);
           handleModal();
         }
@@ -152,6 +153,7 @@ const Page = () => {
             Don&apos;t have an account?
             &nbsp;
             <Link
+              component={NextLink}
               href={paths.register}
               underline="hover"
               variant="subtitle2"
@@ -200,6 +202,7 @@ const Page = () => {
         </form>
         <Box sx={{mt: 3}}>
           <Link
+            component={NextLink}
             href={paths.forgot}
             underline="hover"
             variant="subtitle2"

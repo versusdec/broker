@@ -24,8 +24,8 @@ const setUserUpdate = (user, newValues) => {
       delete newUser[i]
   }
   //todo remove after cleaning up stepka mistakes for all users queues
-  delete newUser.queues;
-  newUser.queues = [];
+  // delete newUser.queues;
+  // newUser.queues = [];
   //------------------
   return newUser
 }

@@ -1,58 +1,58 @@
-import Head from 'next/head';
-import {useRouter, useSearchParams} from 'next/navigation';
 import NextLink from 'next/link';
 import * as Yup from 'yup';
 import {useFormik} from 'formik';
 import {
-  Alert, Box,
+  Box,
   Button,
-  Card,
-  CardContent,
-  CardHeader,
-  FormHelperText, Hidden,
-  Link,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
   Stack,
-  TextField,
+  Link,
   Typography
 } from '@mui/material';
 import {Layout as AuthLayout} from '../../../layouts/auth';
 import {paths} from '../../../navigation/paths';
 import {Loader} from '../../../components/loader';
+import {useEffect, useState} from "react";
+import {Close} from "@mui/icons-material";
 import {Input} from "../../../components/input";
+import {useAuth} from "../../../hooks/useAuth";
+import toast from "react-hot-toast";
+import {useDispatch} from "../../../store";
+import {actions} from "../../../slices/authSlice";
 
 const initialValues = {
-  password: '',
-  confirm_password: '',
-  token: ''
+  email: ''
 };
 
 const validationSchema = Yup.object({
-  password: Yup
+  email: Yup
     .string()
-    .min(8)
+    .email('Must be a valid email')
     .max(255)
-    .required('Password is required'),
-  confirm_password: Yup
-    .string()
-    .oneOf([Yup.ref('password'), null], 'Passwords must match')
-    .max(255)
-    .required('Password is required')
+    .required('Email is required')
 });
 
-const useParams = () => {
-  const searchParams = useSearchParams();
-  const token = searchParams.get('token') || undefined;
-  
-  return {
-    token
-  };
-};
+const useModal = () => {
+  const [modalOpen, setModalOpen] = useState(false)
+  const handleModal = () => {
+    setModalOpen(!modalOpen)
+  }
+  return {modalOpen, handleModal}
+}
 
 const Page = () => {
-  const router = useRouter();
-  const {token} = useParams();
-  initialValues.token = token;
-  // const {data, isFetching, error, login} = useLogin();
+  const {modalOpen, handleModal} = useModal();
+  const {loading, error, restore} = useAuth();
+  
+  useEffect(() => {
+    error
+      ? toast.error(error.message ? error.message
+      : 'En error has occurred') : void 0;
+  }, [error])
   
   const formik = useFormik({
     initialValues,
@@ -61,10 +61,10 @@ const Page = () => {
       try {
         //login here
         // login(values);
-        values.token = token;
-        console.log(values);
-        
-        // router.push(paths.index);
+        const res = restore(values);
+        if (res) {
+          handleModal();
+        }
       } catch (err) {
         console.error(err);
         
@@ -78,7 +78,43 @@ const Page = () => {
   return (
     <>
       <div>
-        {/*{isFetching && <Loader/>}*/}
+        {loading && <Loader/>}
+        
+        <Dialog
+          open={modalOpen}
+          onClose={handleModal}
+          scroll={'paper'}
+          maxWidth={'lg'}
+        >
+          <DialogTitle sx={{pr: 10}}>
+            <IconButton
+              aria-label="close"
+              onClick={handleModal}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.primary.main,
+              }}
+            >
+              <Close/>
+            </IconButton>
+            Password resetting
+          </DialogTitle>
+          <DialogContent dividers>
+            To restore access, use the instructions sent to your email.
+          </DialogContent>
+          <DialogActions>
+            <Button
+              type={'button'}
+              variant={'contained'}
+              onClick={handleModal}
+            >
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
+        
         <Stack
           sx={{mb: 4}}
           spacing={1}
@@ -93,26 +129,15 @@ const Page = () => {
         >
           <Stack spacing={3}>
             <Input
-              error={!!(formik.touched.password && formik.errors.password)}
+              error={!!(formik.touched.email && formik.errors.email)}
               fullWidth
-              helperText={formik.touched.password && formik.errors.password}
-              label="New password"
-              name="password"
+              helperText={formik.touched.email && formik.errors.email}
+              label="Email Address"
+              name="email"
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
-              type="password"
-              value={formik.values.password}
-            />
-            <Input
-              error={!!(formik.touched.confirm_password && formik.errors.confirm_password)}
-              fullWidth
-              helperText={formik.touched.confirm_password && formik.errors.confirm_password}
-              label="Confirm password"
-              name="confirm_password"
-              onBlur={formik.handleBlur}
-              onChange={formik.handleChange}
-              type="password"
-              value={formik.values.confirm_password}
+              type="email"
+              value={formik.values.email}
             />
           </Stack>
           <Button
@@ -125,17 +150,14 @@ const Page = () => {
             Continue
           </Button>
           <Box sx={{mt: 3}}>
-            <Typography
-              color="text.secondary"
-              variant={'body2'}>
-              <Link
-                href={paths.forgot}
-                underline="hover"
-                variant="subtitle2"
-              >
-                Resend email
-              </Link>
-            </Typography>
+            <Link
+              component={NextLink}
+              href={paths.login}
+              underline="hover"
+              variant="subtitle2"
+            >
+              Log in
+            </Link>
           </Box>
         </form>
       </div>

@@ -6,8 +6,8 @@ import {
   Box,
   Button, Dialog, DialogActions, DialogContent, DialogTitle,
   FormHelperText, IconButton, InputAdornment,
-  Link,
   Stack,
+  Link,
   Typography
 } from '@mui/material';
 
@@ -100,7 +100,8 @@ const Page = () => {
             delete values[key]
         }
         const res = await register(values);
-        if (res) {
+        console.log(res);
+        if (!res.error) {
           handleModal()
         }
       } catch (err) {

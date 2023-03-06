@@ -7,6 +7,7 @@ import {setToken} from "../utils/set-token";
 import {domain} from "../api/config";
 import {paths} from "../navigation/paths";
 import {useSearchParams} from "next/navigation";
+import toast from "react-hot-toast";
 
 let ActionType = {
   'INITIALIZE': 'INITIALIZE',
@@ -135,16 +136,45 @@ export const AuthProvider = (props) => {
     []);
   
   const login = useCallback(async (values) => {
-    setLoading(true);
-    setError(false);
-    const res = await api.auth.login(values);
-    const response = await res.json();
-    setLoading(false);
-    const user = response.result
-    if (response.result) {
-      if (response.result.method === 'login2fa') {
-        return response.result
-      } else {
+    try {
+      setLoading(true);
+      setError(false);
+      const res = await api.auth.login(values);
+      const {result} = await res.json();
+      setLoading(false);
+      if (result && !result.error) {
+        if (result.method === 'login2fa') {
+          return result
+        } else {
+          if (res.headers.get('token') != null) {
+            const user = result
+            setToken(res.headers.get('token'))
+            dispatch({
+              type: ActionType.LOGIN,
+              payload: {
+                user
+              }
+            });
+            router.push(returnTo || paths.index);
+          }
+        }
+      } else if (result.error) {
+        setError(result.error)
+      }
+    } catch (e) {
+      toast.error('Something went wrong')
+    }
+  }, [dispatch]);
+  
+  const login2fa = useCallback(async (values) => {
+    try {
+      setLoading(true);
+      setError(false);
+      const res = await api.auth.login2fa(values);
+      const {result} = await res.json();
+      setLoading(false);
+      const user = result
+      if (result && !result.error) {
         if (res.headers.get('token') != null) {
           setToken(res.headers.get('token'))
           dispatch({
@@ -155,34 +185,11 @@ export const AuthProvider = (props) => {
           });
           router.push(returnTo || paths.index);
         }
+      } else {
+        setError(result.error)
       }
-    } else if (response.error) {
-      console.table(response.error)
-      setError(response.error)
-    }
-  }, [dispatch]);
-  
-  const login2fa = useCallback(async (values) => {
-    setLoading(true);
-    setError(false);
-    const res = await api.auth.login2fa(values);
-    const response = await res.json();
-    setLoading(false);
-    const user = response.result
-    if (response.result) {
-        if (res.headers.get('token') != null) {
-          setToken(res.headers.get('token'))
-          dispatch({
-            type: ActionType.LOGIN,
-            payload: {
-              user
-            }
-          });
-          router.push(returnTo || paths.index);
-      }
-    } else if (response.error) {
-      console.table(response.error)
-      setError(response.error)
+    } catch (e) {
+      toast.error('Something went wrong')
     }
   }, [dispatch]);
   
@@ -195,18 +202,58 @@ export const AuthProvider = (props) => {
   }, [dispatch])
   
   const register = useCallback(async (values) => {
-    setLoading(true);
-    setError(false);
-    const res = await api.auth.register(values);
-    const response = await res.json();
-    setLoading(false);
-    if (response.result) {
-      dispatch({type: ActionType.REGISTER});
-      return true
-    } else if (response.error) {
-      console.table(response.error)
-      setError(response.error)
+    try {
+      setLoading(true);
+      setError(false);
+      const res = await api.auth.register(values);
+      const {result} = await res.json();
+      setLoading(false);
+      if (result && !result.error) {
+        dispatch({type: ActionType.REGISTER});
+        return true
+      } else {
+        setError(result.error)
+      }
+    } catch (e) {
+      toast.error('Something went wrong')
     }
+  }, [dispatch]);
+  
+  const restore = useCallback(async (values) => {
+    try {
+      setLoading(true);
+      setError(false);
+      const res = await api.auth.restore(values);
+      const {result} = await res.json();
+      setLoading(false);
+      if (result && !result.error) {
+        return true
+      } else {
+        setError(result.error)
+      }
+    } catch (e) {
+      toast.error('Something went wrong')
+    }
+    
+  }, [dispatch]);
+  
+  const password = useCallback(async (values) => {
+    try {
+      setLoading(true);
+      setError(false);
+      const res = await api.auth.password(values);
+      const {result} = await res.json();
+      setLoading(false);
+      if (result && !result.error) {
+        return true
+      } else {
+        setError(result.error)
+      }
+    } catch (e) {
+      toast.error('Something went wrong')
+    }
+    
+    
   }, [dispatch]);
   
   
@@ -218,6 +265,8 @@ export const AuthProvider = (props) => {
         login2fa,
         logout,
         register,
+        restore,
+        password,
         error,
         loading
       }}
