@@ -55,6 +55,7 @@
     "draft-js": "0.11.7",
     "firebase": "9.9.4",
     "formik": "2.2.9",
+    "generate-password": "1.7.0",
     "gray-matter": "4.0.3",
     "i18next": "21.9.1",
     "lodash.debounce": "4.0.8",

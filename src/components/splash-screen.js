@@ -25,7 +25,7 @@ export const SplashScreen = () => (
         width: 48
       }}
     >
-      <Logo />
+      <Logo/>
     </Box>
   </Box>
 );
