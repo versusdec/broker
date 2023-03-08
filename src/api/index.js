@@ -19,10 +19,7 @@ export const api = Object.freeze({
   auth: {
     login: async (params) => {
       try {
-        const {result, error} = await fetch(root, init({params: params, method: 'auth.login'}));
-        return {
-          result, error
-        }
+        return await fetch(root, init({params: params, method: 'auth.login'}));
       } catch (e) {
         return {
           error: e
@@ -31,10 +28,7 @@ export const api = Object.freeze({
     },
     login2fa: async (params) => {
       try {
-        const {result, error} = await fetch(root, init({params: params, method: 'auth.login2fa'}));
-        return {
-          result, error
-        }
+        return await fetch(root, init({params: params, method: 'auth.login2fa'}));
       } catch (e) {
         return {
           error: e
@@ -43,10 +37,7 @@ export const api = Object.freeze({
     },
     register: async (params) => {
       try {
-        const {result, error} = await fetch(root, init({params: params, method: 'auth.register'}));
-        return {
-          result, error
-        }
+        return await fetch(root, init({params: params, method: 'auth.register'}));
       } catch (e) {
         return {
           error: e
@@ -55,10 +46,7 @@ export const api = Object.freeze({
     },
     restore: async (params) => {
       try {
-        const {result, error} = await fetch(root, init({params: params, method: 'auth.restore'}));
-        return {
-          result, error
-        }
+       return await fetch(root, init({params: params, method: 'auth.restore'}));
       } catch (e) {
         return {
           error: e
@@ -67,10 +55,7 @@ export const api = Object.freeze({
     },
     password: async (params) => {
       try {
-        const {result, error} = await fetch(root, init({params: params, method: 'auth.password'}));
-        return {
-          result, error
-        }
+        return await fetch(root, init({params: params, method: 'auth.password'}));
       } catch (e) {
         return {
           error: e

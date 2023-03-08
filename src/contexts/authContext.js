@@ -140,9 +140,9 @@ export const AuthProvider = (props) => {
       setLoading(true);
       setError(false);
       const res = await api.auth.login(values);
-      const {result} = await res.json();
+      const {result, error} = await res.json();
       setLoading(false);
-      if (result && !result.error) {
+      if (result && !error) {
         if (result.method === 'login2fa') {
           return result
         } else {
@@ -158,10 +158,11 @@ export const AuthProvider = (props) => {
             router.push(returnTo || paths.index);
           }
         }
-      } else if (result.error) {
-        setError(result.error)
+      } else if (error) {
+        setError(error)
       }
     } catch (e) {
+      setLoading(false);
       toast.error('Something went wrong')
     }
   }, [dispatch]);
@@ -171,10 +172,10 @@ export const AuthProvider = (props) => {
       setLoading(true);
       setError(false);
       const res = await api.auth.login2fa(values);
-      const {result} = await res.json();
+      const {result, error} = await res.json();
       setLoading(false);
       const user = result
-      if (result && !result.error) {
+      if (result && !error) {
         if (res.headers.get('token') != null) {
           setToken(res.headers.get('token'))
           dispatch({
@@ -186,9 +187,10 @@ export const AuthProvider = (props) => {
           router.push(returnTo || paths.index);
         }
       } else {
-        setError(result.error)
+        setError(error)
       }
     } catch (e) {
+      setLoading(false);
       toast.error('Something went wrong')
     }
   }, [dispatch]);
@@ -206,15 +208,16 @@ export const AuthProvider = (props) => {
       setLoading(true);
       setError(false);
       const res = await api.auth.register(values);
-      const {result} = await res.json();
+      const {result, error} = await res.json();
       setLoading(false);
-      if (result && !result.error) {
+      if (result && !error) {
         dispatch({type: ActionType.REGISTER});
         return true
       } else {
-        setError(result.error)
+        setError(error)
       }
     } catch (e) {
+      setLoading(false);
       toast.error('Something went wrong')
     }
   }, [dispatch]);
@@ -224,14 +227,15 @@ export const AuthProvider = (props) => {
       setLoading(true);
       setError(false);
       const res = await api.auth.restore(values);
-      const {result} = await res.json();
+      const {result, error} = await res.json();
       setLoading(false);
-      if (result && !result.error) {
+      if (result && !error) {
         return true
       } else {
-        setError(result.error)
+        setError(error)
       }
     } catch (e) {
+      setLoading(false);
       toast.error('Something went wrong')
     }
     
@@ -242,14 +246,15 @@ export const AuthProvider = (props) => {
       setLoading(true);
       setError(false);
       const res = await api.auth.password(values);
-      const {result} = await res.json();
+      const {result, error} = await res.json();
       setLoading(false);
-      if (result && !result.error) {
+      if (result && !error) {
         return true
       } else {
-        setError(result.error)
+        setError(error)
       }
     } catch (e) {
+      setLoading(false);
       toast.error('Something went wrong')
     }
     
