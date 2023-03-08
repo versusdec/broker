@@ -10,8 +10,6 @@ import {actions} from "../../slices/usersSlice";
 import toast from "react-hot-toast";
 import {useDispatch} from "../../store";
 
-const now = new Date();
-
 const tabs = [
   {label: 'General', value: 'general'},
   {label: 'Security', value: 'security'}
@@ -35,6 +33,7 @@ const userUpdate = async (user, newValues, dispatch)=>{
   const res = await api.users.update(u)
   if (!res.error) {
     dispatch(actions.fillMe(u))
+    toast.success('Changes saved')
   } else {
     toast.error('Something went wrong')
   }
@@ -53,6 +52,10 @@ const Page = () => {
     userUpdate(user, values, dispatch)
   }, [user, dispatch])
   
+  const handleSecuritySubmit = useCallback((values) => {
+    userUpdate(user, values, dispatch)
+  }, [user, dispatch])
+  
   const handleAvatarUpload = useCallback((files) => {
     userUpdate(user, {
       avatar: root + files[0].path
@@ -60,7 +63,7 @@ const Page = () => {
   }, [user, dispatch])
   
   const accountGeneralSettingsProps = {
-    user:user, onSubmit: handleGeneralSubmit, updateAvatar: handleAvatarUpload
+    user:user, onSubmit: handleGeneralSubmit, onUpload: handleAvatarUpload
   }
   
   return user && (
@@ -100,22 +103,7 @@ const Page = () => {
         )}
         {currentTab === 'security' && (
           <AccountSecuritySettings
-            loginEvents={[
-              {
-                id: '1bd6d44321cb78fd915462fa',
-                createdAt: subDays(subHours(subMinutes(now, 5), 7), 1).getTime(),
-                ip: '95.130.17.84',
-                type: 'Credential login',
-                userAgent: 'Chrome, Mac OS 10.15.7'
-              },
-              {
-                id: 'bde169c2fe9adea5d4598ea9',
-                createdAt: subDays(subHours(subMinutes(now, 25), 9), 1).getTime(),
-                ip: '95.130.17.84',
-                type: 'Credential login',
-                userAgent: 'Chrome, Mac OS 10.15.7'
-              }
-            ]}
+            onUpdate={handleSecuritySubmit}
           />
         )}
       </Box>

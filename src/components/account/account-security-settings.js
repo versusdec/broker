@@ -1,4 +1,4 @@
-import {useCallback, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {format} from 'date-fns';
 import ArrowRightIcon from '@untitled-ui/icons-react/build/esm/ArrowRight';
@@ -18,12 +18,15 @@ import {
   Typography,
   Unstable_Grid2 as Grid
 } from '@mui/material';
-import {Button} from '../../components/button';
+import {Button} from '../button';
 import * as Yup from "yup";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
 import {Input} from "../input";
 import {useFormik} from "formik";
 import {paths} from "../../navigation/paths";
+import {useMe} from "../../hooks/useMe";
+import toast from "react-hot-toast";
+import {api} from "../../api";
 
 const initialValues = {
   old_password: '',
@@ -35,7 +38,7 @@ const validationSchema = Yup.object({
   old_password: Yup
     .string()
     .max(255)
-    .required(),
+    .required('Enter old password'),
   password: Yup
     .string()
     .min(8)
@@ -43,26 +46,51 @@ const validationSchema = Yup.object({
     .required('Password is required'),
   confirm_password: Yup
     .string()
-    .oneOf([Yup.ref('password'), null], 'Passwords must match')
+    .oneOf([Yup.ref('password')], 'Passwords must match')
     .max(255)
     .required('Password is required')
 });
 
 
 export const AccountSecuritySettings = (props) => {
+  const user = useMe();
   const [showPass, setShowPass] = useState(false);
+  const [twa, setTwa] = useState(user.twofa.status === 'enabled');
+  const {onUpdate} = props;
+  const [code, setCode] = useState('')
   
-  const [twa, setTwa] = useState(false);
+  const handleTwa = useCallback(() => {
+    if (!twa) {
+      setTwa(true)
+    } else {
+      const newValues = {...user, twofa: {status: 'disabled'}}
+      onUpdate(newValues)
+      setTwa(false)
+    }
+  }, [twa])
+  
+  useEffect(() => {
+    const fetch = async () => {
+      const {result, error} = await api.users.qr({size: 300})
+      if (result)
+        setCode(result)
+      else if (error)
+        toast.error(error)
+    }
+    if (twa)
+      fetch()
+  }, [twa])
   
   const formik = useFormik({
     initialValues,
     validationSchema,
     onSubmit: async (values, helpers) => {
       try {
-        // register here
-        console.log(values)
-        
-        // open Dialog
+        if (values.password !== user.password) {
+          toast.error('You entered wrong password')
+        } else {
+          onUpdate(values)
+        }
       } catch (err) {
         console.error(err);
         helpers.setStatus({success: false});
@@ -216,11 +244,9 @@ export const AccountSecuritySettings = (props) => {
                   <Box sx={{mt: 4}}>
                     <Button
                       variant="outlined"
-                      onClick={() => {
-                        setTwa(!twa)
-                      }}
+                      onClick={handleTwa}
                     >
-                      Set Up
+                      {!twa ? 'Set Up' : 'Disable'}
                     </Button>
                   </Box>
                 </CardContent>
@@ -236,7 +262,9 @@ export const AccountSecuritySettings = (props) => {
                 variant="outlined"
               >
                 <CardContent>
-                  QR HERE
+                  <Typography variant={'subtitle2'}>Scan code or type below code in your app</Typography>
+                  {!!code.length && <img src={code} alt="" style={{width: '100%'}}/>}
+                  <Typography variant={'body2'}>{user.twofa.key}</Typography>
                 </CardContent>
               </Card>
             </Grid>
@@ -246,8 +274,4 @@ export const AccountSecuritySettings = (props) => {
       </Card>
     </Stack>
   );
-};
-
-AccountSecuritySettings.propTypes = {
-  loginEvents: PropTypes.array.isRequired
 };

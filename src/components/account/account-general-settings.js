@@ -7,11 +7,9 @@ import {
   Button,
   Card,
   CardContent,
-  Divider, MenuItem,
+  MenuItem,
   Stack,
   SvgIcon,
-  Switch,
-  TextField,
   Typography,
   Unstable_Grid2 as Grid
 } from '@mui/material';
@@ -53,7 +51,7 @@ const validationSchema = Yup.object({
 });
 
 export const AccountGeneralSettings = (props) => {
-  const {user, onSubmit, updateAvatar} = props;
+  const {user, onSubmit, onUpload} = props;
   const [uploaderOpen, setUploaderOpen] = useState(false);
   const [timezones, setTimezones] = useState(null);
   
@@ -311,7 +309,7 @@ export const AccountGeneralSettings = (props) => {
         onClose={handleClose}
         open={uploaderOpen}
         onUpload={(files) => {
-          updateAvatar(files)
+          onUpload(files)
           handleClose()
         }
         }

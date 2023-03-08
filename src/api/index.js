@@ -18,27 +18,102 @@ const init = (body) => {
 export const api = Object.freeze({
   auth: {
     login: async (params) => {
-      return await fetch(root, init({params: params, method: 'auth.login'}));
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'auth.login'}));
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
     },
     login2fa: async (params) => {
-      return await fetch(root, init({params: params, method: 'auth.login2fa'}));
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'auth.login2fa'}));
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
     },
     register: async (params) => {
-      return await fetch(root, init({params: params, method: 'auth.register'}));
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'auth.register'}));
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
     },
     restore: async (params) => {
-      return await fetch(root, init({params: params, method: 'auth.restore'}));
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'auth.restore'}));
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
     },
     password: async (params) => {
-      return await fetch(root, init({params: params, method: 'auth.password'}));
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'auth.password'}));
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
     }
   },
   users: {
     me: async () => {
-      return await fetch(root, init({params: {}, method: 'users.me'})).then(res => res.json());
+      try {
+        const {result, error} = await fetch(root, init({params: {}, method: 'users.me'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
     },
     update: async (params) => {
-      return await fetch(root, init({params: params, method: 'users.update'})).then(res => res.json());
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'users.update'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    qr: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'users.qr'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
     }
   }
 });
