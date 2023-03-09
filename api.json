@@ -1,39 +1,85 @@
 {
-  "queues.suggest": {
+  "queues.add": {
+    "required": {
+      "name": "string"
+    },
     "role": [
       "admin",
       "client",
-      "supervisor",
-      "operator"
+      "supervisor"
     ],
     "optional": {
       "client_id": "int",
-      "offset": "int",
-      "limit": "int",
-      "q": "string",
+      "users": "int[]",
       "status": {
-        "type": "enum",
         "options": [
           "active",
           "archived"
-        ]
-      }
+        ],
+        "type": "enum"
+      },
+      "description": "int"
     }
   },
-  "scripts.update": {
+  "scripts.add": {
     "required": {
-      "id": "int"
+      "name": "string"
     },
     "role": [
       "admin",
       "client"
     ],
     "optional": {
-      "qualification": {
-        "type": "object[]",
+      "statuses": {
         "data": {
+          "label": "string",
+          "actions": {
+            "data": {
+              "values": "object[]",
+              "name": {
+                "options": [
+                  "assign_recall",
+                  "add_tag",
+                  "add_blacklist",
+                  "send_sms"
+                ],
+                "type": "enum"
+              }
+            },
+            "type": "object[]"
+          },
+          "name": "string"
+        },
+        "type": "object[]"
+      },
+      "is_default": "boolean",
+      "client_id": "int",
+      "steps": {
+        "data": {
+          "next": {
+            "data": {
+              "step_id": "int",
+              "answer": "string"
+            },
+            "type": "object[]"
+          },
+          "id": "int",
+          "text": "string",
+          "title": "string"
+        },
+        "type": "object[]"
+      },
+      "status": {
+        "options": [
+          "active",
+          "archived"
+        ],
+        "type": "enum"
+      },
+      "qualification": {
+        "data": {
+          "label": "string",
           "type": {
-            "type": "enum",
             "options": [
               "string",
               "int",
@@ -42,65 +88,256 @@
               "time",
               "datetime",
               "select"
-            ]
+            ],
+            "type": "enum"
           },
           "options": {
-            "type": "object[]",
             "data": {
-              "id": "int",
-              "value": "string"
-            }
+              "value": "string",
+              "id": "int"
+            },
+            "type": "object[]"
           },
-          "label": "string",
           "name": "string"
-        }
+        },
+        "type": "object[]"
+      }
+    }
+  },
+  "users.add": {
+    "required": {
+      "role": {
+        "options": [
+          "admin",
+          "client",
+          "supervisor",
+          "operator"
+        ],
+        "type": "enum"
       },
-      "name": "string",
-      "statuses": {
-        "type": "object[]",
+      "password": "string",
+      "email": "email",
+      "name": "string"
+    },
+    "role": [
+      "admin",
+      "client"
+    ],
+    "optional": {
+      "twofa": {
         "data": {
-          "actions": {
-            "type": "object[]",
-            "data": {
-              "name": {
-                "type": "enum",
-                "options": [
-                  "assign_recall",
-                  "add_tag",
-                  "add_blacklist",
-                  "send_sms"
-                ]
-              },
-              "values": "object[]"
-            }
-          },
-          "label": "string",
-          "name": "string"
-        }
-      },
-      "is_default": "boolean",
-      "steps": {
-        "type": "object[]",
-        "data": {
-          "text": "string",
-          "title": "string",
-          "id": "int",
-          "next": {
-            "type": "object[]",
-            "data": {
-              "step_id": "int",
-              "answer": "string"
-            }
+          "status": {
+            "options": [
+              "enabled",
+              "disabled"
+            ],
+            "type": "enum"
           }
-        }
+        },
+        "type": "object"
       },
+      "phone": "phone",
+      "timezone": "int",
+      "queues": "int[]",
+      "avatar": "string",
+      "client_id": "int",
+      "company": "string",
       "status": {
-        "type": "enum",
+        "options": [
+          "active",
+          "blocked"
+        ],
+        "type": "enum"
+      },
+      "language": {
+        "options": [
+          "ru",
+          "en"
+        ],
+        "type": "enum"
+      }
+    }
+  },
+  "projects.add": {
+    "required": {
+      "name": "string"
+    },
+    "role": [
+      "admin",
+      "client"
+    ],
+    "optional": {
+      "client_id": "int",
+      "status": {
         "options": [
           "active",
           "archived"
-        ]
-      }
+        ],
+        "type": "enum"
+      },
+      "description": "string"
+    }
+  },
+  "transactions.list": {
+    "role": [
+      "admin",
+      "client",
+      "supervisor",
+      "operator"
+    ],
+    "optional": {
+      "offset": "int",
+      "user_id": "int",
+      "timestamp": {
+        "data": {
+          "start": "int",
+          "end": "int"
+        },
+        "type": "object"
+      },
+      "limit": "int",
+      "type": "int"
+    }
+  },
+  "auth.password": {
+    "required": {
+      "password": "string",
+      "token": "string",
+      "password_confirm": "string"
+    },
+    "role": [
+      "public"
+    ]
+  },
+  "queues.list": {
+    "role": [
+      "admin",
+      "client",
+      "supervisor",
+      "operator"
+    ],
+    "optional": {
+      "status": {
+        "options": [
+          "active",
+          "archived"
+        ],
+        "type": "enum"
+      },
+      "client_id": "int",
+      "offset": "int",
+      "limit": "int"
+    }
+  },
+  "payments.get": {
+    "required": {
+      "id": "int"
+    },
+    "role": [
+      "admin",
+      "client"
+    ]
+  },
+  "auth.login2fa": {
+    "required": {
+      "code": "string",
+      "email": "email",
+      "password": "string"
+    },
+    "role": [
+      "public"
+    ]
+  },
+  "scripts.list": {
+    "role": [
+      "admin",
+      "client",
+      "supervisor",
+      "operator"
+    ],
+    "optional": {
+      "status": {
+        "options": [
+          "active",
+          "archived"
+        ],
+        "type": "enum"
+      },
+      "client_id": "int",
+      "offset": "int",
+      "limit": "int"
+    }
+  },
+  "users.get": {
+    "required": {
+      "id": "int"
+    },
+    "role": [
+      "admin",
+      "client",
+      "supervisor"
+    ]
+  },
+  "queues.update": {
+    "required": {
+      "id": "int"
+    },
+    "role": [
+      "admin",
+      "client",
+      "supervisor"
+    ],
+    "optional": {
+      "status": {
+        "options": [
+          "active",
+          "archived"
+        ],
+        "type": "enum"
+      },
+      "users": "int[]",
+      "name": "string",
+      "description": "int"
+    }
+  },
+  "payments.add": {
+    "required": {
+      "type": {
+        "options": [
+          "invoice",
+          "bonus"
+        ],
+        "type": "enum"
+      },
+      "amount": "float"
+    },
+    "role": [
+      "admin",
+      "client"
+    ],
+    "optional": {
+      "comment": "string",
+      "user_id": "int"
+    }
+  },
+  "projects.update": {
+    "required": {
+      "id": "int"
+    },
+    "role": [
+      "admin",
+      "client"
+    ],
+    "optional": {
+      "status": {
+        "options": [
+          "active",
+          "archived"
+        ],
+        "type": "enum"
+      },
+      "name": "string",
+      "description": "string"
     }
   },
   "users.update": {
@@ -114,197 +351,196 @@
       "operator"
     ],
     "optional": {
-      "role": {
-        "type": "enum",
-        "options": [
-          "admin",
-          "client",
-          "supervisor",
-          "operator"
-        ]
-      },
-      "password_confirm": "string",
-      "queues": "int[]",
-      "avatar": "string",
-      "status": {
-        "type": "enum",
-        "options": [
-          "active",
-          "blocked"
-        ]
-      },
-      "client_id": "int",
-      "company": "string",
-      "language": {
-        "type": "enum",
-        "options": [
-          "ru",
-          "en"
-        ]
-      },
-      "password": "string",
       "twofa": {
-        "type": "object",
         "data": {
           "status": {
-            "type": "enum",
             "options": [
               "enabled",
               "disabled"
-            ]
+            ],
+            "type": "enum"
           }
-        }
+        },
+        "type": "object"
       },
-      "timezone": "int",
-      "name": "string",
-      "phone": "phone"
-    }
-  },
-  "queues.list": {
-    "role": [
-      "admin",
-      "client",
-      "supervisor",
-      "operator"
-    ],
-    "optional": {
-      "limit": "int",
-      "client_id": "int",
-      "status": {
-        "type": "enum",
-        "options": [
-          "active",
-          "archived"
-        ]
-      },
-      "offset": "int"
-    }
-  },
-  "users.list": {
-    "role": [
-      "admin",
-      "client",
-      "supervisor"
-    ],
-    "optional": {
-      "role": {
-        "type": "enum",
-        "options": [
-          "admin",
-          "client",
-          "supervisor",
-          "operator"
-        ]
-      },
-      "offset": "int",
-      "limit": "int",
-      "created": {
-        "type": "object",
-        "data": {
-          "end": "int",
-          "start": "int"
-        }
-      },
-      "status": {
-        "type": "enum",
-        "options": [
-          "active",
-          "blocked",
-          "pending"
-        ]
-      }
-    }
-  },
-  "auth.login": {
-    "required": {
-      "email": "email",
-      "password": "string"
-    },
-    "role": [
-      "public"
-    ]
-  },
-  "scripts.get": {
-    "required": {
-      "id": "int"
-    },
-    "role": [
-      "admin",
-      "client",
-      "supervisor",
-      "operator"
-    ]
-  },
-  "payments.get": {
-    "required": {
-      "id": "int"
-    },
-    "role": [
-      "admin",
-      "client"
-    ]
-  },
-  "users.add": {
-    "required": {
-      "email": "email",
-      "role": {
-        "type": "enum",
-        "options": [
-          "admin",
-          "client",
-          "supervisor",
-          "operator"
-        ]
-      },
-      "name": "string",
-      "password": "string"
-    },
-    "role": [
-      "admin",
-      "client"
-    ],
-    "optional": {
       "phone": "phone",
       "timezone": "int",
       "avatar": "string",
+      "password_confirm": "string",
+      "client_id": "int",
+      "queues": "int[]",
+      "role": {
+        "options": [
+          "admin",
+          "client",
+          "supervisor",
+          "operator"
+        ],
+        "type": "enum"
+      },
+      "name": "string",
       "status": {
-        "type": "enum",
         "options": [
           "active",
           "blocked"
-        ]
+        ],
+        "type": "enum"
       },
-      "client_id": "int",
       "company": "string",
+      "password": "string",
       "language": {
-        "type": "enum",
         "options": [
           "ru",
           "en"
-        ]
-      },
-      "queues": "int[]",
-      "twofa": {
-        "type": "object",
-        "data": {
-          "status": {
-            "type": "enum",
-            "options": [
-              "enabled",
-              "disabled"
-            ]
-          }
-        }
+        ],
+        "type": "enum"
       }
     }
   },
-  "auth.restore": {
+  "transactions.add": {
     "required": {
-      "email": "email"
+      "amount": "float",
+      "type": "int",
+      "user_id": "int"
+    },
+    "role": [
+      "admin"
+    ],
+    "optional": {
+      "comment": "string"
+    }
+  },
+  "auth.register": {
+    "required": {
+      "password_confirm": "string",
+      "password": "string",
+      "email": "email",
+      "name": "string"
     },
     "role": [
       "public"
-    ]
+    ],
+    "optional": {
+      "phone": "phone",
+      "company": "string"
+    }
+  },
+  "payments.list": {
+    "role": [
+      "admin",
+      "client"
+    ],
+    "optional": {
+      "offset": "int",
+      "user_id": "int",
+      "status": {
+        "options": [
+          "new",
+          "pending",
+          "payed",
+          "canceled"
+        ],
+        "type": "enum"
+      },
+      "limit": "int",
+      "created": {
+        "data": {
+          "start": "int",
+          "end": "int"
+        },
+        "type": "object"
+      },
+      "type": {
+        "options": [
+          "invoice",
+          "bonus"
+        ],
+        "type": "enum"
+      }
+    }
+  },
+  "scripts.update": {
+    "required": {
+      "id": "int"
+    },
+    "role": [
+      "admin",
+      "client"
+    ],
+    "optional": {
+      "statuses": {
+        "data": {
+          "label": "string",
+          "actions": {
+            "data": {
+              "values": "object[]",
+              "name": {
+                "options": [
+                  "assign_recall",
+                  "add_tag",
+                  "add_blacklist",
+                  "send_sms"
+                ],
+                "type": "enum"
+              }
+            },
+            "type": "object[]"
+          },
+          "name": "string"
+        },
+        "type": "object[]"
+      },
+      "is_default": "boolean",
+      "status": {
+        "options": [
+          "active",
+          "archived"
+        ],
+        "type": "enum"
+      },
+      "qualification": {
+        "data": {
+          "label": "string",
+          "type": {
+            "options": [
+              "string",
+              "int",
+              "boolean",
+              "date",
+              "time",
+              "datetime",
+              "select"
+            ],
+            "type": "enum"
+          },
+          "options": {
+            "data": {
+              "value": "string",
+              "id": "int"
+            },
+            "type": "object[]"
+          },
+          "name": "string"
+        },
+        "type": "object[]"
+      },
+      "steps": {
+        "data": {
+          "next": {
+            "data": {
+              "step_id": "int",
+              "answer": "string"
+            },
+            "type": "object[]"
+          },
+          "id": "int",
+          "text": "string",
+          "title": "string"
+        },
+        "type": "object[]"
+      },
+      "name": "string"
+    }
   },
   "queues.get": {
     "required": {
@@ -317,20 +553,13 @@
       "operator"
     ]
   },
-  "auth.register": {
+  "payments.pay": {
     "required": {
-      "email": "email",
-      "password_confirm": "string",
-      "name": "string",
-      "password": "string"
+      "id": "int"
     },
     "role": [
-      "public"
-    ],
-    "optional": {
-      "phone": "phone",
-      "company": "string"
-    }
+      "client"
+    ]
   },
   "users.me": {
     "role": [
@@ -340,70 +569,7 @@
       "operator"
     ]
   },
-  "payments.list": {
-    "role": [
-      "admin",
-      "client"
-    ],
-    "optional": {
-      "type": {
-        "type": "enum",
-        "options": [
-          "invoice",
-          "bonus"
-        ]
-      },
-      "offset": "int",
-      "limit": "int",
-      "created": {
-        "type": "object",
-        "data": {
-          "end": "int",
-          "start": "int"
-        }
-      },
-      "user_id": "int",
-      "status": {
-        "type": "enum",
-        "options": [
-          "new",
-          "pending",
-          "payed",
-          "canceled"
-        ]
-      }
-    }
-  },
-  "payments.add": {
-    "required": {
-      "type": {
-        "type": "enum",
-        "options": [
-          "invoice",
-          "bonus"
-        ]
-      },
-      "amount": "float"
-    },
-    "role": [
-      "admin",
-      "client"
-    ],
-    "optional": {
-      "user_id": "int",
-      "comment": "string"
-    }
-  },
-  "payments.cancel": {
-    "required": {
-      "id": "int"
-    },
-    "role": [
-      "admin",
-      "client"
-    ]
-  },
-  "scripts.list": {
+  "queues.suggest": {
     "role": [
       "admin",
       "client",
@@ -411,17 +577,29 @@
       "operator"
     ],
     "optional": {
+      "q": "string",
+      "offset": "int",
       "limit": "int",
-      "client_id": "int",
       "status": {
-        "type": "enum",
         "options": [
           "active",
           "archived"
-        ]
+        ],
+        "type": "enum"
       },
-      "offset": "int"
+      "client_id": "int"
     }
+  },
+  "scripts.get": {
+    "required": {
+      "id": "int"
+    },
+    "role": [
+      "admin",
+      "client",
+      "supervisor",
+      "operator"
+    ]
   },
   "users.qr": {
     "role": [
@@ -434,18 +612,33 @@
       "size": "int"
     }
   },
-  "transactions.add": {
-    "required": {
-      "type": "int",
-      "user_id": "int",
-      "amount": "float"
-    },
+  "projects.suggest": {
     "role": [
-      "admin"
+      "admin",
+      "client"
     ],
     "optional": {
-      "comment": "string"
+      "q": "string",
+      "offset": "int",
+      "limit": "int",
+      "status": {
+        "options": [
+          "active",
+          "archived"
+        ],
+        "type": "enum"
+      },
+      "client_id": "int"
     }
+  },
+  "payments.cancel": {
+    "required": {
+      "id": "int"
+    },
+    "role": [
+      "admin",
+      "client"
+    ]
   },
   "users.suggest": {
     "role": [
@@ -454,38 +647,89 @@
       "supervisor"
     ],
     "optional": {
+      "q": "string",
       "role": {
-        "type": "enum",
         "options": [
           "admin",
           "client",
           "supervisor",
           "operator"
-        ]
+        ],
+        "type": "enum"
       },
-      "offset": "int",
       "limit": "int",
-      "q": "string",
-      "created": {
-        "type": "object",
-        "data": {
-          "end": "int",
-          "start": "int"
-        }
-      },
       "status": {
-        "type": "enum",
         "options": [
           "active",
           "blocked"
-        ]
-      }
+        ],
+        "type": "enum"
+      },
+      "created": {
+        "data": {
+          "start": "int",
+          "end": "int"
+        },
+        "type": "object"
+      },
+      "offset": "int"
     }
   },
-  "auth.password": {
+  "auth.restore": {
     "required": {
-      "password_confirm": "string",
-      "token": "string",
+      "email": "email"
+    },
+    "role": [
+      "public"
+    ]
+  },
+  "users.list": {
+    "role": [
+      "admin",
+      "client",
+      "supervisor"
+    ],
+    "optional": {
+      "role": {
+        "options": [
+          "admin",
+          "client",
+          "supervisor",
+          "operator"
+        ],
+        "type": "enum"
+      },
+      "limit": "int",
+      "status": {
+        "options": [
+          "active",
+          "blocked",
+          "pending"
+        ],
+        "type": "enum"
+      },
+      "created": {
+        "data": {
+          "start": "int",
+          "end": "int"
+        },
+        "type": "object"
+      },
+      "offset": "int"
+    }
+  },
+  "projects.get": {
+    "required": {
+      "id": "int"
+    },
+    "role": [
+      "admin",
+      "client"
+    ]
+  },
+  "auth.login": {
+    "required": {
+      "email": "email",
       "password": "string"
     },
     "role": [
@@ -500,193 +744,35 @@
       "operator"
     ],
     "optional": {
-      "client_id": "int",
-      "offset": "int",
-      "limit": "int",
       "q": "string",
-      "status": {
-        "type": "enum",
-        "options": [
-          "active",
-          "archived"
-        ]
-      }
-    }
-  },
-  "payments.pay": {
-    "required": {
-      "id": "int"
-    },
-    "role": [
-      "client"
-    ]
-  },
-  "scripts.add": {
-    "required": {
-      "name": "string"
-    },
-    "role": [
-      "admin",
-      "client"
-    ],
-    "optional": {
-      "client_id": "int",
-      "qualification": {
-        "type": "object[]",
-        "data": {
-          "type": {
-            "type": "enum",
-            "options": [
-              "string",
-              "int",
-              "boolean",
-              "date",
-              "time",
-              "datetime",
-              "select"
-            ]
-          },
-          "options": {
-            "type": "object[]",
-            "data": {
-              "id": "int",
-              "value": "string"
-            }
-          },
-          "label": "string",
-          "name": "string"
-        }
-      },
-      "statuses": {
-        "type": "object[]",
-        "data": {
-          "actions": {
-            "type": "object[]",
-            "data": {
-              "name": {
-                "type": "enum",
-                "options": [
-                  "assign_recall",
-                  "add_tag",
-                  "add_blacklist",
-                  "send_sms"
-                ]
-              },
-              "values": "object[]"
-            }
-          },
-          "label": "string",
-          "name": "string"
-        }
-      },
-      "is_default": "boolean",
-      "steps": {
-        "type": "object[]",
-        "data": {
-          "text": "string",
-          "title": "string",
-          "id": "int",
-          "next": {
-            "type": "object[]",
-            "data": {
-              "step_id": "int",
-              "answer": "string"
-            }
-          }
-        }
-      },
-      "status": {
-        "type": "enum",
-        "options": [
-          "active",
-          "archived"
-        ]
-      }
-    }
-  },
-  "queues.add": {
-    "required": {
-      "name": "string"
-    },
-    "role": [
-      "admin",
-      "client",
-      "supervisor"
-    ],
-    "optional": {
-      "client_id": "int",
-      "description": "int",
-      "users": "int[]",
-      "status": {
-        "type": "enum",
-        "options": [
-          "active",
-          "archived"
-        ]
-      }
-    }
-  },
-  "users.get": {
-    "required": {
-      "id": "int"
-    },
-    "role": [
-      "admin",
-      "client",
-      "supervisor"
-    ]
-  },
-  "auth.login2fa": {
-    "required": {
-      "email": "email",
-      "code": "string",
-      "password": "string"
-    },
-    "role": [
-      "public"
-    ]
-  },
-  "queues.update": {
-    "required": {
-      "id": "int"
-    },
-    "role": [
-      "admin",
-      "client",
-      "supervisor"
-    ],
-    "optional": {
-      "users": "int[]",
-      "description": "int",
-      "name": "string",
-      "status": {
-        "type": "enum",
-        "options": [
-          "active",
-          "archived"
-        ]
-      }
-    }
-  },
-  "transactions.list": {
-    "role": [
-      "admin",
-      "client",
-      "supervisor",
-      "operator"
-    ],
-    "optional": {
-      "type": "int",
       "offset": "int",
       "limit": "int",
-      "user_id": "int",
-      "timestamp": {
-        "type": "object",
-        "data": {
-          "end": "int",
-          "start": "int"
-        }
-      }
+      "status": {
+        "options": [
+          "active",
+          "archived"
+        ],
+        "type": "enum"
+      },
+      "client_id": "int"
+    }
+  },
+  "projects.list": {
+    "role": [
+      "admin",
+      "client"
+    ],
+    "optional": {
+      "status": {
+        "options": [
+          "active",
+          "archived"
+        ],
+        "type": "enum"
+      },
+      "client_id": "int",
+      "offset": "int",
+      "limit": "int"
     }
   }
 }

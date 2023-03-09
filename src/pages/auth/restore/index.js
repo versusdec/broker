@@ -88,7 +88,7 @@ const Page = () => {
   return (
     <>
       <div>
-        {loading && <Loader/>}
+        {loading && <Loader backdrop/>}
         <Stack
           sx={{mb: 4}}
           spacing={1}

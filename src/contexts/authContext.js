@@ -6,8 +6,8 @@ import {useRouter} from "next/router";
 import {setToken} from "../utils/set-token";
 import {domain} from "../api/config";
 import {paths} from "../navigation/paths";
-import {useSearchParams} from "next/navigation";
 import toast from "react-hot-toast";
+import {useParams} from "../utils/use-params";
 
 let ActionType = {
   'INITIALIZE': 'INITIALIZE',
@@ -76,22 +76,13 @@ export const AuthContext = createContext({
   register: () => Promise.resolve(),
 });
 
-const useParams = () => {
-  const searchParams = useSearchParams();
-  const returnTo = searchParams.get('returnTo') || undefined;
-  
-  return {
-    returnTo
-  };
-};
-
 export const AuthProvider = (props) => {
   const {children} = props;
   const [state, dispatch] = useReducer(reducer, initialState);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const router = useRouter();
-  const {returnTo} = useParams();
+  const returnTo = useParams('returnTo');
   
   const initialize = useCallback(async () => {
     try {

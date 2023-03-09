@@ -50,8 +50,7 @@ const validationSchema = Yup.object({
     .oneOf(['en', 'ru'])
 });
 
-export const AccountGeneralSettings = (props) => {
-  const {user, onSubmit, onUpload} = props;
+export const AccountGeneralSettings = ({user, onSubmit, onUpload, ...props}) => {
   const [uploaderOpen, setUploaderOpen] = useState(false);
   const [timezones, setTimezones] = useState(null);
   
@@ -311,8 +310,7 @@ export const AccountGeneralSettings = (props) => {
         onUpload={(files) => {
           onUpload(files)
           handleClose()
-        }
-        }
+        }}
         multiple={false}
       />
     </Stack>

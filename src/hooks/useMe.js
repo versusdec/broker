@@ -4,12 +4,12 @@ import {usersMe} from "../slices/usersSlice";
 
 export const useMe = () => {
   const dispatch = useDispatch();
-  const me = useSelector(state => state.users.me)
+  const {data, loading, error} = useSelector(state => state.users.me)
 
   useEffect(() => {
-      if(!me)
-        dispatch(usersMe())
-  }, [me, dispatch])
+    if (!data)
+      dispatch(usersMe())
+  }, [data, dispatch])
   
-  return me
+  return {user: data, loading, error}
 }

@@ -24,8 +24,7 @@ export const AccountPopover = (props) => {
   const { anchorEl, onClose, open, ...other } = props;
   const router = useRouter();
   const auth = useAuth();
-  const user = useMe()
-  
+  const {user} = useMe();
   
   const handleLogout = useCallback(async () => {
     try {

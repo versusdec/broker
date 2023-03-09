@@ -1,84 +1,35 @@
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import PlusIcon from '@untitled-ui/icons-react/build/esm/Plus';
-import {Box, Button, Card, Container, Stack, SvgIcon, Typography} from '@mui/material';
-import {customersApi} from '../../api/customers'
+import {Box, Button, Card, Stack, SvgIcon, Typography} from '@mui/material';
 import {UserListTable} from '../../components/users/user-list-table';
 import NextLink from "next/link";
 import {paths} from "../../navigation/paths";
+import {useMe} from "../../hooks/useMe";
+import {useUsers} from "../../hooks/useUsers";
+import {usePagination} from "../../hooks/usePagination";
+import {UsersListFilters} from "../../components/users-list-filters";
+import {Loader} from "../../components/loader";
 
-const useSearch = () => {
-  const [search, setSearch] = useState({
-    filters: {
-      query: undefined,
-      hasAcceptedMarketing: undefined,
-      isProspect: undefined,
-      isReturning: undefined
-    },
-    page: 0,
-    rowsPerPage: 5,
-    sortBy: 'updatedAt',
-    sortDir: 'desc'
-  });
-  
-  return {
-    search,
-    updateSearch: setSearch
-  };
-};
-
-const useCustomers = (search) => {
-  const [state, setState] = useState({
-    users: [],
-    usersCount: 0
-  });
-  
-  const getCustomers = useCallback(async () => {
-    try {
-      const response = await customersApi.getCustomers(search);
-      
-      setState({
-        users: response.data,
-        usersCount: response.count
-      });
-      
-    } catch (err) {
-      console.error(err);
-    }
-  }, [search]);
-  
-  useEffect(() => {
-      getCustomers();
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [search]);
-  
-  return state;
-};
 
 const Page = () => {
-  const {search, updateSearch} = useSearch();
-  const {users, usersCount} = useCustomers(search);
+  const {user} = useMe();
+  const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
+  const [filters, setFilters] = useState({});
   
   const handleFiltersChange = useCallback((filters) => {
-    updateSearch((prevState) => ({
-      ...prevState,
-      filters
-    }));
-  }, [updateSearch]);
+    handlePageChange(null, 0)
+    setFilters(filters)
+  }, [filters])
   
-  const handlePageChange = useCallback((event, page) => {
-    updateSearch((prevState) => ({
-      ...prevState,
-      page
-    }));
-  }, [updateSearch]);
+  const params = useMemo(() => {
+    return {
+      limit: limit, offset: offset,
+      ...filters
+    }
+  }, [limit, offset, filters]);
   
-  const handleRowsPerPageChange = useCallback((event) => {
-    updateSearch((prevState) => ({
-      ...prevState,
-      rowsPerPage: parseInt(event.target.value, 10)
-    }));
-  }, [updateSearch]);
+  const {users, loading, error} = useUsers(params);
+  const {items, total} = users || {items: [], limit: limit, total: 0};
   
   return (
     <>
@@ -98,7 +49,7 @@ const Page = () => {
             direction="row"
             spacing={3}
           >
-            <Button
+            {user && (user.role === 'admin' || user.role === 'client') && <Button
               component={NextLink}
               href={paths.users.edit}
               startIcon={(
@@ -109,17 +60,22 @@ const Page = () => {
               variant="contained"
             >
               Add
-            </Button>
+            </Button>}
           </Stack>
         </Stack>
         <Card>
+          <UsersListFilters
+            onFiltersChange={handleFiltersChange}
+            initialFilters={filters}
+          />
           <UserListTable
-            users={users}
-            usersCount={usersCount}
+            users={items}
+            total={total}
             onPageChange={handlePageChange}
-            onRowsPerPageChange={handleRowsPerPageChange}
-            rowsPerPage={search.rowsPerPage}
-            page={search.page}
+            handleLimitChange={handleLimitChange}
+            limit={limit}
+            page={page}
+            loading={loading}
           />
         </Card>
       </Stack>

@@ -22,6 +22,8 @@ import {
 } from '@mui/material';
 import {Scrollbar} from '../scrollbar';
 import {paths} from '../../navigation/paths';
+import {Pagination} from "../pagination";
+import {Loader} from "../loader";
 
 
 const useSelectionModel = (users) => {
@@ -64,11 +66,12 @@ const useSelectionModel = (users) => {
 export const UserListTable = (props) => {
   const {
     users,
-    usersCount,
+    total,
     onPageChange,
-    onRowsPerPageChange,
+    handleLimitChange,
     page,
-    rowsPerPage,
+    limit,
+    loading,
     ...other
   } = props;
   const {deselectAll, selectAll, deselectOne, selectOne, selected} = useSelectionModel(users);
@@ -131,149 +134,167 @@ export const UserListTable = (props) => {
       )}
       <Scrollbar>
         <Table sx={{minWidth: 700}}>
-          <TableHead>
+          {loading && !!!users.length &&
+          <TableBody>
             <TableRow>
-              <TableCell padding="checkbox">
-                <Checkbox
-                  checked={selectedAll}
-                  indeterminate={selectedSome}
-                  onChange={handleToggleAll}
-                />
-              </TableCell>
-              <TableCell>
-                ID
-              </TableCell>
-              <TableCell>
-                Name
-              </TableCell>
-              <TableCell>
-                Status
-              </TableCell>
-              <TableCell align="right">
-                Actions
+              <Box sx={{
+                position: 'relative',
+                width: '100%',
+                height: '200px'
+              }}>
+                <Loader/>
+              </Box>
+            </TableRow>
+          </TableBody>
+          }
+          {!loading && !!!users.length &&
+          <TableBody>
+            <TableRow>
+              <TableCell align={'center'}>
+                <Typography variant={'subtitle2'}>
+                  Nothing found
+                </Typography>
               </TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {users.map((user) => {
-              const isSelected = selected.includes(user.id);
-              const location = `${user.city}, ${user.state}, ${user.country}`;
-              const totalSpent = numeral(user.totalSpent).format(`${user.currency}0,0.00`);
-              
-              return (
-                <TableRow
-                  hover
-                  key={user.id}
-                  selected={isSelected}
-                >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={isSelected}
-                      onChange={(event) => {
-                        const {checked} = event.target;
-                        
-                        if (checked) {
-                          selectOne(user.id);
-                        } else {
-                          deselectOne(user.id);
-                        }
-                      }}
-                      value={isSelected}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {user.id}
-                  </TableCell>
-                  <TableCell>
-                    <Stack
-                      alignItems="center"
-                      direction="row"
-                      spacing={1}
-                    >
-                      <Avatar
-                        src={user.avatar}
-                        sx={{
-                          height: 42,
-                          width: 42
+          </TableBody>
+          }
+          {!!users.length &&
+          <>
+            <TableHead>
+              <TableRow>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    checked={selectedAll}
+                    indeterminate={selectedSome}
+                    onChange={handleToggleAll}
+                  />
+                </TableCell>
+                <TableCell>
+                  ID
+                </TableCell>
+                <TableCell>
+                  Name
+                </TableCell>
+                <TableCell>
+                  Status
+                </TableCell>
+                <TableCell align="right">
+                  Actions
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {users.map((user) => {
+                const isSelected = selected.includes(user.id);
+                
+                return (
+                  <TableRow
+                    hover
+                    key={user.id}
+                    selected={isSelected}
+                  >
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={isSelected}
+                        onChange={(event) => {
+                          const {checked} = event.target;
+                          
+                          if (checked) {
+                            selectOne(user.id);
+                          } else {
+                            deselectOne(user.id);
+                          }
                         }}
+                        value={isSelected}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {user.id}
+                    </TableCell>
+                    <TableCell>
+                      <Stack
+                        alignItems="center"
+                        direction="row"
+                        spacing={1}
                       >
-                        {user.name}
-                      </Avatar>
-                      <div>
-                        <Link
-                          color="inherit"
-                          component={NextLink}
-                          href={`${paths.users.index}/${user.id}`}
-                          variant="subtitle2"
+                        <Avatar
+                          src={user.avatar}
+                          sx={{
+                            height: 42,
+                            width: 42
+                          }}
                         >
                           {user.name}
-                        </Link>
-                        <Typography
-                          color="text.secondary"
-                          variant="body2"
-                        >
-                          {user.email}
-                        </Typography>
-                      </div>
-                    </Stack>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      sx={{
-                        textTransform: 'capitalize',
-                        color: (user.status === 'active') ? 'success.main' : 'error.main'
-                      }}
-                    >
-                      {user.status}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Tooltip title={user.status === 'active' ? 'Block' : 'Unblock'}>
-                      <IconButton
-                        onClick={() => {
+                        </Avatar>
+                        <div>
+                          <Link
+                            color="inherit"
+                            component={NextLink}
+                            href={`${paths.users.index}/${user.id}`}
+                            variant="subtitle2"
+                          >
+                            {user.name}
+                          </Link>
+                          <Typography
+                            color="text.secondary"
+                            variant="body2"
+                          >
+                            {user.email}
+                          </Typography>
+                        </div>
+                      </Stack>
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        sx={{
+                          textTransform: 'capitalize',
+                          color: (user.status === 'active') ? 'success.main' : 'error.main'
                         }}
+                      >
+                        {user.status}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      <Tooltip title={user.status === 'active' ? 'Block' : 'Unblock'}>
+                        <IconButton
+                          onClick={() => {
+                          }}
                         
-                      >
-                        <SvgIcon color={user.status === 'blocked' ? 'success' : 'error'}>
-                          {user.status === 'blocked' ? <CheckCircleOutlined/> : <Block/>}
-                        </SvgIcon>
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title={'Edit'}>
-                      <IconButton
-                        component={NextLink}
-                        href={`${paths.users.index}/${user.id}`}
-                      >
-                        <SvgIcon color={'primary'}>
-                          <EditOutlined/>
-                        </SvgIcon>
-                      </IconButton>
-                    </Tooltip>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
+                        >
+                          <SvgIcon color={user.status === 'blocked' ? 'success' : 'error'}>
+                            {user.status === 'blocked' ? <CheckCircleOutlined/> : <Block/>}
+                          </SvgIcon>
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title={'Edit'}>
+                        <IconButton
+                          component={NextLink}
+                          href={`${paths.users.index}/${user.id}`}
+                        >
+                          <SvgIcon color={'primary'}>
+                            <EditOutlined/>
+                          </SvgIcon>
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </>
+          }
         </Table>
       </Scrollbar>
-      <TablePagination
-        component="div"
-        count={usersCount}
-        onPageChange={onPageChange}
-        onRowsPerPageChange={onRowsPerPageChange}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[5, 10, 25]}
-      />
+      <Pagination limit={limit} total={total} page={page} onPageChange={onPageChange} onLimitChange={handleLimitChange}/>
     </Box>
   );
 };
 
 UserListTable.propTypes = {
   users: PropTypes.array.isRequired,
-  usersCount: PropTypes.number.isRequired,
+  total: PropTypes.number.isRequired,
   onPageChange: PropTypes.func.isRequired,
-  onRowsPerPageChange: PropTypes.func,
+  handleLimitChange: PropTypes.func,
   page: PropTypes.number.isRequired,
-  rowsPerPage: PropTypes.number.isRequired
+  limit: PropTypes.number.isRequired
 };

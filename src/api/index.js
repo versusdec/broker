@@ -99,6 +99,31 @@ export const api = Object.freeze({
           error: e
         }
       }
-    }
+    },
+    list: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'users.list'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    suggest: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'users.suggest'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    
   }
 });

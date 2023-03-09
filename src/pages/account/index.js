@@ -21,10 +21,7 @@ const setUserUpdate = (user, newValues) => {
     if (newUser[i] === '')
       delete newUser[i]
   }
-  //todo remove after cleaning up stepka mistakes for all users queues
-  // delete newUser.queues;
-  // newUser.queues = [];
-  //------------------
+  
   return newUser
 }
 
@@ -41,7 +38,7 @@ const userUpdate = async (user, newValues, dispatch)=>{
 
 const Page = () => {
   const [currentTab, setCurrentTab] = useState('general');
-  const user = useMe();
+  const {user} = useMe();
   const dispatch = useDispatch()
   
   const handleTabsChange = useCallback((event, value) => {
@@ -66,49 +63,47 @@ const Page = () => {
     user:user, onSubmit: handleGeneralSubmit, onUpload: handleAvatarUpload
   }
   
-  return user && (
-    <>
-      <Box>
-        <Stack
-          spacing={3}
-          sx={{mb: 3}}
-        >
-          <Typography variant="h4">
-            Account
-          </Typography>
-          <div>
-            <Tabs
-              indicatorColor="primary"
-              onChange={handleTabsChange}
-              scrollButtons="auto"
-              textColor="primary"
-              value={currentTab}
-              variant="scrollable"
-            >
-              {tabs.map((tab) => (
-                <Tab
-                  key={tab.value}
-                  label={tab.label}
-                  value={tab.value}
-                />
-              ))}
-            </Tabs>
-            <Divider/>
-          </div>
-        </Stack>
-        {currentTab === 'general' && (
-          <AccountGeneralSettings
-            {...accountGeneralSettingsProps}
-          />
-        )}
-        {currentTab === 'security' && (
-          <AccountSecuritySettings
-            onUpdate={handleSecuritySubmit}
-          />
-        )}
-      </Box>
-    </>
-  );
+  return user && <>
+    <Box>
+      <Stack
+        spacing={3}
+        sx={{mb: 3}}
+      >
+        <Typography variant="h4">
+          Account
+        </Typography>
+        <div>
+          <Tabs
+            indicatorColor="primary"
+            onChange={handleTabsChange}
+            scrollButtons="auto"
+            textColor="primary"
+            value={currentTab}
+            variant="scrollable"
+          >
+            {tabs.map((tab) => (
+              <Tab
+                key={tab.value}
+                label={tab.label}
+                value={tab.value}
+              />
+            ))}
+          </Tabs>
+          <Divider/>
+        </div>
+      </Stack>
+      {currentTab === 'general' && (
+        <AccountGeneralSettings
+          {...accountGeneralSettingsProps}
+        />
+      )}
+      {currentTab === 'security' && (
+        <AccountSecuritySettings
+          onUpdate={handleSecuritySubmit}
+        />
+      )}
+    </Box>
+  </>;
 };
 
 Page.defaultProps = {
