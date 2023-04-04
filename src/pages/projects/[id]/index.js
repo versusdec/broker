@@ -41,7 +41,7 @@ const tabs = [
   {label: 'Common', value: 'common'},
   {label: 'Fields', value: 'fields'},
   {label: 'Tags', value: 'tags'},
-  {label: 'Modules', value: 'modules'}
+  // {label: 'Modules', value: 'modules'}
 ];
 
 const setProjectUpdate = (project, newValues) => {
@@ -110,44 +110,52 @@ const Page = withProjectsAddGuard(() => {
   }, [])
   
   const getFields = useCallback(async () => {
+    console.log('fields get')
     const {result, error} = await api.fields.list({
       project_id: id, ...params
     })
     if (result) {
       setFields(result)
     }
-  }, [])
+  }, [params])
   
   useEffect(() => {
-    getClients()
-    
     if (!!id) {
       getFields()
     }
+  }, [params])
+  
+  useEffect(() => {
+    getClients()
   }, [])
   
-  const handleFieldEdit = useCallback(async (params) => {
-    const {result, error} = await api.fields.update(params)
-  }, [])
-  
-  const handleFieldAdd = useCallback(async (params, cb) => {
-    const {result, error} = await api.fields.add(params)
-    console.log(result);
+  const handleFieldEdit = useCallback(async (params, cb) => {
+    const {result, error} = await api.fields.update(params);
     if (result) {
       cb()
       getFields()
     } else if (error) {
-      toast.error(error)
+      toast.error(error.message)
     }
   }, [])
   
-  const handleFieldAutocomplete = useCallback(async (params) => {
-    /*const {result, error} = await api.fields.add(params)
+  const handleFieldAdd = useCallback(async (params, cb) => {
+    const {result, error} = await api.fields.add(params)
+    if (result) {
+      cb()
+      getFields()
+    } else if (error) {
+      toast.error(error.message)
+    }
+  }, [])
+  
+  const handleFieldStatus = useCallback(async (id, status) => {
+    const {result, error} = await api.fields.update({id: id, status: status})
     if (result) {
       getFields()
     } else if (error) {
-      toast.error(error)
-    }*/
+      toast.error(error.message)
+    }
   }, [])
   
   const handleTabsChange = useCallback((event, value) => {
@@ -273,7 +281,7 @@ const Page = withProjectsAddGuard(() => {
         handleLimitChange={handleLimitChange}
         handleAdd={handleFieldAdd}
         handleEdit={handleFieldEdit}
-        handleAutocomplete={handleFieldAutocomplete}
+        handleStatus={handleFieldStatus}
         limit={limit}
         page={page}
         projectId={id}

@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
-import {Block, CheckCircleOutlined, Close, EditOutlined} from '@mui/icons-material'
+import {Block, CheckCircleOutlined, Close, DeleteOutlined, EditOutlined} from '@mui/icons-material'
 import {
   Avatar,
   Box,
@@ -18,7 +18,7 @@ import {
   TablePagination,
   TableRow, TextField, Tooltip,
   Typography,
-  Autocomplete, MenuItem
+  Autocomplete, MenuItem, Badge
 } from '@mui/material';
 import {Scrollbar} from '../scrollbar';
 import {paths} from '../../navigation/paths';
@@ -31,8 +31,7 @@ import {Input} from "../input";
 import {api} from "../../api";
 import * as Yup from "yup";
 import {useFormik, Form} from "formik";
-import {usePagination} from "../../hooks/usePagination";
-import {wait} from "../../utils/wait";
+import Bell01Icon from "@untitled-ui/icons-react/build/esm/Bell01";
 
 const validationSchema = Yup.object({
   name: Yup
@@ -47,18 +46,9 @@ const validationSchema = Yup.object({
     .oneOf(['string', 'int', 'boolean', 'date', 'time', 'datetime', 'select']),
   options: Yup.array().of(
     Yup.object({
-      value: Yup.string().required('Value is required')
+      value: Yup.string()
     }))
 });
-
-const Options = ({items, formik}) => {
-  const OptionsJSX = items.map((item, index) => {
-    
-    return false
-  })
-  
-  return OptionsJSX;
-}
 
 export const FieldsListTable = (props) => {
   const {
@@ -72,36 +62,18 @@ export const FieldsListTable = (props) => {
     projectId,
     handleAdd,
     handleEdit,
-    handleAutocomplete,
     ...other
   } = props;
   
   const [dialog, setDialog] = useState({
     open: false, item: {
-      type: "select",
+      type: "string",
       label: "",
       project_id: projectId,
       name: "",
-      options: [{value: "sraka"}, {value: "zhopa"}]
+      options: [{value: ""}]
     }, edit: false
   });
-  const [autocompleteOpen, setAutocompleteOpen] = useState(false);
-  const [fields, setFields] = useState([]);
-  const [fieldValue, setFieldValue] = useState('');
-  const [value, setValue] = useState({name: ''});
-  
-  const handleDialogClose = useCallback(() => {
-    setDialog({
-      open: false,
-      item: {
-        "type": "string",
-        "label": "",
-        "project_id": projectId,
-        "name": "",
-      },
-      edit: false,
-    })
-  }, []);
   
   const handleAddDialog = useCallback(() => {
     setDialog(prev => {
@@ -111,7 +83,68 @@ export const FieldsListTable = (props) => {
     })
   }, [])
   
-  const suggestFields = useCallback(async (q) => {
+  const handleEditDialog = useCallback((item) => {
+    const i = {...item};
+    if (!i.options)
+      i.options = [{value: ""}];
+    
+    setDialog(prev => {
+      return {
+        open: true, edit: true, item: i
+      }
+    })
+  }, [])
+  
+  const handleRemoveOption = useCallback((i) => {
+    const options = [...dialog.item.options];
+    options.splice(i, 1);
+    setDialog((prev) => {
+      return {
+        ...prev,
+        item: {
+          ...prev.item,
+          type: 'select',
+          options: options
+        }
+      }
+    })
+  }, [dialog])
+  
+  const handleAddOption = useCallback((i) => {
+    const options = [...dialog.item.options];
+    options.push({value: ''})
+    console.log(options);
+    setDialog((prev) => {
+      return {
+        ...prev,
+        item: {
+          ...prev.item,
+          type: 'select',
+          options: options
+        }
+      }
+    })
+  }, [dialog])
+  
+  const handleOptionChange = useCallback((i, v) => {
+    const options = [...dialog.item.options];
+    options[i].value = v;
+    setDialog((prev) => {
+      return {
+        ...prev,
+        item: {
+          ...prev.item,
+          type: 'select',
+          options: options
+        }
+      }
+    })
+  }, [dialog])
+  
+  // const [autocompleteOpen, setAutocompleteOpen] = useState(false);
+  // const [fieldValue, setFieldValue] = useState('');
+  // const [fields, setFields] = useState([]);
+  /*const suggestFields = useCallback(async (q) => {
     const res = await api.fields.suggest({q: q})
     if (res.result) {
       setFields(res.result.items)
@@ -122,18 +155,23 @@ export const FieldsListTable = (props) => {
     if (fieldValue !== '') {
       suggestFields(fieldValue)
     }
-  }, [fieldValue]);
+  }, [fieldValue]);*/
   
-  const initialValues = useMemo(() => (dialog.item), [dialog])
+  const initialValues = useMemo(() => (dialog.item), [dialog]);
   
   const formik = useFormik({
-    // enableReinitialize: true,
     initialValues,
     validationSchema,
     errors: {},
+    enableReinitialize: true,
     onSubmit: (values, helpers) => {
       try {
-        console.log(values);
+        if (values.type === 'select') {
+          values.options.forEach((option, i) => {
+            option.id = i;
+          })
+        }
+        dialog.edit ? handleEdit(values, handleDialogClose) : handleAdd(values, handleDialogClose)
         /*handleAdd(values, () => {
           handleDialogClose()
         });*/
@@ -146,7 +184,24 @@ export const FieldsListTable = (props) => {
         helpers.setSubmitting(false);
       }
     }
-  })
+  });
+  
+  const handleDialogClose = useCallback(() => {
+    setDialog(prev=>({
+        open: false,
+        item: {
+          "type": "string",
+          "label": "",
+          "project_id": projectId,
+          "name": "",
+          "options": [{value: ""}]
+        },
+        edit: false,
+      })
+    );
+    formik.setValues(initialValues, false)
+    // formik.setTouched()
+  }, []);
   
   return (
     <Card>
@@ -155,11 +210,12 @@ export const FieldsListTable = (props) => {
         {...other}>
         <Stack
           alignItems="center"
+          justifyContent="flex-end"
           direction="row"
           spacing={3}
           sx={{p: 3}}
         >
-          <Box
+          {/*<Box
             sx={{flexGrow: 1}}
           >
             <Autocomplete
@@ -203,10 +259,9 @@ export const FieldsListTable = (props) => {
                 />
               )}
             />
-          </Box>
+          </Box>*/}
           <Button
             onClick={handleAddDialog}
-            size={'large'}
             startIcon={(
               <SvgIcon>
                 <PlusIcon/>
@@ -281,7 +336,7 @@ export const FieldsListTable = (props) => {
                         <Tooltip title={item.status === 'active' ? 'Archive' : 'Unzip'}>
                           <IconButton
                             onClick={() => {
-                              handleDialogOpen(item)
+                              handleStatus(item.id, item.status === 'active' ? 'archived' : 'active')
                             }}
                           >
                             <SvgIcon color={item.status === 'archived' ? 'success' : 'error'}>
@@ -292,7 +347,7 @@ export const FieldsListTable = (props) => {
                         <Tooltip title={'Edit'}>
                           <IconButton
                             onClick={() => {
-                              handleEdit(item)
+                              handleEditDialog(item)
                             }}
                           >
                             <SvgIcon color={'primary'}>
@@ -317,23 +372,24 @@ export const FieldsListTable = (props) => {
           maxWidth={'sm'}
           fullWidth
         >
-          <DialogTitle sx={{pr: 10}}>
-            <IconButton
-              aria-label="close"
-              onClick={handleDialogClose}
-              sx={{
-                position: 'absolute',
-                right: 8,
-                top: 8,
-                color: (theme) => theme.palette.primary.main,
-              }}
-            >
-              <Close/>
-            </IconButton>
-            {dialog.edit ? 'Edit field' : 'Create field'}
-          </DialogTitle>
-          <DialogContent dividers>
-            <form noValidate>
+          <form noValidate>
+            <DialogTitle sx={{pr: 10}}>
+              <IconButton
+                aria-label="close"
+                onClick={handleDialogClose}
+                sx={{
+                  position: 'absolute',
+                  right: 8,
+                  top: 8,
+                  color: (theme) => theme.palette.primary.main,
+                }}
+              >
+                <Close/>
+              </IconButton>
+              {dialog.edit ? 'Edit field' : 'Create field'}
+            </DialogTitle>
+            <DialogContent dividers>
+              
               <Stack spacing={3}>
                 <Input
                   fullWidth
@@ -355,7 +411,7 @@ export const FieldsListTable = (props) => {
                   helperText={formik.touched.label && formik.errors.label}
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
-                  value={formik.values.description}
+                  value={formik.values.label}
                 />
                 <Input
                   fullWidth
@@ -389,8 +445,17 @@ export const FieldsListTable = (props) => {
                   </MenuItem>
                 </Input>
                 {formik.values.type === 'select' && <>
-                  <Typography variant={'subtitle2'}>Options</Typography>
-                  {/*<Options items={formik.values.options} formik={formik} />*/}
+                  <Stack direction={'row'} spacing={3} alignItems={'center'} justifyContent={'space-between'}>
+                    <Typography variant={'subtitle2'}>Options</Typography>
+                    <Tooltip title="Add option">
+                      <IconButton onClick={() => {
+                        handleAddOption()
+                      }} color={'primary'}
+                      >
+                        <PlusIcon/>
+                      </IconButton>
+                    </Tooltip>
+                  </Stack>
                   {formik.values.options.map((item, index) => (
                     <Stack
                       alignItems="center"
@@ -400,39 +465,51 @@ export const FieldsListTable = (props) => {
                       <Input name={`options[${index}].value`}
                              fullWidth
                              value={formik.values.options[index].value}
-                             label={'Value'}
+                             label={'Name'}
                              type={'text'}
                              error={!!(formik.touched.options && Boolean(formik.touched.options[index]) && Boolean(formik.errors.options?.[index]) && formik.errors.options?.[index].value)}
                              helperText={formik.touched.options && Boolean(formik.touched.options[index]) && Boolean(formik.errors.options?.[index]) && formik.errors.options?.[index].value}
                              onBlur={formik.handleBlur}
                              onChange={(e) => {
+                               handleOptionChange(index, e.currentTarget.value)
                                formik.setFieldValue(`options[${index}].value`, e.currentTarget.value)
                              }}
                       />
-                      <Button>asd</Button>
+                      <Tooltip title="Remove">
+                        <span>
+                          <IconButton onClick={() => {
+                            handleRemoveOption(index)
+                          }}
+                                      disabled={dialog.item.options.length === 1}
+                                      color={dialog.item.options.length !== 1 ? 'primary' : ''}
+                          >
+                          <DeleteOutlined/>
+                        </IconButton>
+                        </span>
+                      </Tooltip>
                     </Stack>
                   ))}
                 </>}
               </Stack>
-            </form>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              type={'button'}
-              variant={'outlined'}
-              color={'error'}
-              onClick={handleDialogClose}
-            >
-              Cancel
-            </Button>
-            <Button
-              type={'button'}
-              variant={'contained'}
-              onClick={formik.handleSubmit}
-            >
-              Confirm
-            </Button>
-          </DialogActions>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                type={'button'}
+                variant={'outlined'}
+                color={'error'}
+                onClick={handleDialogClose}
+              >
+                Cancel
+              </Button>
+              <Button
+                type={'button'}
+                variant={'contained'}
+                onClick={formik.handleSubmit}
+              >
+                Confirm
+              </Button>
+            </DialogActions>
+          </form>
         </Dialog>
       </Box>
     </Card>
