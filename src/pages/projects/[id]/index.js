@@ -1,9 +1,6 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import NextLink from 'next/link';
-import Head from 'next/head';
 import ArrowLeftIcon from '@untitled-ui/icons-react/build/esm/ArrowLeft';
-import ChevronDownIcon from '@untitled-ui/icons-react/build/esm/ChevronDown';
-import Edit02Icon from '@untitled-ui/icons-react/build/esm/Edit02';
 import {
   Avatar,
   Box,
@@ -17,25 +14,19 @@ import {
   Tab,
   Tabs,
   Typography,
-  Menu,
-  Unstable_Grid2 as Grid
 } from '@mui/material';
 import {paths} from '../../../navigation/paths';
 import {CommonTab} from '../../../components/projects/project-common';
-import {MenuItem} from "@mui/material";
 import {useRouter} from 'next/router'
 import {useMe} from "../../../hooks/useMe";
-import {root} from "../../../api/config";
 import {api} from "../../../api";
 import {actions} from "../../../slices/projectsSlice";
 import toast from "react-hot-toast";
 import {useDispatch} from "../../../store";
 import {withProjectsAddGuard} from "../../../hocs/with-projects-add-guard";
-// import {QueuesListTable} from "../../../components/users/user-queues-table";
 import {useProject} from "../../../hooks/useProject";
 import {usePagination} from "../../../hooks/usePagination";
 import {FieldsListTable} from "../../../components/projects/fields-list-table";
-import {ProjectsListTable} from "../../../components/projects/projects-list-table";
 
 const tabs = [
   {label: 'Common', value: 'common'},
@@ -110,7 +101,6 @@ const Page = withProjectsAddGuard(() => {
   }, [])
   
   const getFields = useCallback(async () => {
-    console.log('fields get')
     const {result, error} = await api.fields.list({
       project_id: id, ...params
     })

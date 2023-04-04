@@ -1,37 +1,25 @@
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import NextLink from 'next/link';
-import PropTypes from 'prop-types';
+import {useCallback, useMemo, useState} from 'react';
 import {Block, CheckCircleOutlined, Close, DeleteOutlined, EditOutlined} from '@mui/icons-material'
 import {
   Avatar,
   Box,
-  Button, Card, CardContent,
-  Checkbox, Dialog, DialogActions, DialogContent, DialogTitle,
-  IconButton, InputAdornment,
-  Link, OutlinedInput,
+  Button, Card, Dialog, DialogActions, DialogContent, DialogTitle,
+  IconButton,
   Stack,
   SvgIcon,
   Table,
   TableBody,
   TableCell,
   TableHead,
-  TablePagination,
-  TableRow, TextField, Tooltip,
-  Typography,
-  Autocomplete, MenuItem, Badge
+  TableRow, Tooltip,
+  Typography, MenuItem
 } from '@mui/material';
 import {Scrollbar} from '../scrollbar';
-import {paths} from '../../navigation/paths';
 import {Pagination} from "../pagination";
-import {Loader} from "../loader";
 import PlusIcon from "@untitled-ui/icons-react/build/esm/Plus";
-import {useUsers} from "../../hooks/useUsers";
-import SearchMdIcon from "@untitled-ui/icons-react/build/esm/SearchMd";
 import {Input} from "../input";
-import {api} from "../../api";
 import * as Yup from "yup";
-import {useFormik, Form} from "formik";
-import Bell01Icon from "@untitled-ui/icons-react/build/esm/Bell01";
+import {useFormik} from "formik";
 
 const validationSchema = Yup.object({
   name: Yup
@@ -171,11 +159,7 @@ export const FieldsListTable = (props) => {
             option.id = i;
           })
         }
-        dialog.edit ? handleEdit(values, handleDialogClose) : handleAdd(values, handleDialogClose)
-        /*handleAdd(values, () => {
-          handleDialogClose()
-        });*/
-        
+        dialog.edit ? handleEdit(values, handleDialogClose) : handleAdd(values, handleDialogClose);
       } catch (err) {
         console.error(err);
         
@@ -200,7 +184,6 @@ export const FieldsListTable = (props) => {
       })
     );
     formik.setValues(initialValues, false)
-    // formik.setTouched()
   }, []);
   
   return (
