@@ -1,5 +1,6 @@
 import {TextField} from "@mui/material";
 import styled from "@emotion/styled";
+import {useState} from "react";
 
 const Styled = styled(TextField)({
   '& .MuiFormHelperText-root.Mui-error': {
@@ -9,6 +10,16 @@ const Styled = styled(TextField)({
 })
 
 export const Input = ({children, ...props}) => {
+  const [value, setValue] = useState(props.value || '');
   
-  return <Styled {...props}>{children}</Styled>
+  const onChange = (e) => {
+    props.onChange(e)
+  }
+  
+  return <Styled {...props} value={value} onChange={(e) => {
+    setValue(e.currentTarget.value)
+  }} onBlur={(e) => {
+    onChange(e);
+    props.handleBlur?.(e);
+  }}>{children}</Styled>
 }

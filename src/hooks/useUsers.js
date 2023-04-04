@@ -1,17 +1,21 @@
 import {useDispatch, useSelector} from "../store";
-import {useEffect} from "react";
+import {useCallback, useEffect} from "react";
 import {usersList, usersSuggest} from "../slices/usersSlice";
 
 export const useUsers = (params) => {
   const dispatch = useDispatch();
   const {data, loading, error} = useSelector(state => state.users.list)
   
-  useEffect(() => {
-    if (params.q) {
+  const getUsers = useCallback(() => {
+    if (params.q)
       dispatch(usersSuggest(params))
-    } else
+    else
       dispatch(usersList(params))
-  }, [dispatch, params])
+  }, [params])
+  
+  useEffect(() => {
+    getUsers()
+  }, [params])
   
   return {users: data, loading, error}
 }

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import {VerticalLayout} from './vertical-layout';
 import {getSections} from './config';
 import Head from '../../components/head'
-import {AuthGuard} from "../../guards/authGuard";
+import {withAuthGuard} from "../../hocs/with-auth-guard";
 
 const useTranslatedSections = () => {
   const {t} = useTranslation();
@@ -12,7 +12,7 @@ const useTranslatedSections = () => {
   return useMemo(() => getSections(t), [t]);
 };
 
-export const Layout = (props) => {
+export const Layout = withAuthGuard((props) => {
   const sections = useTranslatedSections();
   const title = props.title
     ? props.title
@@ -21,14 +21,14 @@ export const Layout = (props) => {
       : false
   
   return (
-    <AuthGuard>
+    <>
       <Head title={title}/>
       <VerticalLayout
         sections={sections}
         {...props} />
-    </AuthGuard>
+    </>
   );
-};
+})
 
 Layout.propTypes = {
   children: PropTypes.node

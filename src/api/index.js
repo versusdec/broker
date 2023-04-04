@@ -1,5 +1,6 @@
 import {root} from './config';
 import {getToken} from "../utils/get-token";
+import {wait} from "../utils/wait";
 
 const init = (body) => {
   const token = getToken()
@@ -44,16 +45,16 @@ export const api = Object.freeze({
         }
       }
     },
-    restore: async (params) => {
+    reset: async (params) => {
       try {
-       return await fetch(root, init({params: params, method: 'auth.restore'}));
+        return await fetch(root, init({params: params, method: 'auth.restore'}));
       } catch (e) {
         return {
           error: e
         }
       }
     },
-    password: async (params) => {
+    restore: async (params) => {
       try {
         return await fetch(root, init({params: params, method: 'auth.password'}));
       } catch (e) {
@@ -124,6 +125,170 @@ export const api = Object.freeze({
         }
       }
     },
+    get: async (id) => {
+      try {
+        const {result, error} = await fetch(root, init({params: {id: +id}, method: 'users.get'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    add: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'users.add'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+  },
+  projects: {
+    list: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.list'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    suggest: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.suggest'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    get: async (id) => {
+      try {
+        const {result, error} = await fetch(root, init({params: {id: +id}, method: 'projects.get'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    add: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.add'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    update: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.update'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
     
+  },
+  fields: {
+    list: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.fields.list'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    suggest: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.fields.suggest'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    get: async (id) => {
+      try {
+        const {result, error} = await fetch(root, init({params: {id: +id}, method: 'projects.fields.get'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    add: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.fields.add'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    update: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.fields.update'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    
+  },
+  queues: {
+    list: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.queues.list'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
   }
+  
 });

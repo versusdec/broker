@@ -39,7 +39,7 @@ const userUpdate = async (user, newValues, dispatch)=>{
 const Page = () => {
   const [currentTab, setCurrentTab] = useState('general');
   const {user} = useMe();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   
   const handleTabsChange = useCallback((event, value) => {
     setCurrentTab(value);
@@ -47,17 +47,17 @@ const Page = () => {
   
   const handleGeneralSubmit = useCallback((values) => {
     userUpdate(user, values, dispatch)
-  }, [user, dispatch])
+  }, [user])
   
   const handleSecuritySubmit = useCallback((values) => {
     userUpdate(user, values, dispatch)
-  }, [user, dispatch])
+  }, [user])
   
   const handleAvatarUpload = useCallback((files) => {
     userUpdate(user, {
       avatar: root + files[0].path
     }, dispatch)
-  }, [user, dispatch])
+  }, [user])
   
   const accountGeneralSettingsProps = {
     user:user, onSubmit: handleGeneralSubmit, onUpload: handleAvatarUpload
@@ -99,6 +99,7 @@ const Page = () => {
       )}
       {currentTab === 'security' && (
         <AccountSecuritySettings
+          user={user}
           onUpdate={handleSecuritySubmit}
         />
       )}

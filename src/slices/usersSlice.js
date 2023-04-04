@@ -16,6 +16,11 @@ export const usersSuggest = createAsyncThunk('users/suggest', async (params) => 
   return {result, error}
 })
 
+export const usersGet = createAsyncThunk('users/get', async (params) => {
+  const {result, error} = await api.users.get(params);
+  return {result, error}
+})
+
 export const usersSlice = createSlice({
   name: 'users',
   initialState: {
@@ -28,12 +33,24 @@ export const usersSlice = createSlice({
       data: null,
       loading: false,
       error: false
+    },
+    get: {
+      data: null,
+      loading: false,
+      error: false
     }
   },
   reducers: {
     fillMe: (state, action) => {
       state.me.data = action.payload;
-    }
+    },
+    fillUser: (state, action) => {
+      state.get.data = action.payload;
+    },
+    fillUsers: (state, action) => {
+      state.list.data.items = action.payload;
+    },
+    
   },
   extraReducers(builder) {
     builder
@@ -72,6 +89,18 @@ export const usersSlice = createSlice({
         state.list.loading = false;
         state.list.data = null;
         state.list.error = action.payload.error;
+      })
+      .addCase(usersGet.pending, (state, action) => {
+        state.get.loading = true;
+      })
+      .addCase(usersGet.fulfilled, (state, action) => {
+        state.get.loading = false;
+        state.get.data = action.payload.result
+      })
+      .addCase(usersGet.rejected, (state, action) => {
+        state.get.loading = false;
+        state.get.data = null;
+        state.get.error = action.payload.error;
       })
     
   }

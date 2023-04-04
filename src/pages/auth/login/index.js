@@ -59,6 +59,7 @@ const Page = () => {
     onSubmit: async (values, helpers) => {
       try {
         const res = await login(values);
+
         if (res && res.method === 'login2fa') {
           setTfaValues(values);
           handleModal();

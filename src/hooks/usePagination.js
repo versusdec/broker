@@ -5,7 +5,7 @@ import {useCallback, useState} from "react";
 export const usePagination = () => {
   const [state, setState] = useState({
     page: 1,
-    limit: 1,
+    limit: 10,
     offset: 0
   });
   
@@ -20,8 +20,10 @@ export const usePagination = () => {
   const handleLimitChange = useCallback((event) => {
     setState(state => ({
       ...state,
+      page: 1,
       limit: parseInt(event.target.value, 10),
-      offset: (state.page - 1) * parseInt(event.target.value, 10)
+      offset: 0
+      // offset: (state.page - 1) * parseInt(event.target.value, 10)
     }))
   }, [])
   

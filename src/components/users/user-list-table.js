@@ -1,13 +1,12 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import NextLink from 'next/link';
-import numeral from 'numeral';
 import PropTypes from 'prop-types';
-import {Block, CheckCircleOutlined, EditOutlined} from '@mui/icons-material'
+import {Block, CheckCircleOutlined, Close, EditOutlined} from '@mui/icons-material'
 import {
   Avatar,
   Box,
   Button,
-  Checkbox,
+  Checkbox, Dialog, DialogActions, DialogContent, DialogTitle,
   IconButton,
   Link,
   Stack,
@@ -24,11 +23,12 @@ import {Scrollbar} from '../scrollbar';
 import {paths} from '../../navigation/paths';
 import {Pagination} from "../pagination";
 import {Loader} from "../loader";
+import {wait} from "../../utils/wait";
 
 
 const useSelectionModel = (users) => {
   const usersIds = useMemo(() => {
-    return users.map((user) => users.id);
+    return users.map((user) => user.id);
   }, [users]);
   const [selected, setSelected] = useState([]);
   
@@ -72,9 +72,25 @@ export const UserListTable = (props) => {
     page,
     limit,
     loading,
+    handleStatus,
     ...other
   } = props;
   const {deselectAll, selectAll, deselectOne, selectOne, selected} = useSelectionModel(users);
+  const [dialog, setDialog] = useState({open: false, user: null});
+  
+  const handleDialogOpen = useCallback((user) => {
+    setDialog({
+      open: true,
+      user: user
+    })
+  }, [])
+  
+  const handleDialogClose = useCallback(() => {
+    setDialog({
+      open: false,
+      user: null
+    })
+  }, [])
   
   const handleToggleAll = useCallback((event) => {
     const {checked} = event.target;
@@ -137,13 +153,15 @@ export const UserListTable = (props) => {
           {loading && !!!users.length &&
           <TableBody>
             <TableRow>
-              <Box sx={{
-                position: 'relative',
-                width: '100%',
-                height: '200px'
-              }}>
-                <Loader/>
-              </Box>
+              <TableCell>
+                <Box sx={{
+                  position: 'relative',
+                  width: '100%',
+                  height: '200px'
+                }}>
+                  <Loader/>
+                </Box>
+              </TableCell>
             </TableRow>
           </TableBody>
           }
@@ -258,8 +276,8 @@ export const UserListTable = (props) => {
                       <Tooltip title={user.status === 'active' ? 'Block' : 'Unblock'}>
                         <IconButton
                           onClick={() => {
+                            handleDialogOpen(user)
                           }}
-                        
                         >
                           <SvgIcon color={user.status === 'blocked' ? 'success' : 'error'}>
                             {user.status === 'blocked' ? <CheckCircleOutlined/> : <Block/>}
@@ -286,6 +304,53 @@ export const UserListTable = (props) => {
         </Table>
       </Scrollbar>
       <Pagination limit={limit} total={total} page={page} onPageChange={onPageChange} onLimitChange={handleLimitChange}/>
+      <Dialog
+        open={dialog.open}
+        onClose={handleDialogClose}
+        scroll={'paper'}
+        maxWidth={'sm'}
+        fullWidth
+      >
+        <DialogTitle sx={{pr: 10}}>
+          <IconButton
+            aria-label="close"
+            onClick={handleDialogClose}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.primary.main,
+            }}
+          >
+            <Close/>
+          </IconButton>
+          {dialog.user && (dialog.user?.status === 'active' ? `Block user #${dialog.user?.id}?` : `Unblock user #${dialog.user?.id}?`)}
+        </DialogTitle>
+        <DialogContent dividers>
+          {dialog.user && 'User '} {dialog.user && dialog.user?.name + ' | ' + dialog.user?.email}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            type={'button'}
+            variant={'outlined'}
+            color={'error'}
+            onClick={handleDialogClose}
+          >
+            Cancel
+          </Button>
+          <Button
+            type={'button'}
+            variant={'contained'}
+            onClick={()=>{
+              handleStatus(dialog.user?.id, dialog.user?.status, ()=>{
+                handleDialogClose()
+              })
+            }}
+          >
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

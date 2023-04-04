@@ -9,6 +9,17 @@ export const paths = Object.freeze({
   support: '/support',
   users: {
     index: '/users',
-    edit: '/users/:userId'
+    edit: '/users/:user',
+    add: '/users/add'
   },
+  queues: {
+    index: '/queues',
+    edit: '/queues/:id',
+    add: '/queues/add'
+  },
+  projects: {
+    index: '/projects',
+    edit: '/projects/:id',
+    add: '/projects/add'
+  }
 });

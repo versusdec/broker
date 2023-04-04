@@ -1,22 +1,23 @@
 import PropTypes from 'prop-types';
-import { Box, Stack } from '@mui/material';
-import { SideNavItem } from './side-nav-item';
+import {Box, Stack} from '@mui/material';
+import {SideNavItem} from './side-nav-item';
+import {useMe} from "../../../hooks/useMe";
 
-const renderItems = ({ depth = 0, items, pathname }) => items.reduce((acc,
-  item) => reduceChildRoutes({
+const renderItems = ({depth = 0, items, pathname, role}) => items.reduce((acc, item) => reduceChildRoutes({
   acc,
   depth,
   item,
-  pathname
+  pathname,
+   role
 }), []);
 
-const reduceChildRoutes = ({ acc, depth, item, pathname }) => {
+const reduceChildRoutes = ({acc, depth, item, pathname, role}) => {
   const checkPath = !!(item.path && pathname);
   const partialMatch = checkPath ? pathname.includes(item.path) : false;
   const exactMatch = checkPath ? pathname === item.path : false;
-
+  
   if (item.items) {
-    acc.push(
+    item.role.includes(role) && acc.push(
       <SideNavItem
         active={partialMatch}
         depth={depth}
@@ -46,9 +47,9 @@ const reduceChildRoutes = ({ acc, depth, item, pathname }) => {
       </SideNavItem>
     );
   } else {
-    acc.push(
+    item.role.includes(role) && acc.push(
       <SideNavItem
-        active={exactMatch}
+        active={exactMatch || (item.path !== '/' ? partialMatch : false)}
         depth={depth}
         disabled={item.disabled}
         icon={item.icon}
@@ -59,15 +60,16 @@ const reduceChildRoutes = ({ acc, depth, item, pathname }) => {
       />
     );
   }
-
+  
   return acc;
 };
 
 export const SideNavSection = (props) => {
-  const { items = [], pathname, subheader = '', ...other } = props;
-
-  return (
-    <Stack
+  const {items = [], pathname, subheader = '', ...other} = props;
+  const {user} = useMe();
+  const role = user && user.role;
+  return role && (
+     <Stack
       component="ul"
       spacing={0.5}
       sx={{
@@ -92,7 +94,7 @@ export const SideNavSection = (props) => {
           {subheader}
         </Box>
       )}
-      {renderItems({ items, pathname })}
+      {renderItems({items, pathname, role})}
     </Stack>
   );
 };

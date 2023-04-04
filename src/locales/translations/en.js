@@ -7,4 +7,5 @@ export const en = {
   [tokens.nav.support]: 'Support',
   [tokens.nav.billing]: 'Billing',
   [tokens.nav.users]: 'Users',
+  [tokens.nav.projects]: 'Projects',
 };

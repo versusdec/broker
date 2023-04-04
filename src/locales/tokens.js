@@ -8,5 +8,6 @@ export const tokens = {
     support: 'nav.support',
     billing: 'nav.billing',
     users: 'nav.users',
+    projects: 'nav.projects'
   }
 };

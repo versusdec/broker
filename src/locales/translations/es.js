@@ -6,4 +6,6 @@ export const es = {
   [tokens.nav.dashboard]: 'Dashboard',
   [tokens.nav.support]: 'Apoyo',
   [tokens.nav.users]: 'Usuarias',
+  [tokens.nav.projects]: 'Proyectos',
+  
 };

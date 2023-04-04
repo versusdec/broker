@@ -10,7 +10,7 @@ export const Pagination = ({limit, total, page, onPageChange, onLimitChange, ...
       onRowsPerPageChange={onLimitChange}
       page={page - 1}
       rowsPerPage={limit}
-      rowsPerPageOptions={[1, 2, 3]}
+      rowsPerPageOptions={[10, 25, 50]}
     />
   )
 }

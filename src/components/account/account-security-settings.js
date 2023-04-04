@@ -52,12 +52,11 @@ const validationSchema = Yup.object({
 });
 
 
-export const AccountSecuritySettings = (props) => {
-  const user = useMe();
+export const AccountSecuritySettings = ({user, ...props}) => {
   const [showPass, setShowPass] = useState(false);
   const [twa, setTwa] = useState(user.twofa.status === 'enabled');
+  const [code, setCode] = useState('');
   const {onUpdate} = props;
-  const [code, setCode] = useState('')
   
   const handleTwa = useCallback(() => {
     if (!twa) {

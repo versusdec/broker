@@ -4,7 +4,7 @@ import {api} from '../api';
 import {getToken} from '../utils/get-token'
 import {useRouter} from "next/router";
 import {setToken} from "../utils/set-token";
-import {domain} from "../api/config";
+import {domain, root} from "../api/config";
 import {paths} from "../navigation/paths";
 import toast from "react-hot-toast";
 import {useParams} from "../utils/use-params";
@@ -22,6 +22,12 @@ const initialState = {
   isInitialized: false,
   user: null
 };
+
+function b64DecodeUnicode(str) {
+  return decodeURIComponent(atob(str.replace(/-/g, '+').replace(/_/g, '/')).split('').map(function (c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+}
 
 const handlers = {
   INITIALIZE: (state, action) => {
@@ -86,7 +92,14 @@ export const AuthProvider = (props) => {
   
   const initialize = useCallback(async () => {
     try {
-      const accessToken = getToken();
+      let accessToken = getToken();
+      accessToken = accessToken && JSON.parse(b64DecodeUnicode(accessToken.split(".")[1])) || {role: 'public'};
+     
+      if (accessToken.exp <= (new Date()).getTime() / 1000) {
+        document.cookie = `__token=;domain=${domain};expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
+        dispatch({type: ActionType.LOGOUT});
+        return router.replace(paths.login);
+      }
       
       if (accessToken) {
         const {result} = await api.users.me();
@@ -146,13 +159,15 @@ export const AuthProvider = (props) => {
                 user
               }
             });
-            router.push(returnTo || paths.index);
+            router.replace(returnTo || paths.index);
           }
         }
       } else if (error) {
         setError(error)
+        return false
       }
     } catch (e) {
+      console.log(e)
       setLoading(false);
       toast.error('Something went wrong')
     }
@@ -175,10 +190,11 @@ export const AuthProvider = (props) => {
               user
             }
           });
-          router.push(returnTo || paths.index);
+          router.replace(returnTo || paths.index);
         }
       } else {
         setError(error)
+        return false
       }
     } catch (e) {
       setLoading(false);
@@ -191,7 +207,7 @@ export const AuthProvider = (props) => {
     setError(false);
     document.cookie = `__token=;domain=${domain};expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
     dispatch({type: ActionType.LOGOUT});
-    router.push(paths.login);
+    router.replace(paths.login);
   }, [dispatch])
   
   const register = useCallback(async (values) => {
@@ -206,11 +222,32 @@ export const AuthProvider = (props) => {
         return true
       } else {
         setError(error)
+        return false
       }
     } catch (e) {
       setLoading(false);
       toast.error('Something went wrong')
     }
+  }, [dispatch]);
+  
+  const reset = useCallback(async (values) => {
+    try {
+      setLoading(true);
+      setError(false);
+      const res = await api.auth.reset(values);
+      const {result, error} = await res.json();
+      setLoading(false);
+      if (result && !error) {
+        return true
+      } else {
+        setError(error);
+        return false
+      }
+    } catch (e) {
+      setLoading(false);
+      toast.error('Something went wrong')
+    }
+    
   }, [dispatch]);
   
   const restore = useCallback(async (values) => {
@@ -224,25 +261,7 @@ export const AuthProvider = (props) => {
         return true
       } else {
         setError(error)
-      }
-    } catch (e) {
-      setLoading(false);
-      toast.error('Something went wrong')
-    }
-    
-  }, [dispatch]);
-  
-  const password = useCallback(async (values) => {
-    try {
-      setLoading(true);
-      setError(false);
-      const res = await api.auth.password(values);
-      const {result, error} = await res.json();
-      setLoading(false);
-      if (result && !error) {
-        return true
-      } else {
-        setError(error)
+        return false
       }
     } catch (e) {
       setLoading(false);
@@ -262,7 +281,7 @@ export const AuthProvider = (props) => {
         logout,
         register,
         restore,
-        password,
+        reset,
         error,
         loading
       }}
