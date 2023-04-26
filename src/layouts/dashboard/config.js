@@ -6,9 +6,9 @@ import {
   PortraitOutlined,
   QuestionAnswerOutlined,
   PeopleAltOutlined,
-  LibraryBooksOutlined
+  LibraryBooksOutlined,
+  CreditCardOutlined
 } from '@mui/icons-material';
-
 export const getSections = (t) => [
   {
     items: [
@@ -62,7 +62,17 @@ export const getSections = (t) => [
           </SvgIcon>
         )
       },
-
+      {
+        title: t(tokens.nav.billing),
+        path: paths.billing,
+        role: ['admin', 'client', 'supervisor', 'operator'],
+        icon: (
+          <SvgIcon fontSize="small">
+            <CreditCardOutlined/>
+          </SvgIcon>
+        )
+      },
+    
     
     ]
   },

@@ -65,8 +65,8 @@ const userUpdate = async (user, newValues, dispatch) => {
 
 const Page = withUsersAddGuard(() => {
   const dispatch = useDispatch();
-  const me = useMe();
   const router = useRouter();
+  const me = useMe();
   const [currentTab, setCurrentTab] = useState('common');
   const [timezones, setTimezones] = useState(null);
   const [user, setUser] = useState({
@@ -78,9 +78,11 @@ const Page = withUsersAddGuard(() => {
     "company": "",
     "status": "active",
     "queues": [],
-    "role": "client"
+    "projects": [],
+    "role": "operator"
   });
   const [clients, setClients] = useState(null);
+  const [projects, setProjects] = useState([]);
   const id = +router.query.user;
   const newUser = isNaN(id);
   const data = useUser(id);
@@ -88,7 +90,9 @@ const Page = withUsersAddGuard(() => {
 
   useEffect(() => {
     if (data.user) {
-      setUser(data.user)
+      const u = {...data.user};
+      u.password_confirm = data.user.password;
+      setUser(u);
     }
     
     return () => {
@@ -107,8 +111,19 @@ const Page = withUsersAddGuard(() => {
     }
   }, [])
   
+  const getProjects = useCallback(async () => {
+    const {result, error} = await api.projects.list({
+      status: 'active',
+      limit: 1000
+    })
+    if (result) {
+      setProjects(result.items)
+    }
+  }, [])
+  
   useEffect(()=>{
-    getClients()
+    getClients();
+    getProjects();
   }, [])
   
   useEffect(() => {
@@ -162,112 +177,115 @@ const Page = withUsersAddGuard(() => {
   
   return (
     <>
-      <Stack spacing={4} mb={3}>
-        <div>
-          <Link
-            color="text.primary"
-            component={NextLink}
-            href={paths.users.index}
-            sx={{
-              alignItems: 'center',
-              display: 'inline-flex'
-            }}
-            underline="hover"
-          >
-            <SvgIcon sx={{mr: 1}}>
-              <ArrowLeftIcon/>
-            </SvgIcon>
-            <Typography variant="subtitle2">
-              Users
-            </Typography>
-          </Link>
-        </div>
-        <Stack
-          alignItems="flex-start"
-          direction={{
-            xs: 'column',
-            md: 'row'
-          }}
-          justifyContent="space-between"
-          spacing={4}
-        >
-          <Stack
-            alignItems="center"
-            direction="row"
-            spacing={2}
-          >
-            {!newUser && <Avatar
-              src={user.avatar}
+      {user && <>
+        <Stack spacing={4} mb={3}>
+          <div>
+            <Link
+              color="text.primary"
+              component={NextLink}
+              href={paths.users.index}
               sx={{
-                height: 64,
-                width: 64
+                alignItems: 'center',
+                display: 'inline-flex'
               }}
+              underline="hover"
             >
-              {!newUser && user.name}
-            </Avatar>}
-            <Stack>
-              <Typography variant="h4">
-                {newUser && 'Add user'}
-                {!newUser && user.name}
+              <SvgIcon sx={{mr: 1}}>
+                <ArrowLeftIcon/>
+              </SvgIcon>
+              <Typography variant="subtitle2">
+                Users
               </Typography>
-              {!newUser && <>
-                <Typography variant="body2" color={'text.secondary'}>
-                  {user.email}
+            </Link>
+          </div>
+          <Stack
+            alignItems="flex-start"
+            direction={{
+              xs: 'column',
+              md: 'row'
+            }}
+            justifyContent="space-between"
+            spacing={4}
+          >
+            <Stack
+              alignItems="center"
+              direction="row"
+              spacing={2}
+            >
+              {!newUser && <Avatar
+                src={user.avatar}
+                sx={{
+                  height: 64,
+                  width: 64
+                }}
+              >
+                {!newUser && user.name}
+              </Avatar>}
+              <Stack>
+                <Typography variant="h4">
+                  {newUser && 'Add user'}
+                  {!newUser && user.name}
                 </Typography>
-                <Stack
-                  alignItems="center"
-                  direction="row"
-                  spacing={1}
-                >
-                  <Typography variant="subtitle2">
-                    ID:
+                {!newUser && <>
+                  <Typography variant="body2" color={'text.secondary'}>
+                    {user.email}
                   </Typography>
-                  <Chip
-                    label={user.id}
-                    size="small"
-                  />
-                </Stack>
-              </>}
+                  <Stack
+                    alignItems="center"
+                    direction="row"
+                    spacing={1}
+                  >
+                    <Typography variant="subtitle2">
+                      ID:
+                    </Typography>
+                    <Chip
+                      label={user.id}
+                      size="small"
+                    />
+                  </Stack>
+                </>}
+              </Stack>
             </Stack>
           </Stack>
+          <div>
+            <Tabs
+              indicatorColor="primary"
+              onChange={handleTabsChange}
+              scrollButtons="auto"
+              sx={{mt: 3}}
+              textColor="primary"
+              value={currentTab}
+              variant="scrollable"
+            >
+              {tabs.map((tab) => (
+                <Tab
+                  key={tab.value}
+                  label={tab.label}
+                  value={tab.value}
+                  disabled={newUser && tab.value === 'common' ? false : newUser}
+                />
+              ))}
+            </Tabs>
+            <Divider/>
+          </div>
         </Stack>
-        <div>
-          <Tabs
-            indicatorColor="primary"
-            onChange={handleTabsChange}
-            scrollButtons="auto"
-            sx={{mt: 3}}
-            textColor="primary"
-            value={currentTab}
-            variant="scrollable"
-          >
-            {tabs.map((tab) => (
-              <Tab
-                key={tab.value}
-                label={tab.label}
-                value={tab.value}
-                disabled={newUser && tab.value === 'common' ? false : newUser}
-              />
-            ))}
-          </Tabs>
-          <Divider/>
-        </div>
-      </Stack>
-      {currentTab === 'common' && (
-        <div>
-          {((!newUser && user.id) || newUser) && me.user && <CommonTab
-            user={user}
-            userRole={me.user.role}
-            isNew={newUser}
-            onUpload={handleAvatarUpload}
-            onSubmit={onCommonSubmit}
-            timezones={timezones}
-            clients={clients}
-          />}
-        </div>
-      )}
-      {/*{currentTab === 'queues' && <QueuesListTable queues={queues}/>}*/}
-      {currentTab === 'operators' && ''}
+        {currentTab === 'common' && (
+          <div>
+            {((!newUser && user.id) || newUser) && me.user && <CommonTab
+              user={user}
+              userRole={me.user.role}
+              isNew={newUser}
+              onUpload={handleAvatarUpload}
+              onSubmit={onCommonSubmit}
+              timezones={timezones}
+              clients={clients}
+              projects={projects}
+            />}
+          </div>
+        )}
+        {/*{currentTab === 'queues' && <QueuesListTable queues={queues}/>}*/}
+        {currentTab === 'operators' && ''}
+      </>}
     </>
   );
 })

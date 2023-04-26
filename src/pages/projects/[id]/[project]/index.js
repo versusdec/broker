@@ -15,19 +15,19 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
-import {paths} from '../../../navigation/paths';
-import {CommonTab} from '../../../components/projects/project-common';
+import {paths} from '../../../../navigation/paths';
+import {CommonTab} from '../../../../components/projects/project-common';
 import {useRouter} from 'next/router'
-import {useMe} from "../../../hooks/useMe";
-import {api} from "../../../api";
-import {actions} from "../../../slices/projectsSlice";
+import {useMe} from "../../../../hooks/useMe";
+import {api} from "../../../../api";
+import {actions} from "../../../../slices/projectsSlice";
 import toast from "react-hot-toast";
-import {useDispatch} from "../../../store";
-import {withProjectsAddGuard} from "../../../hocs/with-projects-add-guard";
-import {useProject} from "../../../hooks/useProject";
-import {usePagination} from "../../../hooks/usePagination";
-import {FieldsListTable} from "../../../components/projects/fields-list-table";
-import {TagsList} from "../../../components/projects/tags-list";
+import {useDispatch} from "../../../../store";
+import {withProjectsAddGuard} from "../../../../hocs/with-projects-add-guard";
+import {useProject} from "../../../../hooks/useProject";
+import {usePagination} from "../../../../hooks/usePagination";
+import {FieldsListTable} from "../../../../components/projects/fields-list-table";
+import {TagsList} from "../../../../components/projects/tags-list";
 
 const tabs = [
   {label: 'Common', value: 'common'},

@@ -37,33 +37,12 @@ const languageOptions = [
   }
 ]
 
-export const CommonTab = ({onUpload, onSubmit, isNew, userRole, timezones, user, clients, ...props}) => {
+export const CommonTab = ({onUpload, onSubmit, isNew, userRole, timezones, user, clients, projects, ...props}) => {
   const [uploaderOpen, setUploaderOpen] = useState(false);
   const [showPass, setShowPass] = useState(false);
-  const [client, setClient] = useState(null)
-  
-  useEffect(() => {
-    if (user.client_id && clients) {
-      const c = clients.find(i => {
-        return i.id === user.client_id
-      })
-      setClient(c)
-    }
-  }, [user, clients])
-  
-  const onClientChange = (client) => {
-    setClient(client)
-  }
-  
-  const handleOpen = useCallback(() => {
-    setUploaderOpen(true)
-  }, [])
-  
-  const handleClose = useCallback(() => {
-    setUploaderOpen(false)
-  }, [])
-  
-  
+  const [client, setClient] = useState(null);
+  const [project, setProject] = useState([]);
+
   const initialValues = useMemo(() => user, [user]);
   const validationSchema = Yup.object({
     email: Yup
@@ -88,7 +67,7 @@ export const CommonTab = ({onUpload, onSubmit, isNew, userRole, timezones, user,
         is: () => isNew,
         then: Yup.string().required('Password is required')
       }),
-    confirm_password: Yup
+    password_confirm: Yup
       .string()
       .max(255)
       .oneOf([Yup.ref('password')], 'Passwords must match')
@@ -105,19 +84,24 @@ export const CommonTab = ({onUpload, onSubmit, isNew, userRole, timezones, user,
   });
   
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues,
     validationSchema,
     errors: {},
     onSubmit: (values, helpers) => {
-      delete values.confirm_password
       const newValues = {
-        ...values
+        ...values, projects: []
       }
+      
+      project.forEach((item) => {
+        newValues.projects.push(item.id)
+      })
+      
       try {
         switch (values.role) {
           case 'supervisor':
           case 'operator':
-            newValues.client_id = client.id
+            user.role === 'admin' ? newValues.client_id = client.id : void 0;
             break;
           default:
             delete newValues.client_id;
@@ -134,7 +118,50 @@ export const CommonTab = ({onUpload, onSubmit, isNew, userRole, timezones, user,
       }
     }
   })
+
+  useEffect(() => {
+    if (user.client_id && clients?.length) {
+      const c = clients.find(i => {
+        return i.id === user.client_id
+      })
+      setClient(c)
+    }
+  }, [user, clients])
   
+  useEffect(() => {
+    if (projects.length) {
+      let p = [];
+      if (user.role === 'operator') {
+        p.push(projects.find(i => {
+          return i.id === user.projects[0]
+        }));
+      } else if (user.role === 'supervisor') {
+        user.projects?.forEach(i => {
+          p.push(projects.find(p => p.id === i));
+        })
+      } else {
+        p = [projects[0]]
+      }
+      setProject(p)
+      // formik.setFieldValue('projects', project)
+    }
+  }, [user, projects])
+  
+  const onClientChange = (client) => {
+    setClient(client)
+  }
+  
+  const onProjectChange = (item) => {
+    setProject([item])
+  }
+  
+  const handleOpen = useCallback(() => {
+    setUploaderOpen(true)
+  }, [])
+  
+  const handleClose = useCallback(() => {
+    setUploaderOpen(false)
+  }, [])
   
   return (
     <Stack
@@ -331,22 +358,25 @@ export const CommonTab = ({onUpload, onSubmit, isNew, userRole, timezones, user,
                   select
                   value={formik.values.role || ''}
                 >
-                  <MenuItem key={'client'} value={'client'}>
-                    Client
-                  </MenuItem>
-                  <MenuItem key={'supervisor'} value={'supervisor'}>
-                    Supervisor
-                  </MenuItem>
-                  <MenuItem key={'operator'} value={'operator'}>
-                    Operator
-                  </MenuItem>
-                  {userRole === 'admin' &&
-                  <MenuItem key={'admin'} value={'admin'}>
-                    Admin
-                  </MenuItem>
-                  }
+                  {['operator', 'supervisor', 'client', 'admin'].map(item=>{
+                    switch (item) {
+                      case 'client':
+                      case 'admin':
+                        return userRole === 'admin' && <MenuItem key={item} value={item}>
+                          <Box sx={{textTransform: 'capitalize'}}>
+                            {item}
+                          </Box>
+                        </MenuItem>
+                      default:
+                        return <MenuItem key={item} value={item} >
+                          <Box sx={{textTransform: 'capitalize'}}>
+                            {item}
+                          </Box>
+                        </MenuItem>
+                    }
+                  })}
                 </Input>
-                {(formik.values.role === 'supervisor' || formik.values.role === 'operator') && clients && <Autocomplete
+                {userRole === 'admin' && (formik.values.role === 'supervisor' || formik.values.role === 'operator') && clients.length && <Autocomplete
                   disablePortal
                   disableClearable
                   options={clients}
@@ -356,13 +386,51 @@ export const CommonTab = ({onUpload, onSubmit, isNew, userRole, timezones, user,
                   onChange={(e, val) => {
                     onClientChange(val)
                   }}
-                  value={client || clients[0]}
+                  value={client || clients[0] || null}
                   renderInput={(params) => <TextField {...params}
                                                       fullWidth
                                                       name="client_id"
                                                       label="Client"/>}
                 />}
-                
+                {(formik.values.role === 'operator') && projects.length && <Autocomplete
+                  disablePortal
+                  disableClearable
+                  options={projects}
+                  getOptionLabel={(i) => {
+                    return i.name
+                  }}
+                  onChange={(e, val) => {
+                    onProjectChange(val)
+                  }}
+                  value={project.length ? project[0] : projects[0]}
+                  renderInput={(params) => <TextField {...params}
+                                                      fullWidth
+                                                      name="projects"
+                                                      label="Project"/>}
+                />}
+                {((formik.values.role === 'supervisor')) && <Autocomplete
+                  multiple
+                  filterSelectedOptions
+                  disableClearable
+                  disablePortal
+                  options={projects}
+                  getOptionLabel={(i) => {
+                    return i.name
+                  }}
+                  onChange={(e, val) => {
+                    setProject(val)
+                    // formik.setFieldValue("projects", val)
+                  }}
+                  defaultValue={[]}
+                  value={project}
+                  // name="projects"
+                  renderInput={(params) => <TextField {...params}
+                                                      fullWidth
+                                                      // error={!!(formik.touched.projects && formik.errors.projects[0])}
+                                                      // helperText={formik.touched.projects && formik.errors.projects[0]}
+                                                      // name="projects"
+                                                      label="Project"/>}
+                />}
                 <Input
                   error={!!(formik.touched.password && formik.errors.password)}
                   fullWidth
@@ -389,17 +457,17 @@ export const CommonTab = ({onUpload, onSubmit, isNew, userRole, timezones, user,
                     )
                   }}
                 />
-                {isNew && <Input
-                  error={!!(formik.touched.password && formik.errors.confirm_password)}
+                <Input
+                  error={!!(formik.touched.password && formik.errors.password_confirm)}
                   fullWidth
-                  helperText={formik.touched.password && formik.errors.confirm_password}
+                  helperText={formik.touched.password && formik.errors.password_confirm}
                   label="Confirm password"
-                  name="confirm_password"
+                  name="password_confirm"
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
                   type="password"
-                  value={formik.values.confirm_password || ''}
-                />}
+                  value={formik.values.password_confirm || ''}
+                />
                 <Stack direction={'row'} justifyContent={'end'}>
                   <Button
                     size="large"

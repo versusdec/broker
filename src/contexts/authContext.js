@@ -61,6 +61,7 @@ const handlers = {
   LOGOUT: (state) => ({
     ...state,
     isAuthenticated: false,
+    isInitialized: true,
     user: null
   }),
   REGISTER: (state) => ({

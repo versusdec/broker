@@ -20,6 +20,10 @@ export const paths = Object.freeze({
   projects: {
     index: '/projects',
     edit: '/projects/:id',
+    project: '/projects/:id/:project',
     add: '/projects/add'
-  }
+  },
+  project: {
+    index: '/project/:id',
+  },
 });

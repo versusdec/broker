@@ -28,7 +28,10 @@ import {wait} from "../../utils/wait";
 
 const useSelectionModel = (users) => {
   const usersIds = useMemo(() => {
-    return users.map((user) => user.id);
+    if (users.length)
+      return users.map((user) => user.id);
+    else
+      return []
   }, [users]);
   const [selected, setSelected] = useState([]);
   
@@ -194,6 +197,9 @@ export const UserListTable = (props) => {
                   Name
                 </TableCell>
                 <TableCell>
+                  Role
+                </TableCell>
+                <TableCell>
                   Status
                 </TableCell>
                 <TableCell align="right">
@@ -241,9 +247,7 @@ export const UserListTable = (props) => {
                             height: 42,
                             width: 42
                           }}
-                        >
-                          {user.name}
-                        </Avatar>
+                        />
                         <div>
                           <Link
                             color="inherit"
@@ -261,6 +265,9 @@ export const UserListTable = (props) => {
                           </Typography>
                         </div>
                       </Stack>
+                    </TableCell>
+                    <TableCell sx={{textTransform: 'capitalize'}}>
+                      {user.role}
                     </TableCell>
                     <TableCell>
                       <Typography
@@ -341,8 +348,8 @@ export const UserListTable = (props) => {
           <Button
             type={'button'}
             variant={'contained'}
-            onClick={()=>{
-              handleStatus(dialog.user?.id, dialog.user?.status, ()=>{
+            onClick={() => {
+              handleStatus(dialog.user?.id, dialog.user?.status, () => {
                 handleDialogClose()
               })
             }}

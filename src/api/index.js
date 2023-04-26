@@ -276,6 +276,68 @@ export const api = Object.freeze({
     },
     
   },
+  tags: {
+    list: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.tags.list'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    suggest: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.tags.suggest'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    get: async (id) => {
+      try {
+        const {result, error} = await fetch(root, init({params: {id: +id}, method: 'projects.tags.get'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    add: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.tags.add'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    update: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.tags.update'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+  },
   queues: {
     list: async (params) => {
       try {
@@ -289,6 +351,83 @@ export const api = Object.freeze({
         }
       }
     },
+  },
+  transactions: {
+    list: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'transactions.list'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    add: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'transactions.add'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+  },
+  payments: {
+    list: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'payments.list'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    add: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'payments.add'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    pay: async (id) => {
+      try {
+        const {result, error} = await fetch(root, init({params: {id: id}, method: 'payments.pay'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    cancel: async (id) => {
+      try {
+        const {result, error} = await fetch(root, init({params: {id: id}, method: 'payments.cancel'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    
   }
   
 });
