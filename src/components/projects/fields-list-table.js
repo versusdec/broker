@@ -300,7 +300,7 @@ export const FieldsListTable = (props) => {
                         {item.id}
                       </TableCell>
                       <TableCell>
-                        {item.name}
+                        {item.label}
                       </TableCell>
                       <TableCell>
                         {item.type}
@@ -377,17 +377,6 @@ export const FieldsListTable = (props) => {
                 <Input
                   fullWidth
                   label="Name"
-                  name="name"
-                  type="text"
-                  error={!!(formik.touched.name && formik.errors.name)}
-                  helperText={formik.touched.name && formik.errors.name}
-                  onBlur={formik.handleBlur}
-                  onChange={formik.handleChange}
-                  value={formik.values.name}
-                />
-                <Input
-                  fullWidth
-                  label="Label"
                   name="label"
                   type="text"
                   error={!!(formik.touched.label && formik.errors.label)}
@@ -395,6 +384,17 @@ export const FieldsListTable = (props) => {
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
                   value={formik.values.label}
+                />
+                <Input
+                  fullWidth
+                  label="Field"
+                  name="name"
+                  type="text"
+                  error={!!(formik.touched.name && formik.errors.name)}
+                  helperText={formik.touched.name && formik.errors.name}
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  value={formik.values.name}
                 />
                 <Input
                   fullWidth

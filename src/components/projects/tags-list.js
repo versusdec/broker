@@ -21,6 +21,7 @@ import PlusIcon from "@untitled-ui/icons-react/build/esm/Plus";
 import {Input} from "../input";
 import * as Yup from "yup";
 import {useFormik} from "formik";
+import {neutral} from "../../theme/colors";
 
 const validationSchema = Yup.object({
   tag: Yup
@@ -35,9 +36,9 @@ const validationSchema = Yup.object({
 
 const Tag = ({handleEditDialog, handleStatus, item}) => {
   
-  return <Paper sx={{p: 1, background: item.color || 'white'}}>
+  return <Paper sx={{p: 1, background: item.styles || 'white', color: item.color || 'inherit'}}>
     <Stack spacing={1} direction={'row'} alignItems={'center'}>
-      <Box>asdasdasd {item.tag}</Box>
+      <Box>{item.tag}</Box>
       <Tooltip title={item.status === 'active' ? 'Remove' : 'Unzip'}>
         <IconButton size={'small'}
                     onClick={() => {
@@ -74,8 +75,8 @@ export const TagsList = (props) => {
     open: false, item: {
       project_id: projectId,
       tag: "",
-      styles: "",
-      color: "#FFFFFF",
+      color: neutral[900],
+      styles: "#FFFFFF",
     }, edit: false
   });
   
@@ -121,8 +122,8 @@ export const TagsList = (props) => {
         item: {
           project_id: projectId,
           tag: "",
-          styles: "",
-          color: "#FFFFFF",
+          color: "",
+          styles: "#FFFFFF",
         },
         edit: false,
       })
@@ -211,7 +212,7 @@ export const TagsList = (props) => {
                 />
                 <Input
                   fullWidth
-                  label="Color"
+                  label="Text color"
                   name="color"
                   type="color"
                   error={!!(formik.touched.color && formik.errors.color)}
@@ -222,17 +223,19 @@ export const TagsList = (props) => {
                   }}
                   value={formik.values.color}
                 />
-                {/*<Input
+                <Input
                   fullWidth
                   label="Style"
-                  name="style"
-                  type="text"
-                  error={!!(formik.touched.style && formik.errors.style)}
-                  helperText={formik.touched.style && formik.errors.style}
+                  name="styles"
+                  type="color"
+                  error={!!(formik.touched.styles && formik.errors.styles)}
+                  helperText={formik.touched.styles && formik.errors.styles}
                   onBlur={formik.handleBlur}
-                  onChange={formik.handleChange}
-                  value={formik.values.style}
-                />*/}
+                  onChange={(c) => {
+                    formik.setFieldValue('styles', c)
+                  }}
+                  value={formik.values.styles}
+                />
               
               </Stack>
             </DialogContent>

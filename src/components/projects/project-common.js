@@ -28,7 +28,7 @@ export const CommonTab = ({onSubmit, isNew, userRole, project, clients, ...props
   const [client, setClient] = useState(clients[0])
   
   useEffect(() => {
-    if (project.client_id && clients) {
+    if (project.client_id && Array.isArray(clients)) {
       const c = clients.find(i => {
         return i.id === project.client_id
       })

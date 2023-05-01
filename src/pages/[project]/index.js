@@ -15,19 +15,19 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
-import {paths} from '../../../navigation/paths';
-import {CommonTab} from '../../../components/projects/project-common';
+import {paths} from '../../navigation/paths';
+import {CommonTab} from '../../components/projects/project-common';
 import {useRouter} from 'next/router'
-import {useMe} from "../../../hooks/useMe";
-import {api} from "../../../api";
-import {actions} from "../../../slices/projectsSlice";
+import {useMe} from "../../hooks/useMe";
+import {api} from "../../api";
+import {actions} from "../../slices/projectsSlice";
 import toast from "react-hot-toast";
-import {useDispatch} from "../../../store";
-import {withProjectsAddGuard} from "../../../hocs/with-projects-add-guard";
-import {useProject} from "../../../hooks/useProject";
-import {usePagination} from "../../../hooks/usePagination";
-import {FieldsListTable} from "../../../components/projects/fields-list-table";
-import {TagsList} from "../../../components/projects/tags-list";
+import {useDispatch} from "../../store";
+import {withProjectsAddGuard} from "../../hocs/with-projects-add-guard";
+import {useProject} from "../../hooks/useProject";
+import {usePagination} from "../../hooks/usePagination";
+import {FieldsListTable} from "../../components/projects/fields-list-table";
+import {TagsList} from "../../components/projects/tags-list";
 
 const tabs = [
   {label: 'Common', value: 'common'},
@@ -58,6 +58,8 @@ const projectUpdate = async (project, newValues, dispatch) => {
 }
 
 const Page = withProjectsAddGuard(() => {
+  
+  
   const dispatch = useDispatch();
   const me = useMe();
   const router = useRouter();
@@ -71,7 +73,7 @@ const Page = withProjectsAddGuard(() => {
   const [clients, setClients] = useState(null);
   const [fields, setFields] = useState({items: [], limit: 10, total: 0});
   const [tags, setTags] = useState([]);
-  const id = +router.query.id;
+  const id = +router.query.project;
   const newProject = isNaN(id);
   const data = useProject(id);
   
@@ -171,7 +173,6 @@ const Page = withProjectsAddGuard(() => {
     }
   }, [])
   
-  
   const handleTagEdit = useCallback(async (params, cb) => {
     const {result, error} = await api.tags.update(params);
     if (result) {
@@ -214,8 +215,7 @@ const Page = withProjectsAddGuard(() => {
     }
   }, [project]);
   
-  return (
-    <>
+  return (<>
       <Stack spacing={4} mb={3}>
         <div>
           <Link
@@ -253,9 +253,9 @@ const Page = withProjectsAddGuard(() => {
             <Stack>
               <Typography variant="h4">
                 {newProject && 'Add project'}
-                {!newProject && project.name}
+                {!newProject && project && project.name}
               </Typography>
-              {!newProject && <>
+              {!newProject && project && <>
                 <Typography variant="body2" color={'text.secondary'}>
                   {project.description}
                 </Typography>
@@ -326,8 +326,7 @@ const Page = withProjectsAddGuard(() => {
         handleEdit={handleTagEdit}
         handleStatus={handleTagStatus}
         projectId={id}/>}
-    </>
-  );
+  </>);
 })
 
 export default Page;

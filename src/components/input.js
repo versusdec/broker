@@ -1,6 +1,6 @@
 import {TextField} from "@mui/material";
 import styled from "@emotion/styled";
-import {useCallback, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {MuiColorInput} from 'mui-color-input'
 
 const Styled = styled(TextField)({
@@ -9,7 +9,7 @@ const Styled = styled(TextField)({
     top: '100%'
   },
   'input::-webkit-outer-spin-button, input::-webkit-inner-spin-button': {
-    '-webkit-appearance': 'none'
+    'WebkitAppearance': 'none'
   }
 })
 

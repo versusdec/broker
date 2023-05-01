@@ -1,6 +1,6 @@
 import {SvgIcon} from '@mui/material';
-import {tokens} from '../../locales/tokens';
-import {paths} from '../../navigation/paths';
+import {tokens} from '../../../locales/tokens';
+import {paths} from '../../../navigation/paths';
 import {
   Dashboard,
   PortraitOutlined,

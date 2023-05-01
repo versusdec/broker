@@ -229,7 +229,13 @@ export const ProjectsListTable = (props) => {
                       {project.id}
                     </TableCell>
                     <TableCell>
-                      {project.name}
+                      <Link color={'inherit'}
+                            variant="subtitle2"
+                            component={NextLink}
+                            href={`/${project.id}`}
+                      >
+                        {project.name}
+                      </Link>
                     </TableCell>
                     <TableCell>
                       <Typography
@@ -256,7 +262,7 @@ export const ProjectsListTable = (props) => {
                       <Tooltip title={'Edit'}>
                         <IconButton
                           component={NextLink}
-                          href={`${paths.projects.index}/${project.id}`}
+                          href={`/${project.id}`}
                         >
                           <SvgIcon color={'primary'}>
                             <EditOutlined/>
@@ -310,8 +316,8 @@ export const ProjectsListTable = (props) => {
           <Button
             type={'button'}
             variant={'contained'}
-            onClick={()=>{
-              handleStatus(dialog.project?.id, dialog.project?.status, ()=>{
+            onClick={() => {
+              handleStatus(dialog.project?.id, dialog.project?.status, () => {
                 handleDialogClose()
               })
             }}

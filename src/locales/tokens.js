@@ -1,6 +1,7 @@
 export const tokens = {
   common: {
-    languageChanged: 'common.languageChanged'
+    languageChanged: 'common.languageChanged',
+    edit: 'common.edit'
   },
   nav: {
     account: 'nav.account',
