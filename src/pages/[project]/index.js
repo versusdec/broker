@@ -216,9 +216,9 @@ const Page = withProjectsAddGuard(() => {
   }, [project]);
   
   return (<>
-      <Stack spacing={4} mb={3}>
-        <div>
-          <Link
+    <Stack spacing={4} mb={3}>
+      <div>
+        <Link
             color="text.primary"
             component={NextLink}
             href={paths.projects.index}
@@ -228,15 +228,15 @@ const Page = withProjectsAddGuard(() => {
             }}
             underline="hover"
           >
-            <SvgIcon sx={{mr: 1}}>
-              <ArrowLeftIcon/>
-            </SvgIcon>
-            <Typography variant="subtitle2">
-              Projects
-            </Typography>
-          </Link>
-        </div>
-        <Stack
+          <SvgIcon sx={{mr: 1}}>
+            <ArrowLeftIcon/>
+          </SvgIcon>
+          <Typography variant="subtitle2">
+            Projects
+          </Typography>
+        </Link>
+      </div>
+      <Stack
           alignItems="flex-start"
           direction={{
             xs: 'column',
@@ -245,39 +245,39 @@ const Page = withProjectsAddGuard(() => {
           justifyContent="space-between"
           spacing={4}
         >
-          <Stack
+        <Stack
             alignItems="center"
             direction="row"
             spacing={2}
           >
-            <Stack>
-              <Typography variant="h4">
-                {newProject && 'Add project'}
-                {!newProject && project && project.name}
+          <Stack>
+            <Typography variant="h4">
+              {newProject && 'Add project'}
+              {!newProject && project && project.name}
+            </Typography>
+            {!newProject && project && <>
+              <Typography variant="body2" color={'text.secondary'}>
+                {project.description}
               </Typography>
-              {!newProject && project && <>
-                <Typography variant="body2" color={'text.secondary'}>
-                  {project.description}
-                </Typography>
-                <Stack
+              <Stack
                   alignItems="center"
                   direction="row"
                   spacing={1}
                 >
-                  <Typography variant="subtitle2">
-                    ID:
-                  </Typography>
-                  <Chip
+                <Typography variant="subtitle2">
+                  ID:
+                </Typography>
+                <Chip
                     label={project.id}
                     size="small"
                   />
-                </Stack>
+              </Stack>
               </>}
-            </Stack>
           </Stack>
         </Stack>
-        <div>
-          <Tabs
+      </Stack>
+      <div>
+        <Tabs
             indicatorColor="primary"
             onChange={handleTabsChange}
             scrollButtons="auto"
@@ -286,30 +286,30 @@ const Page = withProjectsAddGuard(() => {
             value={currentTab}
             variant="scrollable"
           >
-            {tabs.map((tab) => (
-              <Tab
+          {tabs.map((tab) => (
+            <Tab
                 key={tab.value}
                 label={tab.label}
                 value={tab.value}
                 disabled={newProject && tab.value === 'common' ? false : newProject}
               />
             ))}
-          </Tabs>
-          <Divider/>
-        </div>
-      </Stack>
-      {currentTab === 'common' && clients && (
-        <div>
-          {((!newProject && project.id) || newProject) && me.user && <CommonTab
+        </Tabs>
+        <Divider/>
+      </div>
+    </Stack>
+    {currentTab === 'common' && clients && (
+    <div>
+      {((!newProject && project.id) || newProject) && me.user && <CommonTab
             project={project}
             userRole={me.user.role}
             isNew={newProject}
             onSubmit={onCommonSubmit}
             clients={clients}
           />}
-        </div>
+    </div>
       )}
-      {currentTab === 'fields' && <FieldsListTable
+    {currentTab === 'fields' && <FieldsListTable
         items={fields.items}
         total={fields.total}
         onPageChange={handlePageChange}
@@ -321,7 +321,7 @@ const Page = withProjectsAddGuard(() => {
         page={page}
         projectId={id}
       />}
-      {currentTab === 'tags' && <TagsList
+    {currentTab === 'tags' && <TagsList
         items={tags} handleAdd={handleTagAdd}
         handleEdit={handleTagEdit}
         handleStatus={handleTagStatus}

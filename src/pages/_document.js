@@ -11,8 +11,8 @@ class CustomDocument extends Document {
           <Favicon />
         </Head>
         <body>
-        <Main />
-        <NextScript />
+          <Main />
+          <NextScript />
         </body>
       </Html>
     );

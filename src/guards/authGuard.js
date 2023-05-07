@@ -11,9 +11,9 @@ export const AuthGuard = (props) => {
   const { isAuthenticated, logout } = useAuth();
   const [checked, setChecked] = useState(false);
   const token = getToken();
-  
+
   const check = useCallback(() => {
-    
+
     if (!isAuthenticated || !token) {
       const searchParams = new URLSearchParams({ returnTo: globalThis.location.href }).toString();
       const href = paths.login + `?${searchParams}`;
