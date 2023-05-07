@@ -61,7 +61,7 @@ const App = ({Component, pageProps}) => {
                         {showSlashScreen
                           ? <SplashAnimation /> :
                           getLayout(
-                          <Component {...pageProps} />
+                            <Component {...pageProps} />
                         )}
                         <Toaster/>
                       </>

@@ -466,8 +466,8 @@ export const FieldsListTable = (props) => {
                                       disabled={dialog.item.options.length === 1}
                                       color={dialog.item.options.length !== 1 ? 'primary' : ''}
                           >
-                          <DeleteOutlined/>
-                        </IconButton>
+                            <DeleteOutlined/>
+                          </IconButton>
                         </span>
                       </Tooltip>
                     </Stack>

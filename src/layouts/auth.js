@@ -6,10 +6,10 @@ export const Layout = (props) => {
   const {children} = props;
   const title = props.title
     ? props.title
-    : props.children?.props.title
-      ? props.children.props.title
-      : false
-  
+        : props.children?.props.title
+          ? props.children.props.title
+          : false
+
   return (
     <>
       <Head title={title} />
@@ -64,7 +64,7 @@ export const Layout = (props) => {
               xs: 4,
               md: 8
             },
-            width: { 
+            width: {
               md: 500
             }
           }}
