@@ -6,9 +6,9 @@ export const Layout = (props) => {
   const {children} = props;
   const title = props.title
     ? props.title
-        : props.children?.props.title
-          ? props.children.props.title
-          : false
+    : props.children?.props.title
+      ? props.children.props.title
+      : false
 
   return (
     <>

@@ -8,9 +8,9 @@ import {getToken} from "../utils/get-token";
 export const AuthGuard = (props) => {
   const { children } = props;
   const router = useRouter();
-          const { isAuthenticated, logout } = useAuth();
-           const [checked, setChecked] = useState(false);
-          const token = getToken();
+  const { isAuthenticated, logout } = useAuth();
+  const [checked, setChecked] = useState(false);
+  const token = getToken();
 
   const check = useCallback(() => {
 
