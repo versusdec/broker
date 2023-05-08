@@ -20,7 +20,7 @@ const Page = () => {
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const [filters, setFilters] = useState({});
   const project_id = +router.query.project;
-  
+
   const handleFiltersChange = useCallback((filters) => {
     setFilters(filters)
   }, [filters])
@@ -32,11 +32,11 @@ const Page = () => {
     }
   }, [limit, page, offset, filters]);
   
-  const {users, loading, error} = useQueues(params);
-  const {items, total} = users || {items: [], limit: limit, total: 0};
+  const {data, loading, error} = useQueues(params);
+  const {items, total} = data || {items: [], limit: limit, total: 0};
   
   const handleStatus = useCallback(async (id, status, cb) => {
-    const res = await api.users.update({
+    const res = await api.queues.update({
       id: +id,
       status: status === 'archived' ? 'active' : 'archived'
     })
@@ -98,6 +98,7 @@ const Page = () => {
             page={page}
             loading={loading}
             handleStatus={handleStatus}
+            project_id={project_id}
           />
         </Card>
       </Stack>

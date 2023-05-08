@@ -9,7 +9,7 @@ import {
   SvgIcon,
   Tab,
   Tabs,
-  Typography,
+  Typography
 } from '@mui/material';
 import {CommonTab} from '../../../../components/queue/common-tab';
 import {UsersTab} from '../../../../components/queue/users-tab';
@@ -21,7 +21,6 @@ import {actions} from "../../../../slices/queuesSlice";
 import toast from "react-hot-toast";
 import {useDispatch} from "../../../../store";
 import {withQueuesAddGuard} from "../../../../hocs/with-queues-add-guard";
-import {wait} from "../../../../utils/wait";
 import * as Yup from "yup";
 import {useFormik} from "formik";
 
@@ -42,9 +41,10 @@ const setUpdate = (values, newValues) => {
 
 const itemUpdate = async (values, newValues, dispatch) => {
   const v = setUpdate(values, newValues)
-  const res = await api.users.update(v)
+  const res = await api.queues.update(v)
+  console.log(res);
   if (!res.error) {
-    dispatch(actions.fillQueue(v))
+    // dispatch(actions.fillQueue(v))
     toast.success('Changes saved')
   } else {
     toast.error('Something went wrong')
@@ -73,7 +73,6 @@ const Page = withQueuesAddGuard(() => {
   
   useEffect(() => {
     if (data) {
-      console.log(data);
       setQueue(data);
     }
     
@@ -92,7 +91,7 @@ const Page = withQueuesAddGuard(() => {
       setUsers(result.items)
     }
   }, [queue])
-
+  
   const queueUsers = useCallback(() => {
     const u = []
     queue.users.forEach((id) => {
@@ -102,8 +101,11 @@ const Page = withQueuesAddGuard(() => {
   }, [users])
   
   useEffect(() => {
-    queueUsers();
-  }, [])
+    // queueUsers();
+    if(data){
+      setSelectedUsers(data.users)
+    }
+  }, [data])
   
   useEffect(() => {
     getUsers();
@@ -113,34 +115,50 @@ const Page = withQueuesAddGuard(() => {
     setCurrentTab(value);
   }, []);
   
-  const handleValuesChange = useCallback((value) => {
+  const handleValuesChange = (value) => {
     setQueue(prev => {
       return {
         ...prev,
         ...value
       }
     })
-  }, [queue]);
+  };
   
   const onSubmit = useCallback(async () => {
-    console.log(queue)
-    /* if (isNew) {
-       try {
-         const {result, error} = await api.queues.add(setUpdate(queue, values));
-         if (result && !error) {
-           toast.success('Queue has been created')
-           await wait(500);
-           router.replace(`/${project}/queues`)
-         } else {
-           toast.error('Something went wrong')
-         }
-       } catch (e) {
-         toast.error('Something went wrong')
-       }
-     } else {
-       itemUpdate(queue, values, dispatch)
-     }*/
-  }, [queue]);
+    const u = selectedUsers.map(i => {
+      return i.id
+    })
+    const data = {
+      ...queue,
+      users: [...u]
+    }
+
+    if (isNew) {
+      try {
+        const {result, error} = await api.queues.add(data);
+        if (result && !error) {
+          toast.success('Queue has been created')
+          await wait(500);
+          router.replace(`/${project}/queues`)
+        } else {
+          toast.error('Something went wrong')
+        }
+      } catch (e) {
+        console.log(e)
+        // toast.error('Something went wrong')
+      }
+    } else {
+      itemUpdate(queue, data, dispatch)
+      /*const res = await api.queues.update(data)
+      console.log(res);
+      if (!res.error) {
+        dispatch(actions.fillQueue(data))
+        toast.success('Changes saved')
+      } else {
+        toast.error('Something went wrong')
+      }*/
+    }
+  }, [queue, selectedUsers]);
   
   const initialValues = useMemo(() => queue, [queue]);
   const validationSchema = Yup.object({
@@ -155,7 +173,7 @@ const Page = withQueuesAddGuard(() => {
       .string()
       .oneOf(['active', 'archived']),
     users: Yup
-      .array().of(Yup.number())
+      .array()
   });
   
   const formik = useFormik({
@@ -176,6 +194,11 @@ const Page = withQueuesAddGuard(() => {
       }
     }
   })
+  
+  const handleSelectedUsers = (val) => {
+    console.log(val);
+    setSelectedUsers(val)
+  }
   
   return (
     <>
@@ -263,6 +286,7 @@ const Page = withQueuesAddGuard(() => {
               onSubmit={onSubmit}
               onChange={handleValuesChange}
               formik={formik}
+              changeTab={handleTabsChange}
             />}
           </div>
         )}
@@ -270,8 +294,11 @@ const Page = withQueuesAddGuard(() => {
           onSubmit={onSubmit}
           users={users}
           selected={selectedUsers}
-          onChange={handleValuesChange}
           formik={formik}
+          changeTab={handleTabsChange}
+          handleChange={(e, v) => {
+            handleSelectedUsers(v)
+          }}
         />}
       </>}
     </>
@@ -281,5 +308,5 @@ const Page = withQueuesAddGuard(() => {
 export default Page;
 
 Page.defaultProps = {
-  title: 'Users'
+  title: 'Queues'
 }

@@ -4,19 +4,10 @@ import {
   CardContent,
   MenuItem,
   Stack,
-  TextField,
-  Autocomplete
 } from '@mui/material';
 import {Input} from "../input";
-import {useFormik} from "formik";
-import * as Yup from "yup";
-import {useEffect, useMemo, useState} from "react";
-import {useRouter} from "next/dist/client/compat/router";
 
-export const CommonTab = ({onSubmit, onChange, isNew, userRole, item, formik, ...props}) => {
- 
-
-  
+export const CommonTab = ({onSubmit, onChange, isNew, userRole, item, formik, changeTab, ...props}) => {
   
   return (
     <Stack
@@ -80,7 +71,12 @@ export const CommonTab = ({onSubmit, onChange, isNew, userRole, item, formik, ..
                     size="large"
                     type="submit"
                     variant="contained"
-                    onClick={formik.handleSubmit}
+                    onClick={e => {
+                      formik.handleSubmit(e);
+                      if (!formik.isValid && formik.errors.users) {
+                        changeTab(e, 'users')
+                      }
+                    }}
                   >
                     Save
                   </Button>

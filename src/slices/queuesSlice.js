@@ -2,17 +2,17 @@ import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {api} from "../api";
 
 export const queuesList = createAsyncThunk('queues/list', async (params) => {
-  const {result, error} = await api.payments.list(params);
+  const {result, error} = await api.queues.list(params);
   return {result, error}
 })
 
 export const queuesSuggest = createAsyncThunk('queues/suggest', async (params) => {
-  const {result, error} = await api.projects.suggest(params);
+  const {result, error} = await api.queues.suggest(params);
   return {result, error}
 })
 
 export const queuesGet = createAsyncThunk('queues/get', async (id) => {
-  const {result, error} = await api.projects.get(id);
+  const {result, error} = await api.queues.get(id);
   return {result, error}
 })
 

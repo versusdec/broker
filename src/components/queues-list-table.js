@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
-import {Block, CheckCircleOutlined, Close, EditOutlined, ArchiveOutlined, UnrchiveOutlined} from '@mui/icons-material'
+import {Block, CheckCircleOutlined, Close, EditOutlined, ArchiveOutlined, UnarchiveOutlined, CheckBox} from '@mui/icons-material'
 import {
   Avatar,
   Box,
@@ -34,6 +34,7 @@ export const QueuesListTable = (props) => {
     limit,
     loading,
     handleStatus,
+    project_id,
     ...other
   } = props;
   const [dialog, setDialog] = useState({open: false, item: null});
@@ -140,14 +141,14 @@ export const QueuesListTable = (props) => {
                           }}
                         >
                           <SvgIcon color={item.status === 'archived' ? 'success' : 'error'}>
-                            {item.status === 'archived' ? <UnrchiveOutlined/> : <ArchiveOutlined/>}
+                            {item.status === 'archived' ? <UnarchiveOutlined/> : <ArchiveOutlined/>}
                           </SvgIcon>
                         </IconButton>
                       </Tooltip>
                       <Tooltip title={'Edit'}>
                         <IconButton
                           component={NextLink}
-                          href={`${paths.queues.edit}/${item.id}`}
+                          href={`/${project_id}/queues/${item.id}`}
                         >
                           <SvgIcon color={'primary'}>
                             <EditOutlined/>

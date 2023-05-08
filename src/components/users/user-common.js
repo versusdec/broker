@@ -408,7 +408,7 @@ export const CommonTab = ({onUpload, onSubmit, isNew, userRole, timezones, user,
                                                       name="projects"
                                                       label="Project"/>}
                 />}
-                {((formik.values.role === 'supervisor')) && <Autocomplete
+                {(formik.values.role === 'supervisor') && projects.length && <Autocomplete
                   multiple
                   filterSelectedOptions
                   disableClearable
@@ -422,13 +422,11 @@ export const CommonTab = ({onUpload, onSubmit, isNew, userRole, timezones, user,
                     // formik.setFieldValue("projects", val)
                   }}
                   defaultValue={[]}
-                  value={project}
+                  value={project.length ? project[0] : projects[0]}
                   // name="projects"
                   renderInput={(params) => <TextField {...params}
                                                       fullWidth
-                                                      // error={!!(formik.touched.projects && formik.errors.projects[0])}
-                                                      // helperText={formik.touched.projects && formik.errors.projects[0]}
-                                                      // name="projects"
+                                                      name="projects"
                                                       label="Project"/>}
                 />}
                 <Input
