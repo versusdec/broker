@@ -1,7 +1,6 @@
 import {useDispatch, useSelector} from "../store";
 import {useCallback, useEffect} from "react";
 import {projectsGet} from "../slices/projectsSlice";
-import {actions} from "../slices/projectsSlice";
 
 export const useProject = (id) => {
   const dispatch = useDispatch();

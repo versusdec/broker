@@ -8,5 +8,6 @@ export const es = {
   [tokens.nav.support]: 'Apoyo',
   [tokens.nav.users]: 'Usuarias',
   [tokens.nav.projects]: 'Proyectos',
+  [tokens.nav.queues.title]: 'Colas',
   
 };

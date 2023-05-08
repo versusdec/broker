@@ -43,6 +43,12 @@ export const getSections = (t, project) => {
               role: ['admin', 'client'],
               path: `/${project?.id}`,
             },
+            {
+              title: t(tokens.nav.queues.title),
+              role: ['admin', 'client', 'supervisor', 'operator'],
+              path: `/${project?.id}/queues`,
+            },
+            
           ]
         },
         {

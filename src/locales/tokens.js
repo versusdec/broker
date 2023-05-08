@@ -9,6 +9,9 @@ export const tokens = {
     support: 'nav.support',
     billing: 'nav.billing',
     users: 'nav.users',
-    projects: 'nav.projects'
+    projects: 'nav.projects',
+    queues: {
+      title: 'Queues'
+    }
   }
 };

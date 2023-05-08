@@ -19,11 +19,10 @@ import {
   TableRow, Tooltip,
   Typography
 } from '@mui/material';
-import {Scrollbar} from '../scrollbar';
-import {paths} from '../../navigation/paths';
-import {Pagination} from "../pagination";
-import {Loader} from "../loader";
-import {wait} from "../../utils/wait";
+import {Scrollbar} from './scrollbar';
+import {paths} from '../navigation/paths';
+import {Pagination} from "./pagination";
+import {Loader} from "./loader";
 
 
 const useSelectionModel = (users) => {
@@ -66,7 +65,7 @@ const useSelectionModel = (users) => {
   };
 };
 
-export const UserListTable = (props) => {
+export const UsersListTable = (props) => {
   const {
     users,
     total,
@@ -113,7 +112,7 @@ export const UserListTable = (props) => {
     <Box
       sx={{position: 'relative'}}
       {...other}>
-      {enableBulkActions && (
+      {/*{enableBulkActions && (
         <Stack
           direction="row"
           spacing={2}
@@ -150,7 +149,7 @@ export const UserListTable = (props) => {
             Edit
           </Button>
         </Stack>
-      )}
+      )}*/}
       <Scrollbar>
         <Table sx={{minWidth: 700}}>
           {loading && !!!users.length &&
@@ -183,13 +182,13 @@ export const UserListTable = (props) => {
           <>
             <TableHead>
               <TableRow>
-                <TableCell padding="checkbox">
+                {/*<TableCell padding="checkbox">
                   <Checkbox
                     checked={selectedAll}
                     indeterminate={selectedSome}
                     onChange={handleToggleAll}
                   />
-                </TableCell>
+                </TableCell>*/}
                 <TableCell>
                   ID
                 </TableCell>
@@ -217,7 +216,7 @@ export const UserListTable = (props) => {
                     key={user.id}
                     selected={isSelected}
                   >
-                    <TableCell padding="checkbox">
+                    {/*<TableCell padding="checkbox">
                       <Checkbox
                         checked={isSelected}
                         onChange={(event) => {
@@ -231,7 +230,7 @@ export const UserListTable = (props) => {
                         }}
                         value={isSelected}
                       />
-                    </TableCell>
+                    </TableCell>*/}
                     <TableCell>
                       {user.id}
                     </TableCell>
@@ -362,7 +361,7 @@ export const UserListTable = (props) => {
   );
 };
 
-UserListTable.propTypes = {
+UsersListTable.propTypes = {
   users: PropTypes.array.isRequired,
   total: PropTypes.number.isRequired,
   onPageChange: PropTypes.func.isRequired,

@@ -16,7 +16,7 @@ const renderItems = ({depth = 0, items, pathname, role}) => items.reduce((acc, i
 
 const reduceChildRoutes = ({acc, depth, item, pathname, role}) => {
   const checkPath = !!(item.path && pathname);
-  const partialMatch = (checkPath ? pathname.includes(item.path) : false) || (checkPath ? (item.path === '/:project' && Number.isInteger(+pathname.split('/')[1])) : false);
+  const partialMatch = (checkPath ? pathname.includes(item.path) : false) ||  (checkPath ? (item.path === '/:project' && Number.isInteger(+pathname.split('/')[1])) : false);
   const exactMatch = checkPath ? pathname === item.path : false;
   
   if (item.items) {
@@ -53,7 +53,7 @@ const reduceChildRoutes = ({acc, depth, item, pathname, role}) => {
   } else {
     item.role.includes(role) && !item.hidden && acc.push(
       <SideNavItem
-        active={exactMatch || (item.path !== '/' ? partialMatch : false)}
+        active={exactMatch || (Number.isInteger(+pathname.split('/')[1]) && item.path.split('/')[2]?.length && (item.path.split('/')[2] === pathname.split('/')[2]))}
         depth={depth}
         disabled={item.disabled}
         icon={item.icon}

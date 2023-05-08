@@ -1,26 +1,25 @@
 import {useCallback, useMemo, useState} from 'react';
 import PlusIcon from '@untitled-ui/icons-react/build/esm/Plus';
 import {Button, Card, Stack, SvgIcon, Typography} from '@mui/material';
-import {UsersListTable} from '../../components/users-list-table';
-import {UsersListFilters} from "../../components/users-list-filters";
+import {QueuesListTable} from '../../../components/queues-list-table';
 import NextLink from "next/link";
-import {paths} from "../../navigation/paths";
-import {useMe} from "../../hooks/useMe";
-import {useUsers} from "../../hooks/useUsers";
-import {usePagination} from "../../hooks/usePagination";
-import {wait} from "../../utils/wait";
-import {withUsersListGuard} from "../../hocs/with-users-list-guard";
-import {api} from "../../api";
+import {paths} from "../../../navigation/paths";
+import {useMe} from "../../../hooks/useMe";
+import {useQueues} from "../../../hooks/useQueues";
+import {usePagination} from "../../../hooks/usePagination";
+import {api} from "../../../api";
 import toast from "react-hot-toast";
-import {useDispatch} from "../../store";
-import {actions} from '../../slices/usersSlice'
+import {useDispatch} from "../../../store";
+import {actions} from '../../../slices/queuesSlice'
+import {useRouter} from "next/router";
 
-const Page = withUsersListGuard(() => {
+const Page = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
   const {user} = useMe();
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const [filters, setFilters] = useState({});
-  
+  const project_id = +router.query.project;
   
   const handleFiltersChange = useCallback((filters) => {
     setFilters(filters)
@@ -33,13 +32,13 @@ const Page = withUsersListGuard(() => {
     }
   }, [limit, page, offset, filters]);
   
-  const {users, loading, error} = useUsers(params);
+  const {users, loading, error} = useQueues(params);
   const {items, total} = users || {items: [], limit: limit, total: 0};
   
   const handleStatus = useCallback(async (id, status, cb) => {
     const res = await api.users.update({
       id: +id,
-      status: status === 'blocked' ? 'active' : 'blocked'
+      status: status === 'archived' ? 'active' : 'archived'
     })
     if (res) {
       cb();
@@ -47,11 +46,11 @@ const Page = withUsersListGuard(() => {
         if (i.id === +id) {
           return {
             ...i,
-            status: status === 'blocked' ? 'active' : 'blocked'
+            status: status === 'archived' ? 'active' : 'archived'
           }
         } else return i
       })
-      dispatch(actions.fillUsers(newItems))
+      dispatch(actions.fillQueues(newItems))
     } else {
       toast.error('Something goes wrong')
     }
@@ -67,7 +66,7 @@ const Page = withUsersListGuard(() => {
         >
           <Stack spacing={1}>
             <Typography variant="h4">
-              Users
+              Queues
             </Typography>
           </Stack>
           <Stack
@@ -75,9 +74,9 @@ const Page = withUsersListGuard(() => {
             direction="row"
             spacing={3}
           >
-            {user && (user.role === 'admin' || user.role === 'client') && <Button
+           <Button
               component={NextLink}
-              href={paths.users.add}
+              href={`/${project_id + paths.queues.add}`}
               startIcon={(
                 <SvgIcon>
                   <PlusIcon/>
@@ -86,16 +85,12 @@ const Page = withUsersListGuard(() => {
               variant="contained"
             >
               Add
-            </Button>}
+            </Button>
           </Stack>
         </Stack>
         <Card>
-          <UsersListFilters
-            onFiltersChange={handleFiltersChange}
-            initialFilters={filters}
-          />
-          <UsersListTable
-            users={items}
+          <QueuesListTable
+            items={items}
             total={total}
             onPageChange={handlePageChange}
             handleLimitChange={handleLimitChange}
@@ -108,10 +103,10 @@ const Page = withUsersListGuard(() => {
       </Stack>
     </>
   );
-})
+}
 
 Page.defaultProps = {
-  title: 'Users'
+  title: 'Queues'
 };
 
 export default Page;

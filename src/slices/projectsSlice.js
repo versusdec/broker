@@ -69,8 +69,4 @@ export const projectsSlice = createSlice({
   }
 })
 
-export const thunks = {
-  projectsList
-}
-
 export const {actions, reducer} = projectsSlice;
