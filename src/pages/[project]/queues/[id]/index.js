@@ -45,7 +45,6 @@ const itemUpdate = async (values, newValues, dispatch) => {
   const res = await api.queues.update(v)
   console.log(res);
   if (!res.error) {
-    // dispatch(actions.fillQueue(v))
     toast.success('Changes saved')
   } else {
     toast.error('Something went wrong')
@@ -57,13 +56,12 @@ const Page = withQueuesAddGuard(() => {
   const router = useRouter();
   const me = useMe();
   const [currentTab, setCurrentTab] = useState('common');
-  const [usersList, setUsersList] = useState(null);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [users, setUsers] = useState([]);
   const id = +router.query.id;
   const project = +router.query.project;
   const isNew = isNaN(id);
-  const {data, loading, error} = useQueue(id);
+  const {data} = useQueue(id);
   const [queue, setQueue] = useState({
     project_id: project,
     name: '',
@@ -93,16 +91,7 @@ const Page = withQueuesAddGuard(() => {
     }
   }, [queue])
   
-  const queueUsers = useCallback(() => {
-    const u = []
-    queue.users.forEach((id) => {
-      u.push(usersList.find(u => (u.id === id)))
-    })
-    setSelectedUsers(u)
-  }, [users])
-  
   useEffect(() => {
-    // queueUsers();
     if(data){
       setSelectedUsers(data.users)
     }
@@ -146,18 +135,9 @@ const Page = withQueuesAddGuard(() => {
         }
       } catch (e) {
         console.log(e)
-        // toast.error('Something went wrong')
       }
     } else {
       itemUpdate(queue, data, dispatch)
-      /*const res = await api.queues.update(data)
-      console.log(res);
-      if (!res.error) {
-        dispatch(actions.fillQueue(data))
-        toast.success('Changes saved')
-      } else {
-        toast.error('Something went wrong')
-      }*/
     }
   }, [queue, selectedUsers]);
   
@@ -184,7 +164,6 @@ const Page = withQueuesAddGuard(() => {
     errors: {},
     onSubmit: (values, helpers) => {
       try {
-        // console.log(values)
         onSubmit()
       } catch (err) {
         console.error(err);
@@ -272,7 +251,6 @@ const Page = withQueuesAddGuard(() => {
                   key={tab.value}
                   label={tab.label}
                   value={tab.value}
-                  // disabled={isNew && tab.value === 'common' ? false : isNew}
                 />
               ))}
             </Tabs>
