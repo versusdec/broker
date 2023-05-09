@@ -23,6 +23,7 @@ import {useDispatch} from "../../../../store";
 import {withQueuesAddGuard} from "../../../../hocs/with-queues-add-guard";
 import * as Yup from "yup";
 import {useFormik} from "formik";
+import {wait} from "../../../../utils/wait";
 
 const tabs = [
   {label: 'Common', value: 'common'},
@@ -132,7 +133,7 @@ const Page = withQueuesAddGuard(() => {
       ...queue,
       users: [...u]
     }
-
+    
     if (isNew) {
       try {
         const {result, error} = await api.queues.add(data);
@@ -196,7 +197,6 @@ const Page = withQueuesAddGuard(() => {
   })
   
   const handleSelectedUsers = (val) => {
-    console.log(val);
     setSelectedUsers(val)
   }
   

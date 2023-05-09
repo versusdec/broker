@@ -6,8 +6,10 @@ import {
   Stack,
 } from '@mui/material';
 import {Input} from "../input";
+import {useState} from "react";
 
 export const CommonTab = ({onSubmit, onChange, isNew, userRole, item, formik, changeTab, ...props}) => {
+  const [disabled, setDisabled] = useState(false);
   
   return (
     <Stack
@@ -71,7 +73,9 @@ export const CommonTab = ({onSubmit, onChange, isNew, userRole, item, formik, ch
                     size="large"
                     type="submit"
                     variant="contained"
+                    disabled={disabled}
                     onClick={e => {
+                      setDisabled(true)
                       formik.handleSubmit(e);
                       if (!formik.isValid && formik.errors.users) {
                         changeTab(e, 'users')

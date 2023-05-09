@@ -1,26 +1,20 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
-import {Block, CheckCircleOutlined, Close, EditOutlined, ArchiveOutlined, UnarchiveOutlined, CheckBox} from '@mui/icons-material'
+import {Close, EditOutlined, ArchiveOutlined, UnarchiveOutlined} from '@mui/icons-material'
 import {
-  Avatar,
   Box,
-  Button,
-  Checkbox, Dialog, DialogActions, DialogContent, DialogTitle,
-  IconButton,
-  Link,
-  Stack,
+  Button, Dialog, DialogActions, DialogContent, DialogTitle,
+  IconButton, Stack,
   SvgIcon,
   Table,
   TableBody,
   TableCell,
   TableHead,
-  TablePagination,
   TableRow, Tooltip,
   Typography
 } from '@mui/material';
 import {Scrollbar} from './scrollbar';
-import {paths} from '../navigation/paths';
 import {Pagination} from "./pagination";
 import {Loader} from "./loader";
 
@@ -134,7 +128,7 @@ export const QueuesListTable = (props) => {
                       </Typography>
                     </TableCell>
                     <TableCell align="right">
-                      <Tooltip title={item.status === 'active' ? 'Block' : 'Unblock'}>
+                      <Tooltip title={item.status === 'active' ? 'Archive' : 'Unzip'}>
                         <IconButton
                           onClick={() => {
                             handleDialogOpen(item)
@@ -185,10 +179,10 @@ export const QueuesListTable = (props) => {
           >
             <Close/>
           </IconButton>
-          {dialog.user && (dialog.user?.status === 'active' ? `Block user #${dialog.user?.id}?` : `Unblock user #${dialog.user?.id}?`)}
+          {dialog.item && (dialog.item?.status === 'active' ? `Archive queue #${dialog.item?.id}?` : `Unzip queue #${dialog.item?.id}?`)}
         </DialogTitle>
         <DialogContent dividers>
-          {dialog.user && 'User '} {dialog.user && dialog.user?.name + ' | ' + dialog.user?.email}
+          {dialog.item && 'Queue '} <Typography component={'span'} variant={'subtitle1'}>{dialog.item && dialog.item?.name}</Typography>
         </DialogContent>
         <DialogActions>
           <Button
@@ -203,7 +197,7 @@ export const QueuesListTable = (props) => {
             type={'button'}
             variant={'contained'}
             onClick={() => {
-              handleStatus(dialog.user?.id, dialog.user?.status, () => {
+              handleStatus(dialog.item?.id, dialog.item?.status, () => {
                 handleDialogClose()
               })
             }}
