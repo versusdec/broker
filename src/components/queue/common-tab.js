@@ -75,7 +75,10 @@ export const CommonTab = ({onSubmit, onChange, isNew, userRole, item, formik, ch
                     variant="contained"
                     disabled={disabled}
                     onClick={e => {
-                      setDisabled(true)
+                      setDisabled(true);
+                      setTimeout(() => {
+                        setDisabled(false)
+                      }, 500)
                       formik.handleSubmit(e);
                       if (!formik.isValid && formik.errors.users) {
                         changeTab(e, 'users')

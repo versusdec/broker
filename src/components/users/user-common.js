@@ -6,23 +6,20 @@ import {
   Button,
   Card,
   CardContent,
-  Divider, IconButton, InputAdornment, MenuItem,
+  IconButton,
+  InputAdornment,
+  MenuItem,
   Stack,
   SvgIcon,
-  Switch,
   TextField,
   Typography,
-  Autocomplete
+  Autocomplete, Checkbox
 } from '@mui/material';
 import {alpha} from '@mui/material/styles';
 import {Input} from "../input";
-import {useFormik} from "formik";
-import * as Yup from "yup";
-import {useCallback, useEffect, useMemo, useState} from "react";
+import {useCallback, useState} from "react";
 import {FileUploader} from "../file-uploader";
-import {Visibility, VisibilityOff} from "@mui/icons-material";
-import {useMe} from "../../hooks/useMe";
-import {api} from "../../api";
+import {CheckBox, CheckBoxOutlineBlank, Visibility, VisibilityOff} from "@mui/icons-material";
 
 const languageOptions = [
   {
@@ -37,123 +34,13 @@ const languageOptions = [
   }
 ]
 
-export const CommonTab = ({onUpload, onSubmit, isNew, userRole, timezones, user, clients, projects, ...props}) => {
+export const CommonTab = ({
+                            onUpload, userRole, timezones, user, client, clients, project, projects, formik, onChange,
+                            onClientChange, onProjectChange, onProjectsChange, ...props
+                          }) => {
   const [uploaderOpen, setUploaderOpen] = useState(false);
   const [showPass, setShowPass] = useState(false);
-  const [client, setClient] = useState(null);
-  const [project, setProject] = useState([]);
-
-  const initialValues = useMemo(() => user, [user]);
-  const validationSchema = Yup.object({
-    email: Yup
-      .string()
-      .email('Must be a valid email')
-      .max(255)
-      .required('Email is required'),
-    name: Yup
-      .string()
-      .max(255)
-      .required('Name is required'),
-    timezone: Yup
-      .number(),
-    language: Yup
-      .string()
-      .oneOf(['en', 'de', 'es']),
-    password: Yup
-      .string()
-      .min(8)
-      .max(255)
-      .when("$other", {
-        is: () => isNew,
-        then: Yup.string().required('Password is required')
-      }),
-    password_confirm: Yup
-      .string()
-      .max(255)
-      .oneOf([Yup.ref('password')], 'Passwords must match')
-      .when("password", {
-        is: (password) => (password && password.length && isNew),
-        then: Yup.string().required("Confirm your new password").max(255)
-      }),
-    status: Yup
-      .string()
-      .oneOf(['active', 'blocked']),
-    role: Yup
-      .string()
-      .oneOf(['client', 'supervisor', 'operator', 'admin']),
-  });
-  
-  const formik = useFormik({
-    enableReinitialize: true,
-    initialValues,
-    validationSchema,
-    errors: {},
-    onSubmit: (values, helpers) => {
-      const newValues = {
-        ...values, projects: []
-      }
-      
-      project.forEach((item) => {
-        newValues.projects.push(item.id)
-      })
-      
-      try {
-        switch (values.role) {
-          case 'supervisor':
-          case 'operator':
-            user.role === 'admin' ? newValues.client_id = client.id : void 0;
-            break;
-          default:
-            delete newValues.client_id;
-            break;
-        }
-        onSubmit(newValues)
-        // console.log(values)
-      } catch (err) {
-        console.error(err);
-        
-        helpers.setStatus({success: false});
-        helpers.setErrors({submit: err.message});
-        helpers.setSubmitting(false);
-      }
-    }
-  })
-
-  useEffect(() => {
-    if (user.client_id && clients?.length) {
-      const c = clients.find(i => {
-        return i.id === user.client_id
-      })
-      setClient(c)
-    }
-  }, [user, clients])
-  
-  useEffect(() => {
-    if (projects.length) {
-      let p = [];
-      if (user.role === 'operator') {
-        p.push(projects.find(i => {
-          return i.id === user.projects[0]
-        }));
-      } else if (user.role === 'supervisor') {
-        user.projects?.forEach(i => {
-          p.push(projects.find(p => p.id === i));
-        })
-      } else {
-        p = [projects[0]]
-      }
-      setProject(p)
-      // formik.setFieldValue('projects', project)
-    }
-  }, [user, projects])
-  
-  const onClientChange = (client) => {
-    setClient(client)
-  }
-  
-  const onProjectChange = (item) => {
-    setProject([item])
-  }
+  const [disabled, setDisabled] = useState(false);
   
   const handleOpen = useCallback(() => {
     setUploaderOpen(true)
@@ -293,7 +180,7 @@ export const CommonTab = ({onUpload, onSubmit, isNew, userRole, timezones, user,
                   value={timezones ? formik.values.timezone : ''}
                 >
                   {
-                    !timezones && <MenuItem value=""></MenuItem>
+                    !timezones && <MenuItem value=""/>
                   }
                   {
                     timezones && timezones.map(option => {
@@ -351,14 +238,11 @@ export const CommonTab = ({onUpload, onSubmit, isNew, userRole, timezones, user,
                   fullWidth
                   label="Role"
                   name="role"
-                  onChange={(e) => {
-                    formik.handleChange(e)
-                    // handleRoleChange(e.target.value)
-                  }}
+                  onChange={formik.handleChange}
                   select
                   value={formik.values.role || ''}
                 >
-                  {['operator', 'supervisor', 'client', 'admin'].map(item=>{
+                  {['operator', 'supervisor', 'client', 'admin'].map(item => {
                     switch (item) {
                       case 'client':
                       case 'admin':
@@ -368,7 +252,7 @@ export const CommonTab = ({onUpload, onSubmit, isNew, userRole, timezones, user,
                           </Box>
                         </MenuItem>
                       default:
-                        return <MenuItem key={item} value={item} >
+                        return <MenuItem key={item} value={item}>
                           <Box sx={{textTransform: 'capitalize'}}>
                             {item}
                           </Box>
@@ -386,7 +270,7 @@ export const CommonTab = ({onUpload, onSubmit, isNew, userRole, timezones, user,
                   onChange={(e, val) => {
                     onClientChange(val)
                   }}
-                  value={client || clients[0] || null}
+                  value={client || clients[0] || undefined}
                   renderInput={(params) => <TextField {...params}
                                                       fullWidth
                                                       name="client_id"
@@ -402,6 +286,7 @@ export const CommonTab = ({onUpload, onSubmit, isNew, userRole, timezones, user,
                   onChange={(e, val) => {
                     onProjectChange(val)
                   }}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
                   value={project.length ? project[0] : projects[0]}
                   renderInput={(params) => <TextField {...params}
                                                       fullWidth
@@ -410,24 +295,29 @@ export const CommonTab = ({onUpload, onSubmit, isNew, userRole, timezones, user,
                 />}
                 {(formik.values.role === 'supervisor') && projects.length && <Autocomplete
                   multiple
-                  filterSelectedOptions
-                  disableClearable
-                  disablePortal
                   options={projects}
-                  getOptionLabel={(i) => {
-                    return i.name
-                  }}
+                  disableCloseOnSelect
+                  getOptionLabel={(option) => option.name}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  value={project.length ? project : [projects[0]]}
+                  renderOption={(props, option, {selected}) => (
+                    <li {...props}>
+                      <Checkbox
+                        icon={<CheckBoxOutlineBlank fontSize={'small'}/>}
+                        checkedIcon={<CheckBox fontSize={'small'}/>}
+                        style={{marginRight: 8}}
+                        checked={selected}
+                      />
+                      {option.name}
+                    </li>
+                  )}
                   onChange={(e, val) => {
-                    setProject(val)
-                    // formik.setFieldValue("projects", val)
+                    onProjectsChange(val)
                   }}
-                  defaultValue={[]}
-                  value={project.length ? project[0] : projects[0]}
-                  // name="projects"
-                  renderInput={(params) => <TextField {...params}
-                                                      fullWidth
-                                                      name="projects"
-                                                      label="Project"/>}
+                  renderInput={(params) => (
+                    <TextField {...params} fullWidth
+                               label="Projects" placeholder="Select projects"/>
+                  )}
                 />}
                 <Input
                   error={!!(formik.touched.password && formik.errors.password)}
@@ -471,7 +361,14 @@ export const CommonTab = ({onUpload, onSubmit, isNew, userRole, timezones, user,
                     size="large"
                     type="submit"
                     variant="contained"
-                    onClick={formik.handleSubmit}
+                    disabled={disabled}
+                    onClick={(e) => {
+                      setDisabled(true)
+                      setTimeout(() => {
+                        setDisabled(false)
+                      }, 500)
+                      formik.handleSubmit(e)
+                    }}
                   >
                     Save
                   </Button>

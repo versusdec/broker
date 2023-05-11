@@ -1,15 +1,9 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import NextLink from 'next/link';
-import Head from 'next/head';
 import ArrowLeftIcon from '@untitled-ui/icons-react/build/esm/ArrowLeft';
-import ChevronDownIcon from '@untitled-ui/icons-react/build/esm/ChevronDown';
-import Edit02Icon from '@untitled-ui/icons-react/build/esm/Edit02';
 import {
   Avatar,
-  Box,
-  Button,
   Chip,
-  Container,
   Divider,
   Link,
   Stack,
@@ -17,13 +11,9 @@ import {
   Tab,
   Tabs,
   Typography,
-  Menu,
-  Unstable_Grid2 as Grid
 } from '@mui/material';
-import {customersApi} from '../../../api/customers';
 import {paths} from '../../../navigation/paths';
 import {CommonTab} from '../../../components/users/user-common';
-import {MenuItem} from "@mui/material";
 import {useUser} from "../../../hooks/useUser";
 import {useRouter} from 'next/router'
 import {useMe} from "../../../hooks/useMe";
@@ -33,35 +23,15 @@ import {actions} from "../../../slices/usersSlice";
 import toast from "react-hot-toast";
 import {useDispatch} from "../../../store";
 import {withUsersAddGuard} from "../../../hocs/with-users-add-guard";
-import {QueuesListTable} from "../../../components/users/user-queues-table";
-
+import * as Yup from "yup";
+import {useFormik} from "formik";
+import {QueuesTab} from "../../../components/users/user-queues";
 
 const tabs = [
   {label: 'Common', value: 'common'},
   {label: 'Queues', value: 'queues'},
   {label: 'Operators', value: 'operators'}
 ];
-
-const setUserUpdate = (user, newValues) => {
-  const newUser = {...user, ...newValues}
-  for (const i in newUser) {
-    if (newUser[i] === '')
-      delete newUser[i]
-  }
-  
-  return newUser
-}
-
-const userUpdate = async (user, newValues, dispatch) => {
-  const u = setUserUpdate(user, newValues)
-  const res = await api.users.update(u)
-  if (!res.error) {
-    dispatch(actions.fillUser(u))
-    toast.success('Changes saved')
-  } else {
-    toast.error('Something went wrong')
-  }
-}
 
 const Page = withUsersAddGuard(() => {
   const dispatch = useDispatch();
@@ -74,34 +44,48 @@ const Page = withUsersAddGuard(() => {
     "email": "",
     "timezone": 180,
     "language": "en",
+    "avatar": "",
     "password": "",
     "company": "",
     "status": "active",
     "queues": [],
     "projects": [],
+    "users": [],
     "role": "operator"
   });
   const [clients, setClients] = useState(null);
+  const [queues, setQueues] = useState([]);
+  const [client, setClient] = useState(null);
+  const [project, setProject] = useState([]);
   const [projects, setProjects] = useState([]);
   const id = +router.query.user;
   const newUser = isNaN(id);
-  const data = useUser(id);
-  // const {queues} = useProjects();
-
+  const userData = useUser(id);
+  
   useEffect(() => {
-    if (data.user) {
-      const u = {...data.user};
-      u.password_confirm = data.user.password;
+    if (userData.user) {
+      const u = {...userData.user};
+      u.password_confirm = userData.user.password;
       setUser(u);
     }
     
     return () => {
       dispatch(actions.fillUser(null))
     }
-  }, [dispatch, data, id])
+  }, [dispatch, userData, id])
+  
+  const getQueues = useCallback(async () => {
+    const {result} = await api.queues.list({
+      status: 'active',
+      limit: 1000
+    })
+    if (result) {
+      setQueues(result.items)
+    }
+  }, [])
   
   const getClients = useCallback(async () => {
-    const {result, error} = await api.users.list({
+    const {result} = await api.users.list({
       role: 'client',
       status: 'active',
       limit: 1000
@@ -112,7 +96,7 @@ const Page = withUsersAddGuard(() => {
   }, [])
   
   const getProjects = useCallback(async () => {
-    const {result, error} = await api.projects.list({
+    const {result} = await api.projects.list({
       status: 'active',
       limit: 1000
     })
@@ -121,10 +105,38 @@ const Page = withUsersAddGuard(() => {
     }
   }, [])
   
-  useEffect(()=>{
+  useEffect(() => {
     getClients();
     getProjects();
-  }, [])
+    getQueues();
+  }, []);
+  
+  useEffect(() => {
+    if (user.client_id && clients?.length) {
+      const c = clients.find(i => {
+        return i.id === user.client_id
+      })
+      setClient(c)
+    }
+  }, [user, clients])
+  
+  useEffect(() => {
+    if (projects.length && !newUser) {
+      let p = [];
+      if (user.role === 'operator') {
+        p.push(projects.find(i => {
+          return i.id === user.projects[0]
+        }));
+      } else if (user.role === 'supervisor') {
+        user.projects?.forEach(i => {
+          p.push(projects.find(p => p.id === i));
+        })
+      } else {
+        p = [projects[0]]
+      }
+      setProject(p)
+    }
+  }, [user, projects])
   
   useEffect(() => {
     const getTimezones = async () => {
@@ -141,39 +153,122 @@ const Page = withUsersAddGuard(() => {
     getTimezones()
   }, [])
   
+  
+  const onClientChange = (client) => {
+    setClient(client)
+    onChange({client_id: client.id})
+  }
+  
+  const onProjectChange = (item) => {
+    setProject([item])
+  }
+  
+  const onProjectsChange = (items) => {
+    setProject(items)
+  }
+  
   const handleTabsChange = useCallback((event, value) => {
     setCurrentTab(value);
   }, []);
   
-  const onCommonSubmit = useCallback(async (values) => {
-    if (newUser) {
-      try {
-        const {result, error} = await api.users.add(setUserUpdate(user, values));
-         if (result && !error) {
-           router.replace('/users/' + result)
-         } else {
-           toast.error('Something went wrong')
-         }
-      } catch (e) {
+  const handleAvatarUpload = useCallback(async (files) => {
+    setUser(state => ({
+      ...state,
+      avatar: root + files[0].path
+    }))
+    if (!newUser) {
+      const res = await api.users.update(user)
+      if (!res.error) {
+        dispatch(actions.fillUser(user))
+        toast.success('Changes saved')
+      } else {
         toast.error('Something went wrong')
       }
-    } else {
-      userUpdate(user, values, dispatch)
-    }
-  }, [user]);
-  
-  const handleAvatarUpload = useCallback((files) => {
-    if (newUser) {
-      setUser(state => ({
-        ...state,
-        avatar: root + files[0].path
-      }))
-    } else {
-      userUpdate(user, {
-        avatar: root + files[0].path
-      }, dispatch)
     }
   }, [user, newUser]);
+  
+  const initialValues = useMemo(() => user, [user]);
+  const validationSchema = Yup.object({
+    email: Yup
+      .string()
+      .email('Must be a valid email')
+      .max(255)
+      .required('Email is required'),
+    name: Yup
+      .string()
+      .max(255)
+      .required('Name is required'),
+    timezone: Yup
+      .number(),
+    language: Yup
+      .string()
+      .oneOf(['en', 'de', 'es']),
+    password: Yup
+      .string()
+      .min(8)
+      .max(255)
+      .when("$other", {
+        is: () => newUser,
+        then: Yup.string().required('Password is required')
+      }),
+    password_confirm: Yup
+      .string()
+      .max(255)
+      .oneOf([Yup.ref('password')], 'Passwords must match')
+      .when("password", {
+        is: (password) => (password && password.length && newUser),
+        then: Yup.string().required("Confirm your new password").max(255)
+      }),
+    status: Yup
+      .string()
+      .oneOf(['active', 'blocked']),
+    role: Yup
+      .string()
+      .oneOf(['client', 'supervisor', 'operator', 'admin']),
+  });
+  
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues,
+    validationSchema,
+    errors: {},
+    onSubmit: async (values, helpers) => {
+      const data = {...values, queues: []}
+      values.queues.forEach(q => {
+        data.queues.push(q.id)
+      })
+      switch (user.role) {
+        case 'supervisor':
+        case 'operator':
+          me.user.role === 'admin' ? data.client_id = client.id : void 0;
+          break;
+        default:
+          delete data.client_id;
+          break;
+      }
+      
+      if (newUser) {
+        try {
+          const {result, error} = await api.users.add(data);
+          if (result && !error) {
+            router.replace('/users/' + result)
+          } else {
+            toast.error('Something went wrong')
+          }
+        } catch (e) {
+          toast.error('Something went wrong')
+        }
+      } else {
+        const res = await api.users.update(data)
+        if (!res.error) {
+          dispatch(actions.fillUser(data))
+          toast.success('Changes saved')
+        } else {
+          toast.error('Something went wrong')
+        }
+      }
+    }
+  })
   
   return (
     <>
@@ -218,9 +313,7 @@ const Page = withUsersAddGuard(() => {
                   height: 64,
                   width: 64
                 }}
-              >
-                {!newUser && user.name}
-              </Avatar>}
+              />}
               <Stack>
                 <Typography variant="h4">
                   {newUser && 'Add user'}
@@ -257,14 +350,17 @@ const Page = withUsersAddGuard(() => {
               value={currentTab}
               variant="scrollable"
             >
-              {tabs.map((tab) => (
-                <Tab
+              {tabs.map((tab) => {
+                
+                if (formik.values.role === "operator" && tab.value === "operators")
+                  return false;
+                
+                return <Tab
                   key={tab.value}
                   label={tab.label}
                   value={tab.value}
-                  disabled={newUser && tab.value === 'common' ? false : newUser}
                 />
-              ))}
+              })}
             </Tabs>
             <Divider/>
           </div>
@@ -274,16 +370,33 @@ const Page = withUsersAddGuard(() => {
             {((!newUser && user.id) || newUser) && me.user && <CommonTab
               user={user}
               userRole={me.user.role}
-              isNew={newUser}
               onUpload={handleAvatarUpload}
-              onSubmit={onCommonSubmit}
               timezones={timezones}
               clients={clients}
               projects={projects}
+              formik={formik}
+              client={client}
+              onClientChange={onClientChange}
+              project={project}
+              onProjectChange={onProjectChange}
+              onProjectsChange={onProjectsChange}
             />}
           </div>
         )}
-        {/*{currentTab === 'queues' && <QueuesListTable queues={queues}/>}*/}
+        {currentTab === 'queues' && queues.length && <QueuesTab
+          items={queues}
+          selected={user.queues}
+          onChange={(data) => {
+            setUser(user => {
+              return {
+                ...user,
+                queues: data
+              }
+            })
+          }}
+          formik={formik}
+          tabChange={handleTabsChange}
+        />}
         {currentTab === 'operators' && ''}
       </>}
     </>

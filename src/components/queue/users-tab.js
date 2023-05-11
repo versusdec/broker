@@ -1,9 +1,10 @@
 import {Button, Card, CardContent, Checkbox, Stack, TextField, Autocomplete} from "@mui/material";
-import {CheckBox, CheckBoxOutlineBlank} from '@mui/icons-material'
+import {CheckBox, CheckBoxOutlineBlank, Save} from '@mui/icons-material'
 import {useState} from "react";
 
 export const UsersTab = ({onSubmit, users, selected, formik, changeTab, handleChange, ...props}) => {
   const [disabled, setDisabled] = useState(false);
+  
   return (<>
     <Stack
       spacing={4}
@@ -40,13 +41,16 @@ export const UsersTab = ({onSubmit, users, selected, formik, changeTab, handleCh
               )}
             />
             <Stack direction={'row'} justifyContent={'end'}>
-              <Button
+               <Button
                 size="large"
                 type="submit"
                 variant="contained"
                 disabled={disabled}
                 onClick={e => {
-                  setDisabled(true)
+                  setDisabled(true);
+                  setTimeout(() => {
+                    setDisabled(false);
+                  }, 500);
                   formik.handleSubmit(e);
                   if (!formik.isValid && formik.errors.name) {
                     changeTab(e, 'common')
