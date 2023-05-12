@@ -4,11 +4,13 @@ import {
   Typography,
   Unstable_Grid2 as Grid
 } from '@mui/material';
+import {useRouter} from 'next/router'
 
 const Page = () => {
-
+ const router = useRouter();
+  router.replace('/projects')
   
-  return (
+  return false && (
     <>
       <Box>
         <Typography variant="h4" sx={{mb: 4}}>

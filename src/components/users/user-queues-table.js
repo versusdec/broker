@@ -1,3 +1,4 @@
+/*
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
@@ -142,3 +143,4 @@ QueuesListTable.propTypes = {
   page: PropTypes.number.isRequired,
   limit: PropTypes.number.isRequired
 };
+*/

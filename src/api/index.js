@@ -150,6 +150,68 @@ export const api = Object.freeze({
       }
     },
   },
+  roles: {
+    update: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'roles.update'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    list: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'roles.list'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    suggest: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'roles.suggest'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    get: async (id) => {
+      try {
+        const {result, error} = await fetch(root, init({params: {id: +id}, method: 'roles.get'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    add: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'roles.add'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+  },
   projects: {
     list: async (params) => {
       try {

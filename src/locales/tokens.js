@@ -11,7 +11,11 @@ export const tokens = {
     users: 'nav.users',
     projects: 'nav.projects',
     queues: {
-      title: 'Queues'
-    }
+      title: 'queues'
+    },
+  },
+  roles: {
+    title: "roles",
+    role: 'role'
   }
 };

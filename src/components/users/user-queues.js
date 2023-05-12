@@ -54,9 +54,6 @@ export const QueuesTab = ({onSubmit, items, selected, formik, onChange, tabChang
                     setDisabled(false)
                   }, 500)
                   formik.handleSubmit(e);
-                  if (!formik.isValid && !formik.errors.queues) {
-                    changeTab(e, 'common')
-                  }
                 }}
               >
                 Save

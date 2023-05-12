@@ -19,15 +19,14 @@ export const paths = Object.freeze({
   project: {
     index: '/:project',
   },
-/*  queues: {
-    index: '/:project/queues',
-    add: '/:project/queues/add',
-    edit: '/:project/queues/:id'
-  },*/
-    queues: {
+  queues: {
     index: '/queues',
     add: '/queues/add',
     edit: '/queues/:id'
   },
-  
+  roles: {
+    index: '/roles',
+    add: '/roles/add',
+    edit: '/roles/:id'
+  },
 });

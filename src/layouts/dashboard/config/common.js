@@ -7,7 +7,7 @@ import {
   QuestionAnswerOutlined,
   PeopleAltOutlined,
   LibraryBooksOutlined,
-  CreditCardOutlined
+  CreditCardOutlined, Groups2Outlined
 } from '@mui/icons-material';
 
 
@@ -20,7 +20,7 @@ export const getSections = (t, project) => {
           title: t(tokens.nav.dashboard),
           path: paths.index,
           hidden: true,
-          role: ['admin', 'client', 'supervisor', 'operator'],
+          role: ['admin', 'client', 'manager'],
           icon: (
             <SvgIcon fontSize="small">
               <Dashboard/>
@@ -45,7 +45,7 @@ export const getSections = (t, project) => {
             },
             {
               title: t(tokens.nav.queues.title),
-              role: ['admin', 'client', 'supervisor', 'operator'],
+              role: ['admin', 'client', 'manager'],
               path: `/${project?.id}/queues`,
             },
             
@@ -54,7 +54,7 @@ export const getSections = (t, project) => {
         {
           title: t(tokens.nav.projects),
           path: paths.projects.index,
-          role: ['admin', 'client', 'supervisor'],
+          role: ['admin', 'client', 'manager'],
           icon: (
             <SvgIcon fontSize="small">
               <LibraryBooksOutlined/>
@@ -64,7 +64,7 @@ export const getSections = (t, project) => {
         {
           title: t(tokens.nav.users),
           path: paths.users.index,
-          role: ['admin', 'client', 'supervisor'],
+          role: ['admin', 'client', 'manager'],
           icon: (
             <SvgIcon fontSize="small">
               <PeopleAltOutlined/>
@@ -72,9 +72,19 @@ export const getSections = (t, project) => {
           )
         },
         {
+          title: t(tokens.roles.title),
+          path: paths.roles.index,
+          role: ['admin', 'client'],
+          icon: (
+            <SvgIcon fontSize="small">
+              <Groups2Outlined/>
+            </SvgIcon>
+          )
+        },
+        {
           title: t(tokens.nav.account),
           path: paths.account,
-          role: ['admin', 'client', 'supervisor', 'operator'],
+          role: ['admin', 'client', 'manager'],
           icon: (
             <SvgIcon fontSize="small">
               <PortraitOutlined/>
@@ -84,7 +94,7 @@ export const getSections = (t, project) => {
         {
           title: t(tokens.nav.support),
           path: paths.support,
-          role: ['admin', 'client', 'supervisor', 'operator'],
+          role: ['admin', 'client', 'manager'],
           icon: (
             <SvgIcon fontSize="small">
               <QuestionAnswerOutlined/>
@@ -94,7 +104,7 @@ export const getSections = (t, project) => {
         {
           title: t(tokens.nav.billing),
           path: paths.billing,
-          role: ['admin', 'client', 'supervisor', 'operator'],
+          role: ['admin', 'client', 'manager'],
           icon: (
             <SvgIcon fontSize="small">
               <CreditCardOutlined/>
