@@ -13,7 +13,7 @@ const Styled = styled(TextField)({
   }
 })
 
-export const Input = ({children, ...props}) => {
+export const Input = ({children, type, ...props}) => {
   const [value, setValue] = useState(props.value || '');
   
   useEffect(() => {
@@ -24,16 +24,21 @@ export const Input = ({children, ...props}) => {
     props.onChange(e)
   }
   
-  return props.type === 'color' ?
-    <MuiColorInput {...props} type='text'/> :
-    <Styled {...props} value={value}
-            onChange={(e) => {
-              setValue(e.target.value)
-              props.select ? onChange(e) : void 0;
-            }}
-            onBlur={(e) => {
-              !props.select ? onChange(e) : void 0;
-              props.handleBlur?.(e);
-            }}
-    >{children}</Styled>
+  switch (type) {
+    case 'color':
+      return  <MuiColorInput {...props} type='text'/>;
+    case 'textarea':
+      return <textarea {...props}>{props.value}</textarea>;
+    default:
+      return <Styled {...props} type={type} value={value}
+                     onChange={(e) => {
+                       setValue(e.target.value)
+                       props.select ? onChange(e) : void 0;
+                     }}
+                     onBlur={(e) => {
+                       !props.select ? onChange(e) : void 0;
+                       props.handleBlur?.(e);
+                     }}
+      >{children}</Styled>
+  }
 }

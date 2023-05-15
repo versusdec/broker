@@ -25,6 +25,7 @@ import {Scrollbar} from '../scrollbar';
 import {paths} from '../../navigation/paths';
 import {Pagination} from "../pagination";
 import {Loader} from "../loader";
+import {useMe} from "../../hooks/useMe";
 
 
 export const RolesListTable = (props) => {
@@ -40,6 +41,7 @@ export const RolesListTable = (props) => {
     ...other
   } = props;
   const [dialog, setDialog] = useState({open: false, item: null});
+  const me = useMe()
   
   const handleDialogOpen = useCallback((item) => {
     setDialog({
@@ -95,14 +97,17 @@ export const RolesListTable = (props) => {
                   ID
                 </TableCell>
                 <TableCell>
-                  Role
+                  Name
+                </TableCell>
+                <TableCell>
+                  Description
                 </TableCell>
                 <TableCell>
                   Status
                 </TableCell>
-                <TableCell align="right">
+                {me.role === 'admin' && <TableCell align="right">
                   Actions
-                </TableCell>
+                </TableCell>}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -117,7 +122,7 @@ export const RolesListTable = (props) => {
                       {item.id}
                     </TableCell>
                     <TableCell>
-                      <Link
+                     <Link
                         color="inherit"
                         component={NextLink}
                         href={`${paths.roles.index}/${item.id}`}
@@ -125,6 +130,9 @@ export const RolesListTable = (props) => {
                       >
                         {item.name}
                       </Link>
+                    </TableCell>
+                    <TableCell>
+                      {item.description}
                     </TableCell>
                     <TableCell>
                       <Typography
@@ -136,7 +144,7 @@ export const RolesListTable = (props) => {
                         {item.status}
                       </Typography>
                     </TableCell>
-                    <TableCell align="right">
+                    {me.role === 'admin' && <TableCell align="right">
                       <Tooltip title={item.status === 'active' ? 'Archive' : 'Unzip'}>
                         <IconButton
                           onClick={() => {
@@ -158,7 +166,7 @@ export const RolesListTable = (props) => {
                           </SvgIcon>
                         </IconButton>
                       </Tooltip>
-                    </TableCell>
+                    </TableCell>}
                   </TableRow>
                 );
               })}
