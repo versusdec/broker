@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import {useMe} from "../hooks/useMe";
 
 export const RolesListGuard = (props) => {
-  console.log(props);
   
   const {children} = props;
   const [checked, setChecked] = useState(false);

@@ -1,26 +1,8 @@
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useCallback, useState} from 'react';
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
-import {ArchiveOutlined, Block, CheckCircleOutlined, Close, EditOutlined, UnarchiveOutlined} from '@mui/icons-material'
-import {
-  Avatar,
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Link,
-  Stack,
-  SvgIcon,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow, Tooltip,
-  Typography
-} from '@mui/material';
+import {ArchiveOutlined, Close, EditOutlined, UnarchiveOutlined} from '@mui/icons-material'
+import {Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Link, SvgIcon, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Typography} from '@mui/material';
 import {Scrollbar} from '../scrollbar';
 import {paths} from '../../navigation/paths';
 import {Pagination} from "../pagination";
@@ -41,8 +23,8 @@ export const RolesListTable = (props) => {
     ...other
   } = props;
   const [dialog, setDialog] = useState({open: false, item: null});
-  const me = useMe()
-  
+  const {user: {role}} = useMe()
+
   const handleDialogOpen = useCallback((item) => {
     setDialog({
       open: true,
@@ -91,141 +73,142 @@ export const RolesListTable = (props) => {
           }
           {!!items.length &&
           <>
-            <TableHead>
-              <TableRow>
-                <TableCell>
-                  ID
-                </TableCell>
-                <TableCell>
-                  Name
-                </TableCell>
-                <TableCell>
-                  Description
-                </TableCell>
-                <TableCell>
-                  Status
-                </TableCell>
-                {me.role === 'admin' && <TableCell align="right">
-                  Actions
-                </TableCell>}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {items.map((item) => {
-                
-                return (
-                  <TableRow
-                    hover
-                    key={item.id}
-                  >
-                    <TableCell>
-                      {item.id}
-                    </TableCell>
-                    <TableCell>
-                     <Link
-                        color="inherit"
-                        component={NextLink}
-                        href={`${paths.roles.index}/${item.id}`}
-                        variant="subtitle2"
-                      >
-                        {item.name}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      {item.description}
-                    </TableCell>
-                    <TableCell>
-                      <Typography
-                        sx={{
-                          textTransform: 'capitalize',
-                          color: (item.status === 'active') ? 'success.main' : 'error.main'
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                ID
+              </TableCell>
+              <TableCell>
+                Name
+              </TableCell>
+              <TableCell>
+                Description
+              </TableCell>
+              <TableCell>
+                Status
+              </TableCell>
+              {role === 'admin' && <TableCell align="right">
+                Actions
+              </TableCell>}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {items.map((item) => {
+              
+              return (
+                <TableRow
+                  hover
+                  key={item.id}
+                >
+                  <TableCell>
+                    {item.id}
+                  </TableCell>
+                  <TableCell>
+                    {role === 'admin' && <Link
+                      color="inherit"
+                      component={NextLink}
+                      href={`${paths.roles.index}/${item.id}`}
+                      variant="subtitle2"
+                    >
+                      {item.name}
+                    </Link>}
+                    {role !== 'admin' && item.name}
+                  </TableCell>
+                  <TableCell>
+                    {item.description}
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      sx={{
+                        textTransform: 'capitalize',
+                        color: (item.status === 'active') ? 'success.main' : 'error.main'
+                      }}
+                    >
+                      {item.status}
+                    </Typography>
+                  </TableCell>
+                  {role === 'admin' && <TableCell align="right">
+                    <Tooltip title={item.status === 'active' ? 'Archive' : 'Unzip'}>
+                      <IconButton
+                        onClick={() => {
+                          handleDialogOpen(item)
                         }}
                       >
-                        {item.status}
-                      </Typography>
-                    </TableCell>
-                    {me.role === 'admin' && <TableCell align="right">
-                      <Tooltip title={item.status === 'active' ? 'Archive' : 'Unzip'}>
-                        <IconButton
-                          onClick={() => {
-                            handleDialogOpen(item)
-                          }}
-                        >
-                          <SvgIcon color={item.status === 'archived' ? 'success' : 'error'}>
-                            {item.status === 'archived' ? <UnarchiveOutlined/> : <ArchiveOutlined/>}
-                          </SvgIcon>
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title={'Edit'}>
-                        <IconButton
-                          component={NextLink}
-                          href={`${paths.roles.index}/${item.id}`}
-                        >
-                          <SvgIcon color={'primary'}>
-                            <EditOutlined/>
-                          </SvgIcon>
-                        </IconButton>
-                      </Tooltip>
-                    </TableCell>}
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </>
-          }
-        </Table>
-      </Scrollbar>
-      <Pagination limit={limit} total={total} page={page} onPageChange={onPageChange} onLimitChange={handleLimitChange}/>
-      <Dialog
-        open={dialog.open}
-        onClose={handleDialogClose}
-        scroll={'paper'}
-        maxWidth={'sm'}
-        fullWidth
-      >
-        <DialogTitle sx={{pr: 10}}>
-          <IconButton
+                        <SvgIcon color={item.status === 'archived' ? 'success' : 'error'}>
+                          {item.status === 'archived' ? <UnarchiveOutlined/> : <ArchiveOutlined/>}
+                        </SvgIcon>
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title={'Edit'}>
+                      <IconButton
+                        component={NextLink}
+                        href={`${paths.roles.index}/${item.id}`}
+                      >
+                        <SvgIcon color={'primary'}>
+                          <EditOutlined/>
+                        </SvgIcon>
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>}
+                </TableRow>
+              );
+            })}
+              </TableBody>
+              </>
+            }
+          </Table>
+          </Scrollbar>
+            <Pagination limit={limit} total={total} page={page} onPageChange={onPageChange} onLimitChange={handleLimitChange}/>
+            <Dialog
+            open={dialog.open}
+            onClose={handleDialogClose}
+            scroll={'paper'}
+            maxWidth={'sm'}
+            fullWidth
+            >
+            <DialogTitle sx={{pr: 10}}>
+            <IconButton
             aria-label="close"
             onClick={handleDialogClose}
             sx={{
-              position: 'absolute',
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.primary.main,
-            }}
-          >
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.primary.main,
+          }}
+            >
             <Close/>
-          </IconButton>
+            </IconButton>
           {dialog.item && (dialog.item?.status === 'active' ? `Archive role #${dialog.item?.id}?` : `Unzip role #${dialog.item?.id}?`)}
-        </DialogTitle>
-        <DialogContent dividers>
+            </DialogTitle>
+            <DialogContent dividers>
           {dialog.item && 'Role '} <Typography component={'span'} variant={'subtitle1'}>{dialog.item && dialog.item?.name}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button
+            </DialogContent>
+            <DialogActions>
+            <Button
             type={'button'}
             variant={'outlined'}
             color={'error'}
             onClick={handleDialogClose}
-          >
+            >
             Cancel
-          </Button>
-          <Button
+            </Button>
+            <Button
             type={'button'}
             variant={'contained'}
             onClick={() => {
-              handleStatus(dialog.item?.id, dialog.item?.status, () => {
-                handleDialogClose()
-              })
-            }}
-          >
+            handleStatus(dialog.item?.id, dialog.item?.status, () => {
+            handleDialogClose()
+          })
+          }}
+            >
             Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
-  );
-};
+            </Button>
+            </DialogActions>
+            </Dialog>
+            </Box>
+            );
+          };
 
 RolesListTable.propTypes = {
   items: PropTypes.array.isRequired,

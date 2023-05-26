@@ -17,20 +17,14 @@ const Page = withRolesListGuard(() => {
   const dispatch = useDispatch();
   const {user} = useMe();
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
-  const [filters, setFilters] = useState({});
-  
-  const handleFiltersChange = useCallback((filters) => {
-    setFilters(filters)
-  }, [filters])
   
   const params = useMemo(() => {
     return {
-      limit: limit, offset: offset,
-      ...filters
+      limit: limit, offset: offset
     }
-  }, [limit, page, offset, filters]);
+  }, [limit, page, offset]);
   
-  const {data, loading, error} = useRoles(params);
+  const {data, loading} = useRoles(params);
   const {items, total} = data || {items: [], limit: limit, total: 0};
   
   const handleStatus = useCallback(async (id, status, cb) => {

@@ -1,20 +1,21 @@
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
+import {v4 as uuid} from 'uuid'
 import NextLink from 'next/link';
 import ArrowLeftIcon from '@untitled-ui/icons-react/build/esm/ArrowLeft';
 import {
+  Autocomplete,
   Button,
   Card,
-  CardContent,
+  CardContent, Checkbox,
   Chip,
   Link,
   MenuItem,
   Stack,
-  SvgIcon,
+  SvgIcon, TextField,
   Typography,
 } from '@mui/material';
 import {paths} from '../../../navigation/paths';
 import {useRouter} from 'next/router'
-import {useMe} from "../../../hooks/useMe";
 import {useRole} from "../../../hooks/useRole";
 import {actions} from "../../../slices/rolesSlice";
 import {useDispatch} from "../../../store";
@@ -22,12 +23,15 @@ import {withRolesAddGuard} from "../../../hocs/with-roles-add-guard";
 import * as Yup from "yup";
 import {useFormik} from "formik";
 import {Input} from "../../../components/input";
+import {CheckBox, CheckBoxOutlineBlank} from "@mui/icons-material";
+import {api} from "../../../api";
+import toast from "react-hot-toast";
 
 const Page = withRolesAddGuard(() => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const me = useMe();
   const [disabled, setDisabled] = useState(false);
+  const [grants, setGrants] = useState([]);
   const [role, setRole] = useState({
     "name": "",
     "description": "",
@@ -38,6 +42,15 @@ const Page = withRolesAddGuard(() => {
   const id = +router.query.role;
   const isNew = isNaN(id);
   const {data, loading, error} = useRole(id);
+  
+  useEffect(() => {
+    const getGrants = async () => {
+      const res = await fetch('/grants.json').then(res => res.json())
+      setGrants(res)
+    }
+    getGrants()
+  }, [])
+  
   
   useEffect(() => {
     if (data) {
@@ -72,6 +85,17 @@ const Page = withRolesAddGuard(() => {
     errors: {},
     onSubmit: async (values, helpers) => {
       console.log(values)
+      const data = {...role, ...values}
+      const {result, error} = await api.roles[isNew ? 'add' : 'update'](data)
+      if (result && isNew)
+        router.replace('/roles/' + result);
+      else if (result && !isNew) {
+        dispatch(actions.fillRole(data))
+        toast.success('Changes saved')
+      } else if (error) {
+        console.log(error)
+        toast.error('Something went wrong')
+      }
     }
   })
   
@@ -83,7 +107,7 @@ const Page = withRolesAddGuard(() => {
             <Link
               color="text.primary"
               component={NextLink}
-              href={paths.users.index}
+              href={paths.roles.index}
               sx={{
                 alignItems: 'center',
                 display: 'inline-flex'
@@ -158,7 +182,7 @@ const Page = withRolesAddGuard(() => {
                       fullWidth
                       label="Description"
                       name="description"
-                      type="textarea"
+                      type="text"
                       error={!!(formik.touched.description && formik.errors.description)}
                       helperText={formik.touched.description && formik.errors.description}
                       onBlur={formik.handleBlur}
@@ -180,23 +204,34 @@ const Page = withRolesAddGuard(() => {
                         Blocked
                       </MenuItem>
                     </Input>
-                    <Input
+                    <Autocomplete
                       multiple
-                      fullWidth
-                      label="Grants"
-                      name="grants"
-                      onChange={formik.handleChange}
-                      select
-                      value={formik.values.grants || ''}
-                    >
-                      <MenuItem key={'shit'} value={'shit'}>
-                        some shit here
-                      </MenuItem>
-                      <MenuItem key={'crap'} value={'crap'}>
-                        and some shit here
-                      </MenuItem>
-                    </Input>
-                    
+                      options={grants}
+                      disableCloseOnSelect
+                      getOptionLabel={(option) => option}
+                      isOptionEqualToValue={(option, value) => option === value}
+                      value={formik.values.grants || []}
+                      renderOption={(props, option, {selected}) => (
+                        <li {...props}>
+                          <Checkbox
+                            icon={<CheckBoxOutlineBlank fontSize={'small'}/>}
+                            checkedIcon={<CheckBox fontSize={'small'}/>}
+                            style={{marginRight: 8}}
+                            checked={selected}
+                          />
+                          {option}
+                        </li>
+                      )}
+                      onChange={(e, val) => {
+                        formik.setFieldValue('grants', val)
+                      }}
+                      renderInput={(params) => (
+                        <TextField {...params} fullWidth
+                                   error={!!(formik.errors.grants)}
+                                   helperText={formik.errors.grants}
+                                   label="Grants" placeholder="Select grants"/>
+                      )}
+                    />
                     <Stack direction={'row'} justifyContent={'end'}>
                       <Button
                         size="large"
@@ -228,5 +263,5 @@ const Page = withRolesAddGuard(() => {
 export default Page;
 
 Page.defaultProps = {
-  title: 'Users'
+  title: 'Roles'
 }

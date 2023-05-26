@@ -52,28 +52,28 @@ const Page = withUsersAddGuard(() => {
     "queues": [],
     "projects": [],
     "users": [],
-    "role": "operator"
+    "role_id": 1
   });
-  const [clients, setClients] = useState(null);
+  const [clients, setClients] = useState([]);
   const [queues, setQueues] = useState([]);
   const [client, setClient] = useState(null);
   const [project, setProject] = useState([]);
   const [projects, setProjects] = useState([]);
   const id = +router.query.user;
   const newUser = isNaN(id);
-  const userData = useUser(id);
+  const {data} = useUser(id);
   
   useEffect(() => {
-    if (userData.user) {
-      const u = {...userData.user};
-      u.password_confirm = userData.user.password;
+    if (data) {
+      const u = {...data};
+      u.password_confirm = data.password;
       setUser(u);
     }
     
     return () => {
       dispatch(actions.fillUser(null))
     }
-  }, [dispatch, userData, id])
+  }, [dispatch, data, id])
   
   const getQueues = useCallback(async () => {
     const {result} = await api.queues.list({
@@ -107,9 +107,14 @@ const Page = withUsersAddGuard(() => {
   }, [])
   
   useEffect(() => {
-    getClients();
     getProjects();
-    getQueues();
+    
+    if (me.user?.role === 'admin') {
+      getClients();
+    }
+    if (!newUser) {
+      getQueues();
+    }
   }, []);
   
   useEffect(() => {
@@ -247,7 +252,7 @@ const Page = withUsersAddGuard(() => {
           delete data.client_id;
           break;
       }
-
+      
       if (newUser) {
         try {
           const {result, error} = await api.users.add(data);

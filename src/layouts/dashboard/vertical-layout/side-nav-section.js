@@ -2,9 +2,6 @@ import PropTypes from 'prop-types';
 import {Box, Stack} from '@mui/material';
 import {SideNavItem} from './side-nav-item';
 import {useMe} from "../../../hooks/useMe";
-import {useCallback, useEffect, useState} from "react";
-import {useRouter} from "next/router";
-import {api} from "../../../api";
 
 const renderItems = ({depth = 0, items, pathname, role}) => items.reduce((acc, item) => reduceChildRoutes({
   acc,
@@ -16,9 +13,9 @@ const renderItems = ({depth = 0, items, pathname, role}) => items.reduce((acc, i
 
 const reduceChildRoutes = ({acc, depth, item, pathname, role}) => {
   const checkPath = !!(item.path && pathname);
-  const partialMatch = (checkPath ? pathname.includes(item.path) : false) ||  (checkPath ? (item.path === '/:project' && Number.isInteger(+pathname.split('/')[1])) : false);
-  const exactMatch = checkPath ? pathname === item.path : false;
-  
+  const partialMatch = (checkPath ? pathname.includes(item.path) : false) || (checkPath ? (item.path === '/:project' && Number.isInteger(+pathname.split('/')[1])) : false);
+  const exactMatch = checkPath ? ((pathname === item.path) || (pathname.split('/')[1] === item.path.split('/')[1])) : false;
+
   if (item.items) {
     item.role.includes(role) && !item.hidden && acc.push(
       <SideNavItem

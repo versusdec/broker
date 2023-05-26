@@ -27,8 +27,8 @@ export const Input = ({children, type, ...props}) => {
   switch (type) {
     case 'color':
       return  <MuiColorInput {...props} type='text'/>;
-    case 'textarea':
-      return <textarea {...props}>{props.value}</textarea>;
+    /*case 'textarea':
+      return <Textarea {...props}>{props.value}</Textarea>;*/
     default:
       return <Styled {...props} type={type} value={value}
                      onChange={(e) => {
