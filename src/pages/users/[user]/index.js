@@ -28,12 +28,6 @@ import {useFormik} from "formik";
 import {QueuesTab} from "../../../components/users/user-queues";
 import {OperatorsTab} from "../../../components/users/user-operators";
 
-const tabs = [
-  {label: 'Common', value: 'common'},
-  {label: 'Queues', value: 'queues'},
-  {label: 'Operators', value: 'operators'}
-];
-
 const Page = withUsersAddGuard(() => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -59,6 +53,8 @@ const Page = withUsersAddGuard(() => {
   const [client, setClient] = useState(null);
   const [project, setProject] = useState([]);
   const [projects, setProjects] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [role, setRole] = useState({grants: []});
   const id = +router.query.user;
   const newUser = isNaN(id);
   const {data} = useUser(id);
@@ -106,8 +102,34 @@ const Page = withUsersAddGuard(() => {
     }
   }, [])
   
+  const getRoles = useCallback(async () => {
+    const {result} = await api.roles.list({
+      status: 'active',
+      limit: 1000
+    })
+    if (result) {
+      setRoles(result.items)
+    }
+  }, [])
+  
+  const getRole = useCallback(async (id) => {
+    const {result} = await api.roles.get(id);
+    setRole(result)
+  }, [user, roles])
+  
+  const onRoleChange = useCallback((id) => {
+    getRole(id)
+  }, [])
+  
+  useEffect(() => {
+    if (user.role_id) {
+      getRole(user.role_id)
+    }
+  }, [user, roles])
+  
   useEffect(() => {
     getProjects();
+    getRoles();
     
     if (me.user?.role === 'admin') {
       getClients();
@@ -129,17 +151,9 @@ const Page = withUsersAddGuard(() => {
   useEffect(() => {
     if (projects.length && !newUser) {
       let p = [];
-      if (user.role === 'operator') {
-        p.push(projects.find(i => {
-          return i.id === user.projects[0]
-        }));
-      } else if (user.role === 'supervisor') {
-        user.projects?.forEach(i => {
-          p.push(projects.find(p => p.id === i));
-        })
-      } else {
-        p = [projects[0]]
-      }
+      user.projects?.forEach(i => {
+        p.push(projects.find(p => p.id === i));
+      })
       setProject(p)
     }
   }, [user, projects])
@@ -159,19 +173,18 @@ const Page = withUsersAddGuard(() => {
     getTimezones()
   }, [])
   
-  
-  const onClientChange = (client) => {
+  const onClientChange = useCallback((client) => {
     setClient(client)
     onChange({client_id: client.id})
-  }
+  }, [])
   
-  const onProjectChange = (item) => {
+  const onProjectChange = useCallback((item) => {
     setProject([item])
-  }
+  }, [])
   
-  const onProjectsChange = (items) => {
+  const onProjectsChange = useCallback((items) => {
     setProject(items)
-  }
+  }, [])
   
   const handleTabsChange = useCallback((event, value) => {
     setCurrentTab(value);
@@ -228,9 +241,8 @@ const Page = withUsersAddGuard(() => {
     status: Yup
       .string()
       .oneOf(['active', 'blocked']),
-    role: Yup
-      .string()
-      .oneOf(['client', 'supervisor', 'operator', 'admin']),
+    role_id: Yup
+      .number()
   });
   
   const formik = useFormik({
@@ -239,19 +251,12 @@ const Page = withUsersAddGuard(() => {
     validationSchema,
     errors: {},
     onSubmit: async (values, helpers) => {
+      if (values.phone === '') delete values.phone;
       const data = {...values, queues: []}
       values.queues.forEach(q => {
         data.queues.push(q.id)
       })
-      switch (user.role) {
-        case 'supervisor':
-        case 'operator':
-          me.user.role === 'admin' ? data.client_id = client.id : void 0;
-          break;
-        default:
-          delete data.client_id;
-          break;
-      }
+      me.user.role === 'admin' ? data.client_id = client.id : delete data.client_id;
       
       if (newUser) {
         try {
@@ -356,17 +361,21 @@ const Page = withUsersAddGuard(() => {
               value={currentTab}
               variant="scrollable"
             >
-              {tabs.map((tab) => {
-                
-                if (formik.values.role === "operator" && tab.value === "operators")
-                  return false;
-                
-                return <Tab
-                  key={tab.value}
-                  label={tab.label}
-                  value={tab.value}
-                />
-              })}
+              <Tab
+                key={'common'}
+                label={'Common'}
+                value={'common'}
+              />
+              {!newUser && <Tab
+                key={'operators'}
+                label={'Operators'}
+                value={'operators'}
+              />}
+              {!newUser && <Tab
+                key={'queues'}
+                label={'Queues'}
+                value={'queues'}
+              />}
             </Tabs>
             <Divider/>
           </div>
@@ -380,6 +389,7 @@ const Page = withUsersAddGuard(() => {
               timezones={timezones}
               clients={clients}
               projects={projects}
+              roles={roles}
               formik={formik}
               client={client}
               onClientChange={onClientChange}

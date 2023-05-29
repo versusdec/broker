@@ -24,7 +24,7 @@ export const UsersListFilters = (props) => {
   const queryRef = useRef(null);
   const [currentTab, setCurrentTab] = useState('all');
   const [filters, setFilters] = useState();
-
+  
   const handleFiltersUpdate = useCallback(() => {
     onFiltersChange?.(filters);
   }, [filters, onFiltersChange]);
@@ -58,7 +58,7 @@ export const UsersListFilters = (props) => {
   
   return (
     <>
-      <Tabs
+      {/*<Tabs
         indicatorColor="primary"
         onChange={handleTabsChange}
         scrollButtons="auto"
@@ -76,6 +76,7 @@ export const UsersListFilters = (props) => {
         ))}
       </Tabs>
       <Divider/>
+      */}
       <Stack
         alignItems="center"
         direction="row"

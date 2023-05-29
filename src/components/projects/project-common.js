@@ -18,11 +18,7 @@ import {alpha} from '@mui/material/styles';
 import {Input} from "../input";
 import {useFormik} from "formik";
 import * as Yup from "yup";
-import {useCallback, useEffect, useMemo, useState} from "react";
-import {FileUploader} from "../file-uploader";
-import {Visibility, VisibilityOff} from "@mui/icons-material";
-import {useMe} from "../../hooks/useMe";
-import {api} from "../../api";
+import {useEffect, useMemo, useState} from "react";
 
 export const CommonTab = ({onSubmit, isNew, userRole, project, clients, ...props}) => {
   const [client, setClient] = useState(clients[0])
@@ -63,14 +59,7 @@ export const CommonTab = ({onSubmit, isNew, userRole, project, clients, ...props
         const newValues = {
           ...values
         }
-        switch (userRole) {
-          case 'admin':
-            newValues.client_id = client.id;
-            break;
-          default:
-            delete newValues.client_id;
-            break;
-        }
+        userRole === 0 ? newValues.client_id = client.id : delete newValues.client_id;
         onSubmit(newValues)
         // console.log(values)
       } catch (err) {
@@ -132,7 +121,7 @@ export const CommonTab = ({onSubmit, isNew, userRole, project, clients, ...props
                     Archived
                   </MenuItem>
                 </Input>
-                {userRole === 'admin' && clients && <Autocomplete
+                {userRole === 0 && clients && <Autocomplete
                   disablePortal
                   disableClearable
                   options={clients}

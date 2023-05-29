@@ -35,7 +35,7 @@ const languageOptions = [
 ]
 
 export const CommonTab = ({
-                            onUpload, userRole, timezones, user, client, clients, project, projects, formik, onChange,
+                            onUpload, userRole, timezones, user, client, clients, project, projects, roles, formik, onChange,
                             onClientChange, onProjectChange, onProjectsChange, ...props
                           }) => {
   const [uploaderOpen, setUploaderOpen] = useState(false);
@@ -234,33 +234,23 @@ export const CommonTab = ({
                     Blocked
                   </MenuItem>
                 </Input>
-                <Input
+                {roles.length && <Input
                   fullWidth
                   label="Role"
-                  name="role"
+                  name="role_id"
                   onChange={formik.handleChange}
                   select
-                  value={formik.values.role || ''}
+                  value={formik.values.role_id || ''}
                 >
-                  {['operator', 'supervisor', 'client', 'admin'].map(item => {
-                    switch (item) {
-                      case 'client':
-                      case 'admin':
-                        return userRole === 'admin' && <MenuItem key={item} value={item}>
-                          <Box sx={{textTransform: 'capitalize'}}>
-                            {item}
-                          </Box>
-                        </MenuItem>
-                      default:
-                        return <MenuItem key={item} value={item}>
-                          <Box sx={{textTransform: 'capitalize'}}>
-                            {item}
-                          </Box>
-                        </MenuItem>
-                    }
+                  {roles.map(item => {
+                    return <MenuItem key={item.id} value={item.id}>
+                      <Box sx={{textTransform: 'capitalize'}}>
+                        {item.name}
+                      </Box>
+                    </MenuItem>
                   })}
-                </Input>
-                {userRole === 'admin' && (formik.values.role === 'supervisor' || formik.values.role === 'operator') && clients.length && <Autocomplete
+                </Input>}
+                {userRole === 'admin' ? !!clients.length && <Autocomplete
                   disablePortal
                   disableClearable
                   options={clients}
@@ -275,25 +265,8 @@ export const CommonTab = ({
                                                       fullWidth
                                                       name="client_id"
                                                       label="Client"/>}
-                />}
-                {(formik.values.role === 'operator') && projects.length && <Autocomplete
-                  disablePortal
-                  disableClearable
-                  options={projects}
-                  getOptionLabel={(i) => {
-                    return i.name
-                  }}
-                  onChange={(e, val) => {
-                    onProjectChange(val)
-                  }}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                  value={project.length ? project[0] : projects[0]}
-                  renderInput={(params) => <TextField {...params}
-                                                      fullWidth
-                                                      name="projects"
-                                                      label="Project"/>}
-                />}
-                {(formik.values.role === 'supervisor') && projects.length && <Autocomplete
+                /> : ''}
+                {projects.length && <Autocomplete
                   multiple
                   options={projects}
                   disableCloseOnSelect

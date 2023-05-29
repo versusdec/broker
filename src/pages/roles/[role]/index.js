@@ -54,7 +54,6 @@ const Page = withRolesAddGuard(() => {
   
   useEffect(() => {
     if (data) {
-      console.log(data);
       setRole(data);
     }
     

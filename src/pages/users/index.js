@@ -1,4 +1,4 @@
-import {useCallback, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import PlusIcon from '@untitled-ui/icons-react/build/esm/Plus';
 import {Button, Card, Stack, SvgIcon, Typography} from '@mui/material';
 import {UsersListTable} from '../../components/users-list-table';
@@ -8,7 +8,6 @@ import {paths} from "../../navigation/paths";
 import {useMe} from "../../hooks/useMe";
 import {useUsers} from "../../hooks/useUsers";
 import {usePagination} from "../../hooks/usePagination";
-import {wait} from "../../utils/wait";
 import {withUsersListGuard} from "../../hocs/with-users-list-guard";
 import {api} from "../../api";
 import toast from "react-hot-toast";
@@ -20,7 +19,18 @@ const Page = withUsersListGuard(() => {
   const {user} = useMe();
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const [filters, setFilters] = useState({});
+  const [role, setRole] = useState({grants: []});
   
+  const getRole = useCallback(async (id) => {
+    const {result} = await api.roles.get(id);
+    setRole(result)
+  }, [user])
+  
+  useEffect(() => {
+    if (user.role_id) {
+      getRole(user.role_id)
+    }
+  }, [user])
   
   const handleFiltersChange = useCallback((filters) => {
     setFilters(filters)
@@ -75,7 +85,7 @@ const Page = withUsersListGuard(() => {
             direction="row"
             spacing={3}
           >
-            {user && (user.role === 'admin' || user.role === 'client') && <Button
+            {user && (user.role_id === 0 || role.grants.includes('users.write')) && <Button
               component={NextLink}
               href={paths.users.add}
               startIcon={(

@@ -14,5 +14,5 @@ export const useMe = () => {
     fetch()
   }, [])
   
-  return {user: data, loading, error}
+  return {data, loading, error}
 }

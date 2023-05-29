@@ -2,22 +2,24 @@ import PropTypes from 'prop-types';
 import {Box, Stack} from '@mui/material';
 import {SideNavItem} from './side-nav-item';
 import {useMe} from "../../../hooks/useMe";
+import {getGrants} from "../../../utils/get-role-grants";
 
-const renderItems = ({depth = 0, items, pathname, role}) => items.reduce((acc, item) => reduceChildRoutes({
+const renderItems = ({depth = 0, items, pathname, grants, isAdmin}) => items.reduce((acc, item) => reduceChildRoutes({
   acc,
   depth,
   item,
   pathname,
-  role
+  grants,
+  isAdmin
 }), []);
 
-const reduceChildRoutes = ({acc, depth, item, pathname, role}) => {
+const reduceChildRoutes = ({acc, depth, item, pathname, grants, isAdmin}) => {
   const checkPath = !!(item.path && pathname);
-  const partialMatch = (checkPath ? pathname.includes(item.path) : false) || (checkPath ? (item.path === '/:project' && Number.isInteger(+pathname.split('/')[1])) : false);
-  const exactMatch = checkPath ? ((pathname === item.path) || (pathname.split('/')[1] === item.path.split('/')[1])) : false;
-
+  const partialMatch = checkPath ? (pathname.includes(item.path) || Number.isInteger(+pathname.split('/')[1])) : false;
+  const exactMatch = checkPath ? !Number.isInteger(+pathname.split('/')[1]) ? (pathname === item.path || (pathname.split('/')[1] === item.path.split('/')[1])) : false : false;
+  //todo write normal check for project inner route (too long oneline =()
   if (item.items) {
-    item.role.includes(role) && !item.hidden && acc.push(
+    (isAdmin || item.grants?.includes(grants)) && !item.hidden && acc.push(
       <SideNavItem
         active={partialMatch}
         depth={depth}
@@ -41,14 +43,14 @@ const reduceChildRoutes = ({acc, depth, item, pathname, role}) => {
           {renderItems({
             depth: depth + 1,
             items: item.items,
-            role: role,
+            grants: grants,
             pathname
           })}
         </Stack>
       </SideNavItem>
     );
   } else {
-    item.role.includes(role) && !item.hidden && acc.push(
+    (isAdmin || item.grants?.includes(grants)) && !item.hidden && acc.push(
       <SideNavItem
         active={exactMatch || (Number.isInteger(+pathname.split('/')[1]) && item.path.split('/')[2]?.length && (item.path.split('/')[2] === pathname.split('/')[2]))}
         depth={depth}
@@ -67,9 +69,11 @@ const reduceChildRoutes = ({acc, depth, item, pathname, role}) => {
 
 export const SideNavSection = (props) => {
   const {items = [], pathname, subheader = '', ...other} = props;
-  const {user} = useMe();
-  const role = user && user.role;
-  return role && (
+  const {data} = useMe();
+  const isAdmin = data && data.role_id === 0;
+  const grants = getGrants(data?.role_id);
+  
+  return (
     <Stack
       component="ul"
       spacing={0.5}
@@ -95,7 +99,7 @@ export const SideNavSection = (props) => {
           {subheader}
         </Box>
       )}
-      {renderItems({items, pathname, role})}
+      {renderItems({items, pathname, grants, isAdmin})}
     </Stack>
   );
 };

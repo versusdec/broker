@@ -24,44 +24,6 @@ import {paths} from '../../navigation/paths';
 import {Pagination} from "../pagination";
 import {Loader} from "../loader";
 
-
-const useSelectionModel = (users) => {
-  const usersIds = useMemo(() => {
-    return users.map((user) => users.id);
-  }, [users]);
-  const [selected, setSelected] = useState([]);
-  
-  useEffect(() => {
-    setSelected([]);
-  }, [usersIds]);
-  
-  const selectOne = useCallback((userId) => {
-    setSelected((prevState) => [...prevState, userId]);
-  }, []);
-  
-  const deselectOne = useCallback((userId) => {
-    setSelected((prevState) => {
-      return prevState.filter((id) => id !== userId);
-    });
-  }, []);
-  
-  const selectAll = useCallback(() => {
-    setSelected([...usersIds]);
-  }, [usersIds]);
-  
-  const deselectAll = useCallback(() => {
-    setSelected([]);
-  }, []);
-  
-  return {
-    deselectAll,
-    deselectOne,
-    selectAll,
-    selectOne,
-    selected
-  };
-};
-
 export const ProjectsListTable = (props) => {
   const {
     projects,
@@ -72,10 +34,11 @@ export const ProjectsListTable = (props) => {
     limit,
     loading,
     handleStatus,
+    grants, isAdmin,
     ...other
   } = props;
-  const {deselectAll, selectAll, deselectOne, selectOne, selected} = useSelectionModel(projects);
   const [dialog, setDialog] = useState({open: false, project: null});
+  const editGrant = (isAdmin || grants.includes('projects.write'))
   
   const handleDialogOpen = useCallback((project) => {
     setDialog({
@@ -91,62 +54,10 @@ export const ProjectsListTable = (props) => {
     })
   }, [])
   
-  const handleToggleAll = useCallback((event) => {
-    const {checked} = event.target;
-    
-    if (checked) {
-      selectAll();
-    } else {
-      deselectAll();
-    }
-  }, [selectAll, deselectAll]);
-  
-  const selectedAll = selected.length === projects.length;
-  const selectedSome = selected.length > 0 && selected.length < projects.length;
-  const enableBulkActions = selected.length > 0;
-  
   return (
     <Box
       sx={{position: 'relative'}}
       {...other}>
-      {enableBulkActions && (
-        <Stack
-          direction="row"
-          spacing={2}
-          sx={{
-            alignItems: 'center',
-            backgroundColor: (theme) => theme.palette.mode === 'dark'
-              ? 'neutral.800'
-              : 'neutral.50',
-            display: enableBulkActions ? 'flex' : 'none',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            px: 2,
-            py: 0.5,
-            zIndex: 10
-          }}
-        >
-          <Checkbox
-            checked={selectedAll}
-            indeterminate={selectedSome}
-            onChange={handleToggleAll}
-          />
-          <Button
-            color="inherit"
-            size="small"
-          >
-            Delete
-          </Button>
-          <Button
-            color="inherit"
-            size="small"
-          >
-            Edit
-          </Button>
-        </Stack>
-      )}
       <Scrollbar>
         <Table sx={{minWidth: 700}}>
           {loading && !!!projects.length &&
@@ -179,13 +90,6 @@ export const ProjectsListTable = (props) => {
           <>
             <TableHead>
               <TableRow>
-                {/*<TableCell padding="checkbox">
-                  <Checkbox
-                    checked={selectedAll}
-                    indeterminate={selectedSome}
-                    onChange={handleToggleAll}
-                  />
-                </TableCell>*/}
                 <TableCell>
                   ID
                 </TableCell>
@@ -195,47 +99,31 @@ export const ProjectsListTable = (props) => {
                 <TableCell>
                   Status
                 </TableCell>
-                <TableCell align="right">
+                {editGrant && <TableCell align="right">
                   Actions
-                </TableCell>
+                </TableCell>}
               </TableRow>
             </TableHead>
             <TableBody>
               {projects.map((project) => {
-                const isSelected = selected.includes(project.id);
                 
                 return (
                   <TableRow
                     hover
                     key={project.id}
-                    selected={isSelected}
                   >
-                    {/*<TableCell padding="checkbox">
-                      <Checkbox
-                        checked={isSelected}
-                        onChange={(event) => {
-                          const {checked} = event.target;
-                          
-                          if (checked) {
-                            selectOne(project.id);
-                          } else {
-                            deselectOne(project.id);
-                          }
-                        }}
-                        value={isSelected}
-                      />
-                    </TableCell>*/}
                     <TableCell>
                       {project.id}
                     </TableCell>
                     <TableCell>
-                      <Link color={'inherit'}
-                            variant="subtitle2"
-                            component={NextLink}
-                            href={`/${project.id}`}
+                      {editGrant ? <Link color={'inherit'}
+                             variant="subtitle2"
+                             component={NextLink}
+                             href={`/${project.id}`}
                       >
                         {project.name}
-                      </Link>
+                      </Link> : project.name
+                      }
                     </TableCell>
                     <TableCell>
                       <Typography
@@ -247,7 +135,7 @@ export const ProjectsListTable = (props) => {
                         {project.status}
                       </Typography>
                     </TableCell>
-                    <TableCell align="right">
+                    {editGrant && <TableCell align="right">
                       <Tooltip title={project.status === 'active' ? 'Archive' : 'Unzip'}>
                         <IconButton
                           onClick={() => {
@@ -269,7 +157,7 @@ export const ProjectsListTable = (props) => {
                           </SvgIcon>
                         </IconButton>
                       </Tooltip>
-                    </TableCell>
+                    </TableCell>}
                   </TableRow>
                 );
               })}

@@ -20,7 +20,6 @@ export const getSections = (t, project) => {
           title: t(tokens.nav.dashboard),
           path: paths.index,
           hidden: true,
-          role: ['admin', 'client', 'manager'],
           icon: (
             <SvgIcon fontSize="small">
               <Dashboard/>
@@ -30,7 +29,7 @@ export const getSections = (t, project) => {
         {
           title: project?.name,
           path: paths.project.index,
-          role: ['admin', 'client'],
+          grants: 'projects.write',
           hidden: !Boolean(project),
           icon: (
             <SvgIcon fontSize="small">
@@ -40,12 +39,12 @@ export const getSections = (t, project) => {
           items: [
             {
               title: t(tokens.common.edit),
-              role: ['admin', 'client'],
+              grants: 'projects.write',
               path: `/${project?.id}`,
             },
             {
               title: t(tokens.nav.queues.title),
-              role: ['admin', 'client', 'manager'],
+              grants: 'projects.queues.write',
               path: `/${project?.id}/queues`,
             },
             
@@ -54,7 +53,7 @@ export const getSections = (t, project) => {
         {
           title: t(tokens.nav.projects),
           path: paths.projects.index,
-          role: ['admin', 'client', 'manager'],
+          grants: 'projects.read',
           icon: (
             <SvgIcon fontSize="small">
               <LibraryBooksOutlined/>
@@ -64,7 +63,7 @@ export const getSections = (t, project) => {
         {
           title: t(tokens.nav.users),
           path: paths.users.index,
-          role: ['admin', 'client', 'manager'],
+          grants: 'users.read',
           icon: (
             <SvgIcon fontSize="small">
               <PeopleAltOutlined/>
@@ -74,7 +73,7 @@ export const getSections = (t, project) => {
         {
           title: t(tokens.roles.title),
           path: paths.roles.index,
-          role: ['admin', 'client'],
+          grants: 'roles.read',
           icon: (
             <SvgIcon fontSize="small">
               <Groups2Outlined/>
@@ -84,7 +83,6 @@ export const getSections = (t, project) => {
         {
           title: t(tokens.nav.account),
           path: paths.account,
-          role: ['admin', 'client', 'manager'],
           icon: (
             <SvgIcon fontSize="small">
               <PortraitOutlined/>
@@ -94,7 +92,7 @@ export const getSections = (t, project) => {
         {
           title: t(tokens.nav.support),
           path: paths.support,
-          role: ['admin', 'client', 'manager'],
+          hidden: true,
           icon: (
             <SvgIcon fontSize="small">
               <QuestionAnswerOutlined/>
@@ -104,7 +102,7 @@ export const getSections = (t, project) => {
         {
           title: t(tokens.nav.billing),
           path: paths.billing,
-          role: ['admin', 'client', 'manager'],
+          grants: 'transactions.read',
           icon: (
             <SvgIcon fontSize="small">
               <CreditCardOutlined/>

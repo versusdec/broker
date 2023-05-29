@@ -23,7 +23,7 @@ export const RolesListTable = (props) => {
     ...other
   } = props;
   const [dialog, setDialog] = useState({open: false, item: null});
-  const {user: {role}} = useMe()
+  const {data: {role_id}} = useMe()
 
   const handleDialogOpen = useCallback((item) => {
     setDialog({
@@ -87,7 +87,7 @@ export const RolesListTable = (props) => {
               <TableCell>
                 Status
               </TableCell>
-              {role === 'admin' && <TableCell align="right">
+              {role_id === 0 && <TableCell align="right">
                 Actions
               </TableCell>}
             </TableRow>
@@ -104,7 +104,7 @@ export const RolesListTable = (props) => {
                     {item.id}
                   </TableCell>
                   <TableCell>
-                    {role === 'admin' && <Link
+                    {role_id === 0 && <Link
                       color="inherit"
                       component={NextLink}
                       href={`${paths.roles.index}/${item.id}`}
@@ -112,7 +112,7 @@ export const RolesListTable = (props) => {
                     >
                       {item.name}
                     </Link>}
-                    {role !== 'admin' && item.name}
+                    {role_id !== 0 && item.name}
                   </TableCell>
                   <TableCell>
                     {item.description}
@@ -127,7 +127,7 @@ export const RolesListTable = (props) => {
                       {item.status}
                     </Typography>
                   </TableCell>
-                  {role === 'admin' && <TableCell align="right">
+                  {role_id === 0 && <TableCell align="right">
                     <Tooltip title={item.status === 'active' ? 'Archive' : 'Unzip'}>
                       <IconButton
                         onClick={() => {

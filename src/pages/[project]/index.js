@@ -2,11 +2,7 @@ import {useCallback, useEffect, useMemo, useState} from 'react';
 import NextLink from 'next/link';
 import ArrowLeftIcon from '@untitled-ui/icons-react/build/esm/ArrowLeft';
 import {
-  Avatar,
-  Box,
-  Button,
   Chip,
-  Container,
   Divider,
   Link,
   Stack,
@@ -58,8 +54,6 @@ const projectUpdate = async (project, newValues, dispatch) => {
 }
 
 const Page = withProjectsAddGuard(() => {
-  
-  
   const dispatch = useDispatch();
   const me = useMe();
   const router = useRouter();
@@ -94,14 +88,14 @@ const Page = withProjectsAddGuard(() => {
   }, [dispatch, data, id])
   
   const getClients = useCallback(async () => {
-    const {result, error} = await api.users.list({
-      role: 'client',
-      status: 'active',
-      limit: 1000
-    })
-    if (result) {
-      setClients(result.items)
-    }
+      const {result, error} = await api.users.list({
+        role: 'client',
+        status: 'active',
+        limit: 1000
+      })
+      if (result) {
+        setClients(result.items)
+      }
   }, [])
   
   const getFields = useCallback(async () => {
@@ -128,12 +122,17 @@ const Page = withProjectsAddGuard(() => {
     }
   }, [params])
   
+  useEffect(()=>{
+    if (me.data && me.data.role_id === 0) {
+      getClients();
+    }
+  }, [me])
+  
   useEffect(() => {
-    getClients();
     if (!!id) {
       getTags()
     }
-  }, [])
+  }, [id])
   
   const handleFieldEdit = useCallback(async (params, cb) => {
     const {result, error} = await api.fields.update(params);
@@ -219,15 +218,15 @@ const Page = withProjectsAddGuard(() => {
     <Stack spacing={4} mb={3}>
       <div>
         <Link
-            color="text.primary"
-            component={NextLink}
-            href={paths.projects.index}
-            sx={{
-              alignItems: 'center',
-              display: 'inline-flex'
-            }}
-            underline="hover"
-          >
+          color="text.primary"
+          component={NextLink}
+          href={paths.projects.index}
+          sx={{
+            alignItems: 'center',
+            display: 'inline-flex'
+          }}
+          underline="hover"
+        >
           <SvgIcon sx={{mr: 1}}>
             <ArrowLeftIcon/>
           </SvgIcon>
@@ -237,19 +236,19 @@ const Page = withProjectsAddGuard(() => {
         </Link>
       </div>
       <Stack
-          alignItems="flex-start"
-          direction={{
-            xs: 'column',
-            md: 'row'
-          }}
-          justifyContent="space-between"
-          spacing={4}
-        >
+        alignItems="flex-start"
+        direction={{
+          xs: 'column',
+          md: 'row'
+        }}
+        justifyContent="space-between"
+        spacing={4}
+      >
         <Stack
-            alignItems="center"
-            direction="row"
-            spacing={2}
-          >
+          alignItems="center"
+          direction="row"
+          spacing={2}
+        >
           <Stack>
             <Typography variant="h4">
               {newProject && 'Add project'}
@@ -260,72 +259,72 @@ const Page = withProjectsAddGuard(() => {
                 {project.description}
               </Typography>
               <Stack
-                  alignItems="center"
-                  direction="row"
-                  spacing={1}
-                >
+                alignItems="center"
+                direction="row"
+                spacing={1}
+              >
                 <Typography variant="subtitle2">
                   ID:
                 </Typography>
                 <Chip
-                    label={project.id}
-                    size="small"
-                  />
+                  label={project.id}
+                  size="small"
+                />
               </Stack>
-              </>}
+            </>}
           </Stack>
         </Stack>
       </Stack>
       <div>
         <Tabs
-            indicatorColor="primary"
-            onChange={handleTabsChange}
-            scrollButtons="auto"
-            sx={{mt: 3}}
-            textColor="primary"
-            value={currentTab}
-            variant="scrollable"
-          >
+          indicatorColor="primary"
+          onChange={handleTabsChange}
+          scrollButtons="auto"
+          sx={{mt: 3}}
+          textColor="primary"
+          value={currentTab}
+          variant="scrollable"
+        >
           {tabs.map((tab) => (
             <Tab
-                key={tab.value}
-                label={tab.label}
-                value={tab.value}
-                disabled={newProject && tab.value === 'common' ? false : newProject}
-              />
-            ))}
+              key={tab.value}
+              label={tab.label}
+              value={tab.value}
+              disabled={newProject && tab.value === 'common' ? false : newProject}
+            />
+          ))}
         </Tabs>
         <Divider/>
       </div>
     </Stack>
     {currentTab === 'common' && clients && (
-    <div>
-      {((!newProject && project.id) || newProject) && me.user && <CommonTab
-            project={project}
-            userRole={me.user.role}
-            isNew={newProject}
-            onSubmit={onCommonSubmit}
-            clients={clients}
-          />}
-    </div>
-      )}
+      <div>
+        {((!newProject && project.id) || newProject) && me.data && <CommonTab
+          project={project}
+          userRole={data.role_id}
+          isNew={newProject}
+          onSubmit={onCommonSubmit}
+          clients={clients}
+        />}
+      </div>
+    )}
     {currentTab === 'fields' && <FieldsListTable
-        items={fields.items}
-        total={fields.total}
-        onPageChange={handlePageChange}
-        handleLimitChange={handleLimitChange}
-        handleAdd={handleFieldAdd}
-        handleEdit={handleFieldEdit}
-        handleStatus={handleFieldStatus}
-        limit={limit}
-        page={page}
-        projectId={id}
-      />}
+      items={fields.items}
+      total={fields.total}
+      onPageChange={handlePageChange}
+      handleLimitChange={handleLimitChange}
+      handleAdd={handleFieldAdd}
+      handleEdit={handleFieldEdit}
+      handleStatus={handleFieldStatus}
+      limit={limit}
+      page={page}
+      projectId={id}
+    />}
     {currentTab === 'tags' && <TagsList
-        items={tags} handleAdd={handleTagAdd}
-        handleEdit={handleTagEdit}
-        handleStatus={handleTagStatus}
-        projectId={id}/>}
+      items={tags} handleAdd={handleTagAdd}
+      handleEdit={handleTagEdit}
+      handleStatus={handleTagStatus}
+      projectId={id}/>}
   </>);
 })
 
