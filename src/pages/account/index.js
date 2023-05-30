@@ -9,6 +9,7 @@ import {root} from "../../api/config";
 import {actions} from "../../slices/usersSlice";
 import toast from "react-hot-toast";
 import {useDispatch} from "../../store";
+import {getGrants} from "../../utils/get-role-grants";
 
 const tabs = [
   {label: 'General', value: 'general'},
@@ -38,32 +39,35 @@ const userUpdate = async (user, newValues, dispatch)=>{
 
 const Page = () => {
   const [currentTab, setCurrentTab] = useState('general');
-  const {user} = useMe();
+  const {data} = useMe();
   const dispatch = useDispatch();
+  const grants = getGrants(data?.user_id);
+  const editGrant = grants.includes('users.write');
+  const isAdmin = data && data.role_id === 0;
   
   const handleTabsChange = useCallback((event, value) => {
     setCurrentTab(value);
   }, []);
   
   const handleGeneralSubmit = useCallback((values) => {
-    userUpdate(user, values, dispatch)
-  }, [user])
+    userUpdate(data, values, dispatch)
+  }, [data])
   
   const handleSecuritySubmit = useCallback((values) => {
-    userUpdate(user, values, dispatch)
-  }, [user])
+    userUpdate(data, values, dispatch)
+  }, [data])
   
   const handleAvatarUpload = useCallback((files) => {
-    userUpdate(user, {
+    userUpdate(data, {
       avatar: root + files[0].path
     }, dispatch)
-  }, [user])
+  }, [data])
   
   const accountGeneralSettingsProps = {
-    user:user, onSubmit: handleGeneralSubmit, onUpload: handleAvatarUpload
+    user:data, onSubmit: handleGeneralSubmit, onUpload: handleAvatarUpload, editGrant, isAdmin
   }
   
-  return user && <>
+  return data && <>
     <Box>
       <Stack
         spacing={3}
@@ -99,8 +103,10 @@ const Page = () => {
       )}
       {currentTab === 'security' && (
         <AccountSecuritySettings
-          user={user}
+          user={data}
           onUpdate={handleSecuritySubmit}
+          isAdmin={isAdmin}
+          editGrant={editGrant}
         />
       )}
     </Box>

@@ -20,7 +20,7 @@ export const QueuesTab = ({onSubmit, items, selected, formik, onChange, tabChang
               isOptionEqualToValue={(option, value) => option.id === value.id}
               value={selected || []}
               renderOption={(props, option, {selected}) => (
-                <li {...props} key={option.id}>
+                <li {...props}>
                   <Checkbox
                     icon={<CheckBoxOutlineBlank fontSize={'small'}/>}
                     checkedIcon={<CheckBox fontSize={'small'}/>}

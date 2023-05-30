@@ -24,7 +24,7 @@ export const AccountPopover = (props) => {
   const { anchorEl, onClose, open, ...other } = props;
   const router = useRouter();
   const auth = useAuth();
-  const {user} = useMe();
+  const {data} = useMe();
   
   const handleLogout = useCallback(async () => {
     try {
@@ -52,13 +52,13 @@ export const AccountPopover = (props) => {
       {...other}>
       <Box sx={{ p: 2 }}>
         <Typography variant="body1">
-          {user && user.name}
+          {data?.name}
         </Typography>
         <Typography
           color="text.secondary"
           variant="body2"
         >
-          {user && user.email}
+          {data?.email}
         </Typography>
       </Box>
       <Divider />

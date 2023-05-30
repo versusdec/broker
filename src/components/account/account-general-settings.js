@@ -50,9 +50,11 @@ const validationSchema = Yup.object({
     .oneOf(['en', 'ru'])
 });
 
-export const AccountGeneralSettings = ({user, onSubmit, onUpload, ...props}) => {
+export const AccountGeneralSettings = ({user, onSubmit, onUpload, editGrant, isAdmin, ...props}) => {
   const [uploaderOpen, setUploaderOpen] = useState(false);
   const [timezones, setTimezones] = useState(null);
+  const [disabled, setDisabled] = useState(false);
+  const isDisabled = !(isAdmin || editGrant);
   
   useEffect(() => {
     const getTimezones = async () => {
@@ -80,7 +82,7 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, ...props}) => 
   const initialValues = {
     name: user?.name || '',
     email: user?.email || '',
-    avatar: user?.avatar || '/assets/avatars/avatar-anika-visser.png',
+    avatar: user?.avatar || '',
     timezone: user?.timezone || 0,
     language: user?.language || 'en'
   };
@@ -147,7 +149,7 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, ...props}) => 
                         position: 'relative'
                       }}
                     >
-                      <Box
+                      {(isAdmin || editGrant) && <Box
                         sx={{
                           alignItems: 'center',
                           backgroundColor: (theme) => alpha(theme.palette.neutral[700], 0.5),
@@ -185,7 +187,7 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, ...props}) => 
                             Select
                           </Typography>
                         </Stack>
-                      </Box>
+                      </Box>}
                       <Avatar
                         src={user?.avatar || '/assets/avatars/avatar-anika-visser.png'}
                         sx={{
@@ -199,13 +201,13 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, ...props}) => 
                       </Avatar>
                     </Box>
                   </Box>
-                  <Button
+                  {(isAdmin || editGrant) && <Button
                     color="inherit"
                     size="small"
                     onClick={handleOpen}
                   >
                     Change
-                  </Button>
+                  </Button>}
                 </Stack>
                 <form noValidate>
                   <Stack spacing={3}>
@@ -219,6 +221,7 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, ...props}) => 
                       onBlur={formik.handleBlur}
                       onChange={formik.handleChange}
                       value={formik.values.name}
+                      disabled={isDisabled}
                     />
                     <Input
                       fullWidth
@@ -230,6 +233,7 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, ...props}) => 
                       onBlur={formik.handleBlur}
                       onChange={formik.handleChange}
                       value={formik.values.email}
+                      disabled={isDisabled}
                     />
                     <Input
                       name="avatar"
@@ -245,6 +249,7 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, ...props}) => 
                       onChange={formik.handleChange}
                       select
                       value={timezones ? formik.values.timezone : ''}
+                      disabled={isDisabled}
                     >
                       {
                         !timezones && <MenuItem value=""></MenuItem>
@@ -268,6 +273,7 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, ...props}) => 
                       onChange={formik.handleChange}
                       select
                       value={formik.values.language}
+                      disabled={isDisabled}
                     >
                       {
                         languageOptions.map(option => {
@@ -290,9 +296,14 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, ...props}) => 
                     <Stack direction={'row'} justifyContent={'end'}>
                       <Button
                         size="large"
-                        type="submit"
-                        variant="contained"
-                        onClick={formik.handleSubmit}
+                        disabled={disabled}
+                        onClick={(e)=>{
+                          setDisabled(true);
+                          setTimeout(()=>{
+                            setDisabled(false)
+                          }, 500)
+                          formik.handleSubmit(e)
+                        }}
                       >
                         Save
                       </Button>

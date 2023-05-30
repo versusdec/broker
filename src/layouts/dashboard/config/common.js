@@ -29,7 +29,6 @@ export const getSections = (t, project) => {
         {
           title: project?.name,
           path: paths.project.index,
-          grants: 'projects.write',
           hidden: !Boolean(project),
           icon: (
             <SvgIcon fontSize="small">
@@ -44,7 +43,7 @@ export const getSections = (t, project) => {
             },
             {
               title: t(tokens.nav.queues.title),
-              grants: 'projects.queues.write',
+              grants: 'projects.queues.read',
               path: `/${project?.id}/queues`,
             },
             

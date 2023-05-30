@@ -3,24 +3,28 @@ import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import { paths } from '../navigation/paths';
 import {useMe} from "../hooks/useMe";
+import {getGrants} from "../utils/get-role-grants";
 
 export const UsersAddGuard = (props) => {
   const { children } = props;
-  const [checked, setChecked] = useState(false);
-  const me = useMe();
   const router = useRouter();
+  const [checked, setChecked] = useState(false);
+  const {data} = useMe();
+  const grants = getGrants(data?.role_id);
   
   const check = useCallback(() => {
-    if (me && me.user && !['client', 'admin'].includes(me.user.role)) {
-      router.replace(paths.users.index);
-    } else {
-      setChecked(true);
+    if (data && (grants.length || data.role_id === 0)) {
+      if (data.role_id === 0 || grants.includes('users.write')) {
+        setChecked(true);
+      } else {
+        router.replace(paths.denied);
+      }
     }
-  }, [me]);
+  }, [data, grants]);
   
-  useEffect(()=>{
+  useEffect(() => {
     check()
-  }, [me])
+  }, [data, grants])
   
   if(!checked)
     return null

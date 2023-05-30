@@ -131,7 +131,7 @@ const Page = withUsersAddGuard(() => {
     getProjects();
     getRoles();
     
-    if (me.user?.role === 'admin') {
+    if (me.data?.role === 'admin') {
       getClients();
     }
     if (!newUser) {
@@ -256,7 +256,7 @@ const Page = withUsersAddGuard(() => {
       values.queues.forEach(q => {
         data.queues.push(q.id)
       })
-      me.user.role === 'admin' ? data.client_id = client.id : delete data.client_id;
+      me.data.role === 'admin' ? data.client_id = client.id : delete data.client_id;
       
       if (newUser) {
         try {
@@ -382,9 +382,9 @@ const Page = withUsersAddGuard(() => {
         </Stack>
         {currentTab === 'common' && (
           <div>
-            {((!newUser && user.id) || newUser) && me.user && <CommonTab
+            {((!newUser && user.id) || newUser) && me.data && <CommonTab
               user={user}
-              userRole={me.user.role}
+              userRole={me.data.role}
               onUpload={handleAvatarUpload}
               timezones={timezones}
               clients={clients}
@@ -399,20 +399,6 @@ const Page = withUsersAddGuard(() => {
             />}
           </div>
         )}
-        {currentTab === 'queues' && <QueuesTab
-          items={queues}
-          selected={user.queues}
-          onChange={(data) => {
-            setUser(user => {
-              return {
-                ...user,
-                queues: data
-              }
-            })
-          }}
-          formik={formik}
-          tabChange={handleTabsChange}
-        />}
         {currentTab === 'operators' && <OperatorsTab
           items={[]}
           selected={user.queues}
@@ -428,6 +414,20 @@ const Page = withUsersAddGuard(() => {
           tabChange={handleTabsChange}
         />}
       </>}
+      {currentTab === 'queues' && <QueuesTab
+        items={queues}
+        selected={user.queues}
+        onChange={(data) => {
+          setUser(user => {
+            return {
+              ...user,
+              queues: data
+            }
+          })
+        }}
+        formik={formik}
+        tabChange={handleTabsChange}
+      />}
     </>
   );
 })

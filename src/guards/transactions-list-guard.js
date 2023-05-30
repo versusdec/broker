@@ -1,23 +1,23 @@
-import {useCallback, useEffect, useState} from 'react';
-import {useRouter} from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
-import {paths} from '../navigation/paths';
+import { paths } from '../navigation/paths';
 import {useMe} from "../hooks/useMe";
 import {getGrants} from "../utils/get-role-grants";
 
-export const ProjectsAddGuard = (props) => {
-  const {children} = props;
+export const TransactionsListGuard = (props) => {
+  const { children } = props;
   const router = useRouter();
   const [checked, setChecked] = useState(false);
   const {data} = useMe();
   const grants = getGrants(data?.role_id);
-
+  
   const check = useCallback(() => {
     if (data && (grants.length || data.role_id === 0)) {
-      if (data.role_id === 0 || grants.includes('projects.write')) {
+      if (data.role_id === 0 || grants.includes('transactions.read')) {
         setChecked(true);
       } else {
-        router.replace(paths.denied);
+        router.replace(paths.index);
       }
     }
   }, [data, grants]);
@@ -26,12 +26,12 @@ export const ProjectsAddGuard = (props) => {
     check()
   }, [data, grants])
   
-  if (!checked)
+  if(!checked)
     return null
-  
+
   return <>{children}</>;
 };
 
-ProjectsAddGuard.propTypes = {
+TransactionsListGuard.propTypes = {
   children: PropTypes.node
 };

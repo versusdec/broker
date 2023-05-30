@@ -8,9 +8,9 @@ import {useRouter} from 'next/router'
 
 const Page = () => {
  const router = useRouter();
-  router.replace('/projects')
+  // router.replace('/projects')
   
-  return false && (
+  return (
     <>
       <Box>
         <Typography variant="h4" sx={{mb: 4}}>

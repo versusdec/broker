@@ -1,20 +1,12 @@
-import Camera01Icon from '@untitled-ui/icons-react/build/esm/Camera01';
-import User01Icon from '@untitled-ui/icons-react/build/esm/User01';
 import {
-  Avatar,
-  Box,
   Button,
   Card,
   CardContent,
-  Divider, IconButton, InputAdornment, MenuItem,
+  MenuItem,
   Stack,
-  SvgIcon,
-  Switch,
   TextField,
-  Typography,
   Autocomplete
 } from '@mui/material';
-import {alpha} from '@mui/material/styles';
 import {Input} from "../input";
 import {useFormik} from "formik";
 import * as Yup from "yup";
@@ -22,7 +14,6 @@ import {useEffect, useMemo, useState} from "react";
 
 export const CommonTab = ({onSubmit, isNew, userRole, project, clients, ...props}) => {
   const [client, setClient] = useState(clients[0])
-  
   useEffect(() => {
     if (project.client_id && Array.isArray(clients)) {
       const c = clients.find(i => {

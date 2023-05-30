@@ -24,47 +24,6 @@ import {paths} from '../navigation/paths';
 import {Pagination} from "./pagination";
 import {Loader} from "./loader";
 
-
-const useSelectionModel = (users) => {
-  const usersIds = useMemo(() => {
-    if (users.length)
-      return users.map((user) => user.id);
-    else
-      return []
-  }, [users]);
-  const [selected, setSelected] = useState([]);
-  
-  useEffect(() => {
-    setSelected([]);
-  }, [usersIds]);
-  
-  const selectOne = useCallback((userId) => {
-    setSelected((prevState) => [...prevState, userId]);
-  }, []);
-  
-  const deselectOne = useCallback((userId) => {
-    setSelected((prevState) => {
-      return prevState.filter((id) => id !== userId);
-    });
-  }, []);
-  
-  const selectAll = useCallback(() => {
-    setSelected([...usersIds]);
-  }, [usersIds]);
-  
-  const deselectAll = useCallback(() => {
-    setSelected([]);
-  }, []);
-  
-  return {
-    deselectAll,
-    deselectOne,
-    selectAll,
-    selectOne,
-    selected
-  };
-};
-
 export const UsersListTable = (props) => {
   const {
     users,
@@ -75,10 +34,12 @@ export const UsersListTable = (props) => {
     limit,
     loading,
     handleStatus,
+    grants,
+    isAdmin,
     ...other
   } = props;
-  const {deselectAll, selectAll, deselectOne, selectOne, selected} = useSelectionModel(users);
   const [dialog, setDialog] = useState({open: false, user: null});
+  const editGrant = (isAdmin || grants.includes('users.write'))
   
   const handleDialogOpen = useCallback((user) => {
     setDialog({
@@ -94,62 +55,10 @@ export const UsersListTable = (props) => {
     })
   }, [])
   
-  const handleToggleAll = useCallback((event) => {
-    const {checked} = event.target;
-    
-    if (checked) {
-      selectAll();
-    } else {
-      deselectAll();
-    }
-  }, [selectAll, deselectAll]);
-  
-  const selectedAll = selected.length === users.length;
-  const selectedSome = selected.length > 0 && selected.length < users.length;
-  const enableBulkActions = selected.length > 0;
-  
   return (
     <Box
       sx={{position: 'relative'}}
       {...other}>
-      {/*{enableBulkActions && (
-        <Stack
-          direction="row"
-          spacing={2}
-          sx={{
-            alignItems: 'center',
-            backgroundColor: (theme) => theme.palette.mode === 'dark'
-              ? 'neutral.800'
-              : 'neutral.50',
-            display: enableBulkActions ? 'flex' : 'none',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            px: 2,
-            py: 0.5,
-            zIndex: 10
-          }}
-        >
-          <Checkbox
-            checked={selectedAll}
-            indeterminate={selectedSome}
-            onChange={handleToggleAll}
-          />
-          <Button
-            color="inherit"
-            size="small"
-          >
-            Delete
-          </Button>
-          <Button
-            color="inherit"
-            size="small"
-          >
-            Edit
-          </Button>
-        </Stack>
-      )}*/}
       <Scrollbar>
         <Table sx={{minWidth: 700}}>
           {loading && !!!users.length &&
@@ -182,13 +91,6 @@ export const UsersListTable = (props) => {
           <>
             <TableHead>
               <TableRow>
-                {/*<TableCell padding="checkbox">
-                  <Checkbox
-                    checked={selectedAll}
-                    indeterminate={selectedSome}
-                    onChange={handleToggleAll}
-                  />
-                </TableCell>*/}
                 <TableCell>
                   ID
                 </TableCell>
@@ -201,36 +103,19 @@ export const UsersListTable = (props) => {
                 <TableCell>
                   Status
                 </TableCell>
-                <TableCell align="right">
+                {editGrant && <TableCell align="right">
                   Actions
-                </TableCell>
+                </TableCell>}
               </TableRow>
             </TableHead>
             <TableBody>
               {users.map((user) => {
-                const isSelected = selected.includes(user.id);
                 
                 return (
                   <TableRow
                     hover
                     key={user.id}
-                    selected={isSelected}
                   >
-                    {/*<TableCell padding="checkbox">
-                      <Checkbox
-                        checked={isSelected}
-                        onChange={(event) => {
-                          const {checked} = event.target;
-                          
-                          if (checked) {
-                            selectOne(user.id);
-                          } else {
-                            deselectOne(user.id);
-                          }
-                        }}
-                        value={isSelected}
-                      />
-                    </TableCell>*/}
                     <TableCell>
                       {user.id}
                     </TableCell>
@@ -248,14 +133,14 @@ export const UsersListTable = (props) => {
                           }}
                         />
                         <div>
-                          <Link
+                          {editGrant ? <Link
                             color="inherit"
                             component={NextLink}
                             href={`${paths.users.index}/${user.id}`}
                             variant="subtitle2"
                           >
                             {user.name}
-                          </Link>
+                          </Link> : user.name}
                           <Typography
                             color="text.secondary"
                             variant="body2"
@@ -278,7 +163,7 @@ export const UsersListTable = (props) => {
                         {user.status}
                       </Typography>
                     </TableCell>
-                    <TableCell align="right">
+                    {editGrant && <TableCell align="right">
                       <Tooltip title={user.status === 'active' ? 'Block' : 'Unblock'}>
                         <IconButton
                           onClick={() => {
@@ -300,7 +185,7 @@ export const UsersListTable = (props) => {
                           </SvgIcon>
                         </IconButton>
                       </Tooltip>
-                    </TableCell>
+                    </TableCell>}
                   </TableRow>
                 );
               })}

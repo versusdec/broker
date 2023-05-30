@@ -1,20 +1,17 @@
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import PlusIcon from '@untitled-ui/icons-react/build/esm/Plus';
-import {Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Stack, SvgIcon, Tab, Tabs, Typography} from '@mui/material';
-import NextLink from "next/link";
-import {paths} from "../../navigation/paths";
+import {Button, Card, Divider, Stack, SvgIcon, Tab, Tabs, Typography} from '@mui/material';
 import {useMe} from "../../hooks/useMe";
-import {usePagination} from "../../hooks/usePagination";
 import {api} from "../../api";
 import toast from "react-hot-toast";
 import {useDispatch} from "../../store";
-import {actions} from '../../slices/transactionsSlice'
 import {useTransactions} from "../../hooks/useTransactions";
 import {usePayments} from "../../hooks/usePayments";
 import {TransactionsTable} from "../../components/transactions-table";
-import {Close} from "@mui/icons-material";
 import {PaymentsTable} from "../../components/payments-table";
 import {wait} from "../../utils/wait";
+import {getGrants} from "../../utils/get-role-grants";
+import {withTransactionsListGuard} from "../../hocs/with-transactions-list-guard";
 
 const tabs = [
   {
@@ -27,14 +24,15 @@ const tabs = [
   }
 ];
 
-const Page = () => {
-  const dispatch = useDispatch();
-  const {user} = useMe();
+const Page = withTransactionsListGuard(() => {
+  const {data} = useMe();
   const [filtersTransactions, setFiltersTransactions] = useState({limit: 10});
   const [filtersPayments, setFiltersPayments] = useState({});
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentTab, setCurrentTab] = useState('transactions');
   const [clients, setClients] = useState(null);
+  const grants = getGrants(data && data.role_id);
+  const isAdmin = data && data.role_id === 0;
   
   const handleTabsChange = useCallback((event, value) => {
     setCurrentTab(value);
@@ -42,7 +40,6 @@ const Page = () => {
   
   const getClients = useCallback(async () => {
     const {result, error} = await api.users.list({
-      role: 'client',
       status: 'active',
       limit: 1000
     })
@@ -70,19 +67,6 @@ const Page = () => {
       })
     )
   }, [filtersPayments])
-  
-  useEffect(() => {
-    if (user && user.role !== 'admin') {
-      setFiltersTransactions(prev => ({
-        ...prev,
-        user_id: user.id
-      }))
-      setFiltersPayments(prev => ({
-        ...prev,
-        user_id: user.id
-      }))
-    }
-  }, [user])
   
   const transactions = useTransactions(filtersTransactions);
   const payments = usePayments(filtersPayments);
@@ -152,7 +136,7 @@ const Page = () => {
             direction="row"
             spacing={3}
           >
-            {user && (user.role === 'admin') && currentTab === 'transactions' && <Button
+            {isAdmin && currentTab === 'transactions' && <Button
               onClick={() => {
                 setDialogOpen(true)
               }}
@@ -165,7 +149,7 @@ const Page = () => {
             >
               Add Transaction
             </Button>}
-            {user && (user.role === 'admin' || user.role === 'client') && currentTab === 'payments' && <Button
+            {isAdmin && currentTab === 'payments' && <Button
               onClick={() => {
                 setDialogOpen(true)
               }}
@@ -190,25 +174,16 @@ const Page = () => {
             value={currentTab}
             variant="scrollable"
           >
-            {tabs.map((tab) => {
-              switch (tab) {
-                case 'payments':
-                  if (['admin', 'client'].includes(user.role)) {
-                    return <Tab
-                      key={tab.value}
-                      label={tab.label}
-                      value={tab.value}
-                    />
-                  }
-                  break;
-                default:
-                  return <Tab
-                    key={tab.value}
-                    label={tab.label}
-                    value={tab.value}
-                  />
-              }
-            })}
+            <Tab
+              key={'transactions'}
+              label={'Transactions'}
+              value={'transactions'}
+            />
+            {(isAdmin || grants.includes('payments.read')) && <Tab
+              key={'payments'}
+              label={'Payments'}
+              value={'payments'}
+            />}
           </Tabs>
           <Divider/>
           {currentTab === 'transactions' && (
@@ -222,7 +197,7 @@ const Page = () => {
                 }}
                 clients={clients}
                 onSubmit={transactionsCreate}
-                userRole={user?.role}
+                isAdmin={isAdmin}
               />}
             </div>
           )}
@@ -236,7 +211,7 @@ const Page = () => {
                   setDialogOpen(false)
                 }}
                 onSubmit={paymentsCreate}
-                userRole={user?.role}
+                isAdmin={isAdmin}
                 onPay={paymentPay}
                 onCancel={paymentCancel}
               />}
@@ -247,7 +222,7 @@ const Page = () => {
     
     </>
   );
-}
+})
 
 Page.defaultProps = {
   title: 'Billing'

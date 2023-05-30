@@ -1,20 +1,10 @@
 import {useCallback, useEffect, useState} from 'react';
-import PropTypes from 'prop-types';
-import {format} from 'date-fns';
-import ArrowRightIcon from '@untitled-ui/icons-react/build/esm/ArrowRight';
 import {
   Box,
   Card,
   CardContent,
   CardHeader, IconButton, InputAdornment,
   Stack,
-  SvgIcon,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TextField,
   Typography,
   Unstable_Grid2 as Grid
 } from '@mui/material';
@@ -23,8 +13,6 @@ import * as Yup from "yup";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
 import {Input} from "../input";
 import {useFormik} from "formik";
-import {paths} from "../../navigation/paths";
-import {useMe} from "../../hooks/useMe";
 import toast from "react-hot-toast";
 import {api} from "../../api";
 
@@ -52,11 +40,13 @@ const validationSchema = Yup.object({
 });
 
 
-export const AccountSecuritySettings = ({user, ...props}) => {
+export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) => {
   const [showPass, setShowPass] = useState(false);
+  const [disabled, setDisabled] = useState(false);
   const [twa, setTwa] = useState(user.twofa.status === 'enabled');
   const [code, setCode] = useState('');
   const {onUpdate} = props;
+  const isDisabled = !(isAdmin || editGrant)
   
   const handleTwa = useCallback(() => {
     if (!twa) {
@@ -134,6 +124,7 @@ export const AccountSecuritySettings = ({user, ...props}) => {
                   onChange={formik.handleChange}
                   type={showPass ? 'text' : 'password'}
                   value={formik.values.old_password}
+                  isDisabled={isDisabled}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
@@ -160,6 +151,7 @@ export const AccountSecuritySettings = ({user, ...props}) => {
                   onChange={formik.handleChange}
                   type="password"
                   value={formik.values.password}
+                  isDisabled={isDisabled}
                 />
                 <Input
                   error={!!(formik.touched.confirm_password && formik.errors.confirm_password)}
@@ -171,9 +163,20 @@ export const AccountSecuritySettings = ({user, ...props}) => {
                   onChange={formik.handleChange}
                   type="password"
                   value={formik.values.confirm_password}
+                  isDisabled={isDisabled}
                 />
                 <Stack justifyContent={'end'} direction={'row'}>
-                  <Button onClick={formik.handleSubmit}>Save</Button>
+                  <Button
+                    size={'large'}
+                    disabled={disabled}
+                    onClick={(e)=>{
+                      setDisabled(true);
+                      setTimeout(()=>{
+                        setDisabled(false)
+                      }, 500)
+                      formik.handleSubmit(e)
+                    }}
+                  >Save</Button>
                 </Stack>
               </Stack>
             </Grid>
@@ -244,6 +247,7 @@ export const AccountSecuritySettings = ({user, ...props}) => {
                     <Button
                       variant="outlined"
                       onClick={handleTwa}
+                      disabled={isDisabled}
                     >
                       {!twa ? 'Set Up' : 'Disable'}
                     </Button>

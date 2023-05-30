@@ -15,7 +15,8 @@ import {actions} from '../../slices/rolesSlice'
 
 const Page = withRolesListGuard(() => {
   const dispatch = useDispatch();
-  const {user} = useMe();
+  const me = useMe();
+  const userRole = me.data && me.data.role_id;
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   
   const params = useMemo(() => {
@@ -66,7 +67,7 @@ const Page = withRolesListGuard(() => {
             direction="row"
             spacing={3}
           >
-            {user && (user.role === 'admin') && <Button
+            {me.data && (me.data.role_id === 0) && <Button
               component={NextLink}
               href={paths.roles.add}
               startIcon={(
@@ -90,6 +91,7 @@ const Page = withRolesListGuard(() => {
             page={page}
             loading={loading}
             handleStatus={handleStatus}
+            userRole={userRole}
           />
         </Card>
       </Stack>

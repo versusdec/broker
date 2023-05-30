@@ -54,9 +54,13 @@ const projectUpdate = async (project, newValues, dispatch) => {
 }
 
 const Page = withProjectsAddGuard(() => {
+  const router = useRouter();
+  if (!Number.isInteger(+router.query.project) && router.pathname !== '/projects/add') {
+    router.replace(paths.not_found)
+    return <></>
+  }
   const dispatch = useDispatch();
   const me = useMe();
-  const router = useRouter();
   const [currentTab, setCurrentTab] = useState('common');
   const [project, setProject] = useState({
     "name": "",
@@ -70,7 +74,6 @@ const Page = withProjectsAddGuard(() => {
   const id = +router.query.project;
   const newProject = isNaN(id);
   const data = useProject(id);
-  
   const params = useMemo(() => {
     return {
       limit: limit, offset: offset,
@@ -88,14 +91,14 @@ const Page = withProjectsAddGuard(() => {
   }, [dispatch, data, id])
   
   const getClients = useCallback(async () => {
-      const {result, error} = await api.users.list({
-        role: 'client',
-        status: 'active',
-        limit: 1000
-      })
-      if (result) {
-        setClients(result.items)
-      }
+    const {result, error} = await api.users.list({
+      role: 'client',
+      status: 'active',
+      limit: 1000
+    })
+    if (result) {
+      setClients(result.items)
+    }
   }, [])
   
   const getFields = useCallback(async () => {
@@ -122,11 +125,11 @@ const Page = withProjectsAddGuard(() => {
     }
   }, [params])
   
-  useEffect(()=>{
+  useEffect(() => {
     if (me.data && me.data.role_id === 0) {
       getClients();
     }
-  }, [me])
+  }, [])
   
   useEffect(() => {
     if (!!id) {
@@ -299,9 +302,9 @@ const Page = withProjectsAddGuard(() => {
     </Stack>
     {currentTab === 'common' && clients && (
       <div>
-        {((!newProject && project.id) || newProject) && me.data && <CommonTab
+        {((!newProject && project.id) || newProject) && data && <CommonTab
           project={project}
-          userRole={data.role_id}
+          userRole={me.data.role_id}
           isNew={newProject}
           onSubmit={onCommonSubmit}
           clients={clients}

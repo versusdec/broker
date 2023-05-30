@@ -35,7 +35,7 @@ const validationSchema = Yup.object({
     .string()
 });
 
-export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, dialogClose, clients, onSubmit, userRole}) => {
+export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, dialogClose, clients, onSubmit, isAdmin}) => {
   const [timestamp, setTimestamp] = useState(null)
   const [client, setClient] = useState(null)
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
@@ -140,7 +140,7 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
                 <TableCell>
                   Date
                 </TableCell>
-                {(userRole && userRole === 'admin') && <TableCell>User</TableCell>}
+                {isAdmin && <TableCell>User</TableCell>}
                 <TableCell>
                   Amount
                 </TableCell>
@@ -164,7 +164,7 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
                       {item.timestamp}
                     </TableCell>
                     
-                    {(userRole && userRole === 'admin') && <TableCell>
+                    {isAdmin && <TableCell>
                       <Stack
                         alignItems="center"
                         direction="row"

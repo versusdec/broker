@@ -13,15 +13,16 @@ import {projectsList} from "../../slices/projectsSlice";
 import toast from "react-hot-toast";
 import {useDispatch} from "../../store";
 import {getGrants} from "../../utils/get-role-grants";
+import {withProjectsListGuard} from "../../hocs/with-projects-list-guard";
 
-const Page = () => {
+const Page = withProjectsListGuard(() => {
   const dispatch = useDispatch();
   const {data} = useMe();
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const [filters, setFilters] = useState({status: 'active'});
   const grants = getGrants(data?.role_id)
   const isAdmin = data && data.role_id === 0;
-
+  
   const handleFiltersChange = useCallback((filters) => {
     setFilters(filters)
   }, [filters])
@@ -103,7 +104,7 @@ const Page = () => {
       </Stack>
     </>
   );
-};
+})
 
 Page.defaultProps = {
   title: 'Projects'

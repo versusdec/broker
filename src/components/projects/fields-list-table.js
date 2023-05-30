@@ -1,7 +1,6 @@
 import {useCallback, useMemo, useState} from 'react';
 import {Block, CheckCircleOutlined, Close, DeleteOutlined, EditOutlined} from '@mui/icons-material'
 import {
-  Avatar,
   Box,
   Button, Card, Dialog, DialogActions, DialogContent, DialogTitle,
   IconButton,
@@ -129,22 +128,6 @@ export const FieldsListTable = (props) => {
     })
   }, [dialog])
   
-  // const [autocompleteOpen, setAutocompleteOpen] = useState(false);
-  // const [fieldValue, setFieldValue] = useState('');
-  // const [fields, setFields] = useState([]);
-  /*const suggestFields = useCallback(async (q) => {
-    const res = await api.fields.suggest({q: q})
-    if (res.result) {
-      setFields(res.result.items)
-    }
-  }, [])
-  
-  useEffect(() => {
-    if (fieldValue !== '') {
-      suggestFields(fieldValue)
-    }
-  }, [fieldValue]);*/
-  
   const initialValues = useMemo(() => (dialog.item), [dialog]);
   
   const formik = useFormik({
@@ -198,51 +181,6 @@ export const FieldsListTable = (props) => {
           spacing={3}
           sx={{p: 3}}
         >
-          {/*<Box
-            sx={{flexGrow: 1}}
-          >
-            <Autocomplete
-              open={autocompleteOpen}
-              onOpen={() => {
-                setAutocompleteOpen(true);
-              }}
-              onClose={() => {
-                setAutocompleteOpen(false);
-              }}
-              onChange={(event, newValue) => {
-                setValue({name: ''})
-                handleAutocomplete(newValue)
-              }}
-              value={value}
-              onInputChange={(event, newInputValue) => {
-                setFieldValue(newInputValue);
-              }}
-              isOptionEqualToValue={(option, value) => option.name === value.name}
-              getOptionLabel={(option) => option.name}
-              options={fields}
-              size={'large'}
-              filterOptions={(x) => x}
-              // autoComplete
-              // filterSelectedOptions
-              noOptionsText={'Nothing found'}
-              renderOption={(props, option) => {
-                return <MenuItem {...props} key={option.id}>{option.name}</MenuItem>
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  fullWidth
-                  size={'small'}
-                  InputLabelProps={{
-                    sx: {
-                      marginTop: '-5px'
-                    }
-                  }}
-                  label={'Search fields'}
-                />
-              )}
-            />
-          </Box>*/}
           <Button
             onClick={handleAddDialog}
             startIcon={(

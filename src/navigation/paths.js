@@ -1,5 +1,7 @@
 export const paths = Object.freeze({
   index: '/',
+  not_found: '/404',
+  denied: '/denied',
   login: '/auth/login',
   register: '/auth/register',
   forgot: '/auth/reset',

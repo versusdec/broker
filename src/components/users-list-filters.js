@@ -10,12 +10,12 @@ const tabs = [
     value: 'all'
   },
   {
-    label: 'Supervisors',
-    value: 'supervisor'
+    label: 'Active',
+    value: 'active'
   },
   {
-    label: 'Operators',
-    value: 'operator'
+    label: 'Blocked',
+    value: 'blocked'
   }
 ];
 
@@ -38,11 +38,11 @@ export const UsersListFilters = (props) => {
     setFilters((prevState) => {
       const values = {
         ...prevState,
-        role: value
+        status: value
       }
       
       if (value === 'all')
-        delete values.role
+        delete values.status
       
       return values;
     });
@@ -58,7 +58,7 @@ export const UsersListFilters = (props) => {
   
   return (
     <>
-      {/*<Tabs
+      <Tabs
         indicatorColor="primary"
         onChange={handleTabsChange}
         scrollButtons="auto"
@@ -76,7 +76,7 @@ export const UsersListFilters = (props) => {
         ))}
       </Tabs>
       <Divider/>
-      */}
+      
       <Stack
         alignItems="center"
         direction="row"

@@ -34,7 +34,7 @@ const validationSchema = Yup.object({
     .string()
 });
 
-export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClose, onSubmit, userRole, onPay, onCancel}) => {
+export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClose, onSubmit, isAdmin, onPay, onCancel}) => {
   const [timestamp, setTimestamp] = useState(null);
   const [confirmPay, setConfirmPay] = useState({item: null, open: false});
   const [confirmCancel, setConfirmCancel] = useState({item: null, open: false});
@@ -130,7 +130,7 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
                 <TableCell>
                   Date
                 </TableCell>
-                {(userRole && userRole === 'admin') && <TableCell>User</TableCell>}
+                {isAdmin && <TableCell>User</TableCell>}
                 <TableCell>
                   Amount
                 </TableCell>
@@ -159,7 +159,7 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
                       {format(new Date(item.created * 1000), 'yyyy-MM-dd HH:mm:ss')}
                     </TableCell>
                     
-                    {(userRole && userRole === 'admin') && <TableCell>
+                    {isAdmin && <TableCell>
                       <Stack
                         alignItems="center"
                         direction="row"

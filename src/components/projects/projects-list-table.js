@@ -1,26 +1,25 @@
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useCallback, useState} from 'react';
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
 import {Block, CheckCircleOutlined, Close, EditOutlined} from '@mui/icons-material'
 import {
-  Avatar,
   Box,
   Button,
-  Checkbox, Dialog, DialogActions, DialogContent, DialogTitle,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   IconButton,
   Link,
-  Stack,
   SvgIcon,
   Table,
   TableBody,
   TableCell,
   TableHead,
-  TablePagination,
   TableRow, Tooltip,
   Typography
 } from '@mui/material';
 import {Scrollbar} from '../scrollbar';
-import {paths} from '../../navigation/paths';
 import {Pagination} from "../pagination";
 import {Loader} from "../loader";
 
@@ -34,7 +33,8 @@ export const ProjectsListTable = (props) => {
     limit,
     loading,
     handleStatus,
-    grants, isAdmin,
+    grants,
+    isAdmin,
     ...other
   } = props;
   const [dialog, setDialog] = useState({open: false, project: null});

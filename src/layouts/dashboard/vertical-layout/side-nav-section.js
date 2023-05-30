@@ -13,13 +13,22 @@ const renderItems = ({depth = 0, items, pathname, grants, isAdmin}) => items.red
   isAdmin
 }), []);
 
+const checkExact = (pathname, itemPath) => {
+  if (pathname === itemPath) {
+    return true;
+  }
+  if (!Number.isInteger(+pathname.split('/')[1])) {
+    return pathname.split('/')[1] === itemPath.split('/')[1]
+  }
+}
+
 const reduceChildRoutes = ({acc, depth, item, pathname, grants, isAdmin}) => {
   const checkPath = !!(item.path && pathname);
   const partialMatch = checkPath ? (pathname.includes(item.path) || Number.isInteger(+pathname.split('/')[1])) : false;
-  const exactMatch = checkPath ? !Number.isInteger(+pathname.split('/')[1]) ? (pathname === item.path || (pathname.split('/')[1] === item.path.split('/')[1])) : false : false;
-  //todo write normal check for project inner route (too long oneline =()
+  let exactMatch = checkPath ? checkExact(pathname, item.path) : false;
+
   if (item.items) {
-    (isAdmin || item.grants?.includes(grants)) && !item.hidden && acc.push(
+    (item.grants ? (isAdmin || grants.includes(item.grants)) : true) && !item.hidden && acc.push(
       <SideNavItem
         active={partialMatch}
         depth={depth}
@@ -50,7 +59,7 @@ const reduceChildRoutes = ({acc, depth, item, pathname, grants, isAdmin}) => {
       </SideNavItem>
     );
   } else {
-    (isAdmin || item.grants?.includes(grants)) && !item.hidden && acc.push(
+    (item.grants ? (isAdmin || grants.includes(item.grants)) : true) && !item.hidden && acc.push(
       <SideNavItem
         active={exactMatch || (Number.isInteger(+pathname.split('/')[1]) && item.path.split('/')[2]?.length && (item.path.split('/')[2] === pathname.split('/')[2]))}
         depth={depth}
@@ -72,7 +81,7 @@ export const SideNavSection = (props) => {
   const {data} = useMe();
   const isAdmin = data && data.role_id === 0;
   const grants = getGrants(data?.role_id);
-  
+
   return (
     <Stack
       component="ul"
