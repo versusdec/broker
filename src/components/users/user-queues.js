@@ -1,11 +1,13 @@
 import {Button, Card, CardContent, Checkbox, Stack, TextField, Autocomplete} from "@mui/material";
 import {CheckBox, CheckBoxOutlineBlank} from '@mui/icons-material'
+import {Loader} from "../loader";
 import {useState} from "react";
 
-export const QueuesTab = ({onSubmit, items, selected, formik, onChange, tabChange, ...props}) => {
-  const [disabled, setDisabled] = useState(false);
+export const QueuesTab = ({onSubmit, items, selected, onChange, handleChange, handleSetup, role, loading, ...props}) => {
+  const [disabled, setDisabled] = useState(false)
   
   return (<>
+    {loading && <Loader backdrop={true}/>}
     <Stack
       spacing={4}
       {...props}>
@@ -13,6 +15,7 @@ export const QueuesTab = ({onSubmit, items, selected, formik, onChange, tabChang
         <CardContent>
           <Stack spacing={3}>
             <Autocomplete
+              fullWidth
               multiple
               options={items}
               disableCloseOnSelect
@@ -33,33 +36,32 @@ export const QueuesTab = ({onSubmit, items, selected, formik, onChange, tabChang
               onChange={(e, val) => {
                 onChange(val)
               }}
+              onClose={() => {
+                handleChange()
+              }}
               renderInput={(params) => (
                 <TextField {...params} fullWidth
-                           error={!!(formik.errors.users)}
-                           helperText={formik.errors.users}
                            label="Queues" placeholder="Select queues"/>
               )}
             />
-            <Stack direction={'row'} justifyContent={'end'}>
+            {role === 'manager' && <Stack direction={'row'} justifyContent={'end'}>
               <Button
                 size="large"
-                type="submit"
                 variant="contained"
                 disabled={disabled}
                 onClick={e => {
-                  if (!formik.isValid)
-                    return tabChange(e, 'common')
                   setDisabled(true);
                   setTimeout(() => {
                     setDisabled(false)
                   }, 500)
-                  formik.handleSubmit(e);
+                  handleSetup()
                 }}
               >
-                Save
+                Apply to all operators
               </Button>
-            </Stack>
+            </Stack>}
           </Stack>
+        
         </CardContent>
       </Card>
     </Stack>

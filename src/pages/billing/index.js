@@ -40,6 +40,7 @@ const Page = withTransactionsListGuard(() => {
   
   const getClients = useCallback(async () => {
     const {result, error} = await api.users.list({
+      role: 'client',
       status: 'active',
       limit: 1000
     })

@@ -46,7 +46,7 @@ const Page = withProjectsListGuard(() => {
       cb();
       dispatch(projectsList(params))
     } else {
-      toast.error('Something goes wrong')
+      toast.error('Something went wrong')
     }
   }, [items])
   

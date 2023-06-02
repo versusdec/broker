@@ -2,7 +2,6 @@ import {useCallback, useEffect, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 import SearchMdIcon from '@untitled-ui/icons-react/build/esm/SearchMd';
 import {Box, Divider, InputAdornment, OutlinedInput, Stack, SvgIcon, Tab, Tabs} from '@mui/material';
-// import { useUpdateEffect } from '../../../hooks/use-update-effect';
 
 const tabs = [
   {
@@ -23,7 +22,7 @@ export const UsersListFilters = (props) => {
   const {onFiltersChange} = props;
   const queryRef = useRef(null);
   const [currentTab, setCurrentTab] = useState('all');
-  const [filters, setFilters] = useState();
+  const [filters, setFilters] = useState(props.initialFilters);
   
   const handleFiltersUpdate = useCallback(() => {
     onFiltersChange?.(filters);

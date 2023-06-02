@@ -449,6 +449,18 @@ export const api = Object.freeze({
         }
       }
     },
+    setup: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.queues.users.setup'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
   },
   transactions: {
     list: async (params) => {

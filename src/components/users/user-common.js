@@ -35,7 +35,7 @@ const languageOptions = [
 ]
 
 export const CommonTab = ({
-                            onUpload, userRole, timezones, user, client, clients, project, projects, roles, formik, onChange,
+                            onUpload, isAdmin, timezones, user, client, clients, project, projects, roles, formik, onChange,
                             onClientChange, onProjectChange, onProjectsChange, ...props
                           }) => {
   const [uploaderOpen, setUploaderOpen] = useState(false);
@@ -250,7 +250,7 @@ export const CommonTab = ({
                     </MenuItem>
                   })}
                 </Input>}
-                {userRole === 'admin' ? !!clients.length && <Autocomplete
+                {isAdmin ? !!clients.length && <Autocomplete
                   disablePortal
                   disableClearable
                   options={clients}

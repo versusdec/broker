@@ -45,7 +45,7 @@ const Page = withRolesListGuard(() => {
       })
       dispatch(actions.fillRoles(newItems))
     } else {
-      toast.error('Something goes wrong')
+      toast.error('Something went wrong')
     }
   }, [items])
   

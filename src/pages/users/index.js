@@ -66,7 +66,7 @@ const Page = withUsersListGuard(() => {
       })
       dispatch(actions.fillUsers(newItems))
     } else {
-      toast.error('Something goes wrong')
+      toast.error('Something went wrong')
     }
   }, [items])
   

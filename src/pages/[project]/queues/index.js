@@ -52,7 +52,7 @@ const Page = () => {
       })
       dispatch(actions.fillQueues(newItems))
     } else {
-      toast.error('Something goes wrong')
+      toast.error('Something went wrong')
     }
   }, [items])
   
