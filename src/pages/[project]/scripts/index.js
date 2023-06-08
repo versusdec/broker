@@ -1,25 +1,28 @@
+/*
 import {useCallback, useMemo, useState} from 'react';
 import PlusIcon from '@untitled-ui/icons-react/build/esm/Plus';
 import {Button, Card, Stack, SvgIcon, Typography} from '@mui/material';
-import {RolesListTable} from '../../components/roles/roles-list-table';
-import {RolesListFilters} from "../../components/roles/roles-list-filters";
+import {ScriptsListTable} from '../../../components/scripts/scripts-list-table';
 import NextLink from "next/link";
-import {paths} from "../../navigation/paths";
-import {useMe} from "../../hooks/useMe";
-import {useRoles} from "../../hooks/useRoles";
-import {usePagination} from "../../hooks/usePagination";
-import {withRolesListGuard} from "../../hocs/with-roles-list-guard";
-import {api} from "../../api";
+import {paths} from "../../../navigation/paths";
+import {useMe} from "../../../hooks/useMe";
+import {useQueues} from "../../../hooks/useQueues";
+import {usePagination} from "../../../hooks/usePagination";
+import {api} from "../../../api";
 import toast from "react-hot-toast";
-import {useDispatch} from "../../store";
-import {actions} from '../../slices/rolesSlice';
+import {useDispatch} from "../../../store";
+import {actions} from '../../../slices/queuesSlice'
+import {useRouter} from "next/router";
+import {withScriptsListGuard} from "../../../hocs/with-scripts-list-guard";
+import {RolesListFilters} from "../../../components/roles/roles-list-filters";
 
-const Page = withRolesListGuard(() => {
+const Page = withScriptsListGuard(() => {
   const dispatch = useDispatch();
+  const router = useRouter();
   const me = useMe();
-  const userRole = me.data && me.data.role_id;
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const [filters, setFilters] = useState({});
+  const project_id = +router.query.project;
   
   const handleFiltersChange = useCallback((filters) => {
     setFilters(filters)
@@ -27,23 +30,30 @@ const Page = withRolesListGuard(() => {
   
   const params = useMemo(() => {
     return {
-      limit: limit, offset: offset, ...filters
+      limit: limit, offset: offset,
+      ...filters
     }
   }, [limit, page, offset, filters]);
   
-  const {data, loading} = useRoles(params);
+  const {data, loading, error} = useQueues(params);
   const {items, total} = data || {items: [], limit: limit, total: 0};
   
   const handleStatus = useCallback(async (id, status, cb) => {
-    const res = await api.roles.update({
+    const res = await api.queues.update({
       id: +id,
       status: status === 'archived' ? 'active' : 'archived'
     })
     if (res) {
       cb();
-      const {result, error} = await api.roles.list(params)
-      if (result) dispatch(actions.fillRoles(result.items))
-      else if (error) toast.error('Something went wrong')
+      const newItems = items.map((i) => {
+        if (i.id === +id) {
+          return {
+            ...i,
+            status: status === 'archived' ? 'active' : 'archived'
+          }
+        } else return i
+      })
+      dispatch(actions.fillQueues(newItems))
     } else {
       toast.error('Something went wrong')
     }
@@ -59,7 +69,7 @@ const Page = withRolesListGuard(() => {
         >
           <Stack spacing={1}>
             <Typography variant="h4">
-              Roles
+              Queues
             </Typography>
           </Stack>
           <Stack
@@ -67,9 +77,9 @@ const Page = withRolesListGuard(() => {
             direction="row"
             spacing={3}
           >
-            {me.data && (me.data.role_id === 0) && <Button
+            <Button
               component={NextLink}
-              href={paths.roles.add}
+              href={`/${project_id + paths.queues.add}`}
               startIcon={(
                 <SvgIcon>
                   <PlusIcon/>
@@ -78,15 +88,15 @@ const Page = withRolesListGuard(() => {
               variant="contained"
             >
               Add
-            </Button>}
+            </Button>
           </Stack>
         </Stack>
         <Card>
-          <RolesListFilters
+          <ScriptsListFilters
             onFiltersChange={handleFiltersChange}
             initialFilters={filters}
           />
-          <RolesListTable
+          <ScriptsListTable
             items={items}
             total={total}
             onPageChange={handlePageChange}
@@ -95,7 +105,7 @@ const Page = withRolesListGuard(() => {
             page={page}
             loading={loading}
             handleStatus={handleStatus}
-            userRole={userRole}
+            project_id={project_id}
           />
         </Card>
       </Stack>
@@ -104,7 +114,8 @@ const Page = withRolesListGuard(() => {
 })
 
 Page.defaultProps = {
-  title: 'Roles'
+  title: 'Scripts'
 };
 
 export default Page;
+*/

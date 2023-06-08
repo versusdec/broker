@@ -53,6 +53,19 @@ export const queuesSlice = createSlice({
         state.list.data = null;
         state.list.error = action.payload.error;
       })
+      .addCase(queuesSuggest.pending, (state, action) => {
+        state.list.loading = true;
+      })
+      .addCase(queuesSuggest.fulfilled, (state, action) => {
+        state.list.loading = false;
+        state.list.data = action.payload.result
+      })
+      .addCase(queuesSuggest.rejected, (state, action) => {
+        state.list.loading = false;
+        state.list.data = null;
+        state.list.error = action.payload.error;
+      })
+      
       .addCase(queuesGet.pending, (state, action) => {
         state.get.loading = true;
       })

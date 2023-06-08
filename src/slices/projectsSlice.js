@@ -53,6 +53,18 @@ export const projectsSlice = createSlice({
         state.list.error = action.payload.error;
         state.list.data = null
       })
+      .addCase(projectsSuggest.pending, (state, action) => {
+        state.list.loading = true;
+      })
+      .addCase(projectsSuggest.fulfilled, (state, action) => {
+        state.list.loading = false;
+        state.list.data = action.payload.result;
+      })
+      .addCase(projectsSuggest.rejected, (state, action) => {
+        state.list.loading = false;
+        state.list.error = action.payload.error;
+        state.list.data = null
+      })
       .addCase(projectsGet.pending, (state, action) => {
         state.get.loading = true;
       })

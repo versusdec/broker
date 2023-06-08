@@ -52,6 +52,7 @@ const reduceChildRoutes = ({acc, depth, item, pathname, grants, isAdmin}) => {
           {renderItems({
             depth: depth + 1,
             items: item.items,
+            isAdmin: isAdmin,
             grants: grants,
             pathname
           })}

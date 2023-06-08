@@ -1,12 +1,15 @@
 import {useDispatch, useSelector} from "../store";
 import {useCallback, useEffect} from "react";
-import {queuesList} from "../slices/queuesSlice";
+import {queuesList, queuesSuggest} from "../slices/queuesSlice";
 
 export const useQueues = (params) => {
   const dispatch = useDispatch();
   const {data, loading, error} = useSelector(state => state.queues.list)
   
   const getQueues = useCallback(() => {
+    if (params.q)
+      dispatch(queuesSuggest(params))
+    else
       dispatch(queuesList(params))
   }, [params])
   

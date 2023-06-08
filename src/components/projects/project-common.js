@@ -13,7 +13,7 @@ import * as Yup from "yup";
 import {useEffect, useMemo, useState} from "react";
 
 export const CommonTab = ({onSubmit, isNew, userRole, project, clients, ...props}) => {
-  const [client, setClient] = useState(clients[0])
+  const [client, setClient] = useState(clients?.[0] ?? [])
   useEffect(() => {
     if (project.client_id && Array.isArray(clients)) {
       const c = clients.find(i => {

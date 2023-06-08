@@ -42,9 +42,14 @@ export const getSections = (t, project) => {
               path: `/${project?.id}`,
             },
             {
-              title: t(tokens.nav.queues.title),
+              title: t(tokens.nav.queues),
               grants: 'projects.queues.read',
               path: `/${project?.id}/queues`,
+            },
+             {
+              title: t(tokens.nav.scripts),
+              grants: 'projects.scripts.read',
+              path: `/${project?.id}/scripts`,
             },
             
           ]
@@ -70,7 +75,7 @@ export const getSections = (t, project) => {
           )
         },
         {
-          title: t(tokens.roles.title),
+          title: t(tokens.nav.roles),
           path: paths.roles.index,
           grants: 'roles.read',
           icon: (

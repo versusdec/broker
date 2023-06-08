@@ -14,9 +14,9 @@ import {
   TableRow, Tooltip,
   Typography
 } from '@mui/material';
-import {Scrollbar} from './scrollbar';
-import {Pagination} from "./pagination";
-import {Loader} from "./loader";
+import {Scrollbar} from '../scrollbar';
+import {Pagination} from "../pagination";
+import {Loader} from "../loader";
 
 export const QueuesListTable = (props) => {
   const {

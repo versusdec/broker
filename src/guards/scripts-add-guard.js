@@ -5,7 +5,7 @@ import { paths } from '../navigation/paths';
 import {useMe} from "../hooks/useMe";
 import {getGrants} from "../utils/get-role-grants";
 
-export const QueuesAddGuard = (props) => {
+export const ScriptsAddGuard = (props) => {
   const { children } = props;
   const [checked, setChecked] = useState(false);
   const router = useRouter();
@@ -14,7 +14,7 @@ export const QueuesAddGuard = (props) => {
   
   const check = useCallback(() => {
     if (data && (grants.length || data.role_id === 0)) {
-      if (data.role_id === 0 || grants.includes('projects.queues.write')) {
+      if (data.role_id === 0 || grants.includes('projects.scripts.write')) {
         setChecked(true);
       } else {
         router.replace(paths.denied);
@@ -32,6 +32,6 @@ export const QueuesAddGuard = (props) => {
   return <>{children}</>;
 };
 
-QueuesAddGuard.propTypes = {
+ScriptsAddGuard.propTypes = {
   children: PropTypes.node
 };

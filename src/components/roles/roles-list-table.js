@@ -257,7 +257,7 @@ export const RolesListTable = (props) => {
         </DialogTitle>
         <DialogContent dividers>
           <Stack direction={'row'} flexWrap={'wrap'} sx={{gap: 2}}>
-            {grantsDialog.item?.grants.map(item=> <Chip label={item}></Chip>
+            {grantsDialog.item?.grants.map(item=> <Chip label={item} key={item}/>
             )}
           </Stack>
         </DialogContent>

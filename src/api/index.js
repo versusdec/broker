@@ -425,6 +425,18 @@ export const api = Object.freeze({
         }
       }
     },
+    suggest: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.queues.suggest'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
     add: async (params) => {
       try {
         const {result, error} = await fetch(root, init({params: params, method: 'projects.queues.add'})).then(res => res.json());

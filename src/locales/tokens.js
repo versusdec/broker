@@ -10,9 +10,9 @@ export const tokens = {
     billing: 'nav.billing',
     users: 'nav.users',
     projects: 'nav.projects',
-    queues: {
-      title: 'queues'
-    },
+    roles: 'nav.roles',
+    queues: 'nav.queues',
+    scripts: 'nav.scripts',
   },
   roles: {
     title: "roles",

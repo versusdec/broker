@@ -9,6 +9,7 @@ export const en = {
   [tokens.nav.billing]: 'Billing',
   [tokens.nav.users]: 'Users',
   [tokens.nav.projects]: 'Projects',
-  [tokens.nav.queues.title]: 'Queues',
-  [tokens.roles.title]: 'Roles',
+  [tokens.nav.queues]: 'Queues',
+  [tokens.nav.roles]: 'Roles',
+  [tokens.nav.scripts]: 'Scripts',
 };

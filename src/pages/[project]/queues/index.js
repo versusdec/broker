@@ -1,7 +1,8 @@
 import {useCallback, useMemo, useState} from 'react';
 import PlusIcon from '@untitled-ui/icons-react/build/esm/Plus';
 import {Button, Card, Stack, SvgIcon, Typography} from '@mui/material';
-import {QueuesListTable} from '../../../components/queues-list-table';
+import {QueuesListFilters} from "../../../components/queues/queues-list-filters";
+import {QueuesListTable} from '../../../components/queues/queues-list-table';
 import NextLink from "next/link";
 import {paths} from "../../../navigation/paths";
 import {useMe} from "../../../hooks/useMe";
@@ -12,15 +13,16 @@ import toast from "react-hot-toast";
 import {useDispatch} from "../../../store";
 import {actions} from '../../../slices/queuesSlice'
 import {useRouter} from "next/router";
+import {withQueuesListGuard} from "../../../hocs/with-queues-list-guard";
 
-const Page = () => {
+const Page = withQueuesListGuard(() => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const {user} = useMe();
+  const me = useMe();
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const [filters, setFilters] = useState({});
   const project_id = +router.query.project;
-
+  
   const handleFiltersChange = useCallback((filters) => {
     setFilters(filters)
   }, [filters])
@@ -74,7 +76,7 @@ const Page = () => {
             direction="row"
             spacing={3}
           >
-           <Button
+            <Button
               component={NextLink}
               href={`/${project_id + paths.queues.add}`}
               startIcon={(
@@ -89,6 +91,10 @@ const Page = () => {
           </Stack>
         </Stack>
         <Card>
+          <QueuesListFilters
+            onFiltersChange={handleFiltersChange}
+            initialFilters={filters}
+          />
           <QueuesListTable
             items={items}
             total={total}
@@ -104,7 +110,7 @@ const Page = () => {
       </Stack>
     </>
   );
-}
+})
 
 Page.defaultProps = {
   title: 'Queues'

@@ -20,7 +20,7 @@ import {api} from "../../../../api";
 import {actions} from "../../../../slices/queuesSlice";
 import toast from "react-hot-toast";
 import {useDispatch} from "../../../../store";
-import {withQueuesAddGuard} from "../../../../hocs/with-queues-add-guard";
+import {withScriptsAddGuard} from "../../../../hocs/with-scripts-add-guard";
 import * as Yup from "yup";
 import {useFormik} from "formik";
 import {wait} from "../../../../utils/wait";
@@ -51,7 +51,7 @@ const itemUpdate = async (values, newValues, dispatch) => {
   }
 }
 
-const Page = withQueuesAddGuard(() => {
+const Page = withScriptsAddGuard(() => {
   const dispatch = useDispatch();
   const router = useRouter();
   const me = useMe();

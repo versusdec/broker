@@ -300,7 +300,7 @@ const Page = withProjectsAddGuard(() => {
         <Divider/>
       </div>
     </Stack>
-    {currentTab === 'common' && clients && (
+    {currentTab === 'common' && (
       <div>
         {((!newProject && project.id) || newProject) && data && <CommonTab
           project={project}
