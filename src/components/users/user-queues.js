@@ -44,7 +44,7 @@ export const QueuesTab = ({onSubmit, items, selected, onChange, handleChange, ha
                            label="Queues" placeholder="Select queues"/>
               )}
             />
-            {role === 'manager' && <Stack direction={'row'} justifyContent={'end'}>
+            {/*{role === 'manager' && <Stack direction={'row'} justifyContent={'end'}>
               <Button
                 size="large"
                 variant="contained"
@@ -59,7 +59,7 @@ export const QueuesTab = ({onSubmit, items, selected, onChange, handleChange, ha
               >
                 Apply to all operators
               </Button>
-            </Stack>}
+            </Stack>}*/}
           </Stack>
         
         </CardContent>

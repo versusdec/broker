@@ -1,12 +1,12 @@
-/*
 import {useCallback, useMemo, useState} from 'react';
 import PlusIcon from '@untitled-ui/icons-react/build/esm/Plus';
 import {Button, Card, Stack, SvgIcon, Typography} from '@mui/material';
+import {ScriptsListFilters} from "../../../components/scripts/scripts-list-filters";
 import {ScriptsListTable} from '../../../components/scripts/scripts-list-table';
 import NextLink from "next/link";
 import {paths} from "../../../navigation/paths";
 import {useMe} from "../../../hooks/useMe";
-import {useQueues} from "../../../hooks/useQueues";
+import {useScripts} from "../../../hooks/useScripts";
 import {usePagination} from "../../../hooks/usePagination";
 import {api} from "../../../api";
 import toast from "react-hot-toast";
@@ -14,7 +14,6 @@ import {useDispatch} from "../../../store";
 import {actions} from '../../../slices/queuesSlice'
 import {useRouter} from "next/router";
 import {withScriptsListGuard} from "../../../hocs/with-scripts-list-guard";
-import {RolesListFilters} from "../../../components/roles/roles-list-filters";
 
 const Page = withScriptsListGuard(() => {
   const dispatch = useDispatch();
@@ -35,7 +34,7 @@ const Page = withScriptsListGuard(() => {
     }
   }, [limit, page, offset, filters]);
   
-  const {data, loading, error} = useQueues(params);
+  const {data, loading, error} = useScripts(params);
   const {items, total} = data || {items: [], limit: limit, total: 0};
   
   const handleStatus = useCallback(async (id, status, cb) => {
@@ -53,7 +52,7 @@ const Page = withScriptsListGuard(() => {
           }
         } else return i
       })
-      dispatch(actions.fillQueues(newItems))
+      dispatch(actions.fillScripts(newItems))
     } else {
       toast.error('Something went wrong')
     }
@@ -69,7 +68,7 @@ const Page = withScriptsListGuard(() => {
         >
           <Stack spacing={1}>
             <Typography variant="h4">
-              Queues
+              Scripts
             </Typography>
           </Stack>
           <Stack
@@ -79,7 +78,7 @@ const Page = withScriptsListGuard(() => {
           >
             <Button
               component={NextLink}
-              href={`/${project_id + paths.queues.add}`}
+              href={`/${project_id + paths.scripts.add}`}
               startIcon={(
                 <SvgIcon>
                   <PlusIcon/>
@@ -118,4 +117,3 @@ Page.defaultProps = {
 };
 
 export default Page;
-*/

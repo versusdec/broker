@@ -7,6 +7,7 @@ import {reducer as transactionsReducer} from "../slices/transactionsSlice";
 import {reducer as paymentsReducer} from "../slices/paymentsSlice";
 import {reducer as queuesReducer} from "../slices/queuesSlice";
 import {reducer as rolesReducer} from "../slices/rolesSlice";
+import {reducer as scriptsReducer} from "../slices/scriptsSlice";
 
 export const rootReducer = combineReducers({
   auth: authReducer,
@@ -17,4 +18,5 @@ export const rootReducer = combineReducers({
   payments: paymentsReducer,
   queues: queuesReducer,
   roles: rolesReducer,
+  scripts: scriptsReducer,
 });

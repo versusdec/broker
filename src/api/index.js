@@ -550,6 +550,67 @@ export const api = Object.freeze({
       }
     },
     
+  },
+  scripts: {
+    list: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.scripts.list'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    get: async (id) => {
+      try {
+        const {result, error} = await fetch(root, init({params: {id: +id}, method: 'projects.scripts.get'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    suggest: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.scripts.suggest'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    add: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.scripts.add'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    update: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'projects.scripts.update'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    }
   }
-  
 });
