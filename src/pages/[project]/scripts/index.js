@@ -76,7 +76,7 @@ const Page = withScriptsListGuard(() => {
             direction="row"
             spacing={3}
           >
-            <Button
+            {me.data?.role !== 'manager' && <Button
               component={NextLink}
               href={`/${project_id + paths.scripts.add}`}
               startIcon={(
@@ -87,7 +87,7 @@ const Page = withScriptsListGuard(() => {
               variant="contained"
             >
               Add
-            </Button>
+            </Button>}
           </Stack>
         </Stack>
         <Card>
@@ -105,6 +105,7 @@ const Page = withScriptsListGuard(() => {
             loading={loading}
             handleStatus={handleStatus}
             project_id={project_id}
+            userRole={me.data?.role}
           />
         </Card>
       </Stack>

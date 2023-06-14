@@ -11,102 +11,65 @@ import {
   Tabs,
   Typography
 } from '@mui/material';
-import {CommonTab} from '../../../../components/queue/common-tab';
-import {UsersTab} from '../../../../components/queue/users-tab';
-import {useQueue} from "../../../../hooks/useQueue";
+import {CommonTab} from '../../../../components/scripts/common-tab';
+import {StepsTab} from '../../../../components/scripts/steps-tab';
+import {useScript} from "../../../../hooks/useScript";
 import {useRouter} from 'next/router';
 import {useMe} from "../../../../hooks/useMe";
 import {api} from "../../../../api";
-import {actions} from "../../../../slices/queuesSlice";
+import {actions} from "../../../../slices/scriptsSlice";
 import toast from "react-hot-toast";
 import {useDispatch} from "../../../../store";
 import {withScriptsAddGuard} from "../../../../hocs/with-scripts-add-guard";
 import * as Yup from "yup";
 import {useFormik} from "formik";
 import {wait} from "../../../../utils/wait";
+import {useFields} from "../../../../hooks/useFields";
 
 const tabs = [
   {label: 'Common', value: 'common'},
-  {label: 'Users', value: 'users'},
+  {label: 'Steps', value: 'steps'},
+  {label: 'Statuses', value: 'statuses'},
 ];
-
-const setUpdate = (values, newValues) => {
-  const val = {...values, ...newValues}
-  for (const i in val) {
-    if (val[i] === '')
-      delete val[i]
-  }
-  
-  return val
-}
-
-const itemUpdate = async (values, newValues, dispatch) => {
-  const v = setUpdate(values, newValues)
-  const res = await api.queues.update(v)
-  console.log(res);
-  if (!res.error) {
-    toast.success('Changes saved')
-  } else {
-    toast.error('Something went wrong')
-  }
-}
 
 const Page = withScriptsAddGuard(() => {
   const dispatch = useDispatch();
   const router = useRouter();
   const me = useMe();
-  const [currentTab, setCurrentTab] = useState('common');
-  const [selectedUsers, setSelectedUsers] = useState([]);
-  const [users, setUsers] = useState([]);
+  const [currentTab, setCurrentTab] = useState('steps');
+  const project_id = +router.query.project;
   const id = +router.query.id;
-  const project = +router.query.project;
   const isNew = isNaN(id);
-  const {data} = useQueue(id);
-  const [queue, setQueue] = useState({
-    project_id: project,
+  const {data} = useScript(id);
+  const fieldsParams = useMemo(()=>({project_id: project_id, limit: 1000}), [])
+  const fields = useFields(fieldsParams);
+
+  const [script, setScript] = useState({
+    project_id: project_id,
     name: '',
-    description: '',
-    users: [],
+    is_default: false,
+    steps: [],
+    statuses: [],
+    // qualification: [],
     status: 'active'
   });
   
   useEffect(() => {
     if (data) {
-      setQueue(data);
+      setScript(data);
     }
     
     return () => {
-      dispatch(actions.fillQueue(null))
+      dispatch(actions.fillScript(null))
     }
   }, [dispatch, data, id])
-  
-  const getUsers = useCallback(async () => {
-    const {result, error} = await api.users.list({
-      role: 'operator',
-      status: 'active',
-      limit: 1000
-    })
-    if (result) {
-      setUsers(result.items)
-    }
-  }, [queue])
-  
-  useEffect(() => {
-    if(data){
-      setSelectedUsers(data.users)
-    }
-  }, [data])
-  
-  useEffect(() => {
-    getUsers();
-  }, [])
   
   const handleTabsChange = useCallback((event, value) => {
     setCurrentTab(value);
   }, []);
   
   const handleValuesChange = (value) => {
-    setQueue(prev => {
+    setScript(prev => {
       return {
         ...prev,
         ...value
@@ -115,46 +78,34 @@ const Page = withScriptsAddGuard(() => {
   };
   
   const onSubmit = useCallback(async () => {
-    const u = selectedUsers.map(i => {
-      return i.id
-    })
-    const data = {
-      ...queue,
-      users: [...u]
-    }
-    
-    if (isNew) {
-      try {
-        const {result, error} = await api.queues.add(data);
-        if (result && !error) {
-          toast.success('Queue has been created')
+    console.log(script)
+    /*try {
+      const {result, error} = await api.scripts[isNew ? 'add' : 'update'].add(script);
+      if (result && !error) {
+        if (isNew) {
+          toast.success('Script has been created')
           await wait(500);
-          router.replace(`/${project}/queues`)
+          router.replace(`/${project_id}/scripts`)
         } else {
-          toast.error('Something went wrong')
+          toast.success('Script has been updated')
         }
-      } catch (e) {
-        console.log(e)
+      } else {
+        toast.error('Something went wrong')
       }
-    } else {
-      itemUpdate(queue, data, dispatch)
-    }
-  }, [queue, selectedUsers]);
+    } catch (e) {
+      console.log(e)
+    }*/
+  }, [script]);
   
-  const initialValues = useMemo(() => queue, [queue]);
+  const initialValues = useMemo(() => script, [script]);
   const validationSchema = Yup.object({
     name: Yup
       .string()
       .max(255)
       .required('Name is required'),
-    description: Yup
-      .string()
-      .max(255),
     status: Yup
       .string()
       .oneOf(['active', 'archived']),
-    users: Yup
-      .array()
   });
   
   const formik = useFormik({
@@ -175,10 +126,6 @@ const Page = withScriptsAddGuard(() => {
     }
   })
   
-  const handleSelectedUsers = (val) => {
-    setSelectedUsers(val)
-  }
-  
   return (
     <>
       {<>
@@ -187,7 +134,7 @@ const Page = withScriptsAddGuard(() => {
             <Link
               color="text.primary"
               component={NextLink}
-              href={`/${project}/queues`}
+              href={`/${project_id}/scripts`}
               sx={{
                 alignItems: 'center',
                 display: 'inline-flex'
@@ -198,7 +145,7 @@ const Page = withScriptsAddGuard(() => {
                 <ArrowLeftIcon/>
               </SvgIcon>
               <Typography variant="subtitle2">
-                Queues
+                Scripts
               </Typography>
             </Link>
           </div>
@@ -213,13 +160,10 @@ const Page = withScriptsAddGuard(() => {
           >
             <Stack>
               <Typography variant="h4">
-                {isNew && 'Add queue'}
-                {!isNew && queue && queue.name}
+                {isNew && 'Add script'}
+                {!isNew && script && script.name}
               </Typography>
-              {!isNew && queue && <>
-                <Typography variant="body2" color={'text.secondary'}>
-                  {queue.description}
-                </Typography>
+              {!isNew && script && <>
                 <Stack
                   alignItems="center"
                   direction="row"
@@ -229,7 +173,7 @@ const Page = withScriptsAddGuard(() => {
                     ID:
                   </Typography>
                   <Chip
-                    label={queue.id}
+                    label={script.id}
                     size="small"
                   />
                 </Stack>
@@ -259,24 +203,20 @@ const Page = withScriptsAddGuard(() => {
         </Stack>
         {currentTab === 'common' && (
           <div>
-            {((!isNew && queue.id) || isNew) && me.data && <CommonTab
-              item={queue}
+            {((!isNew && script.id) || isNew) && <CommonTab
+              item={script}
               onSubmit={onSubmit}
               onChange={handleValuesChange}
               formik={formik}
-              changeTab={handleTabsChange}
             />}
           </div>
         )}
-        {currentTab === 'users' && <UsersTab
+        {currentTab === 'steps' && <StepsTab
           onSubmit={onSubmit}
-          users={users}
-          selected={selectedUsers}
+          item={script}
+          fields={fields.data}
           formik={formik}
           changeTab={handleTabsChange}
-          handleChange={(e, v) => {
-            handleSelectedUsers(v)
-          }}
         />}
       </>}
     </>
@@ -286,5 +226,5 @@ const Page = withScriptsAddGuard(() => {
 export default Page;
 
 Page.defaultProps = {
-  title: 'Queues'
+  title: 'Scripts'
 }

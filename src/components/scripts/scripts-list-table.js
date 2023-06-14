@@ -1,13 +1,29 @@
 import {useCallback, useState} from 'react';
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
-import {ArchiveOutlined, Close, EditOutlined, UnarchiveOutlined} from '@mui/icons-material'
-import {Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Link, Stack, SvgIcon, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Typography} from '@mui/material';
+import {ArchiveOutlined, Close, EditOutlined, UnarchiveOutlined, PreviewOutlined} from '@mui/icons-material'
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Link,
+  SvgIcon,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Tooltip,
+  Typography
+} from '@mui/material';
 import {Scrollbar} from '../scrollbar';
 import {paths} from '../../navigation/paths';
 import {Pagination} from "../pagination";
 import {Loader} from "../loader";
-import {useMe} from "../../hooks/useMe";
 
 export const ScriptsListTable = (props) => {
   const {
@@ -23,8 +39,6 @@ export const ScriptsListTable = (props) => {
     ...other
   } = props;
   const [dialog, setDialog] = useState({open: false, item: null});
-  const [grantsDialog, setGrantsDialog] = useState({open: false, item: null});
-  const {data} = useMe()
   
   const handleDialogOpen = useCallback((item) => {
     setDialog({
@@ -33,22 +47,8 @@ export const ScriptsListTable = (props) => {
     })
   }, [])
   
-  const handleGrantsDialogOpen = useCallback((item) => {
-    setGrantsDialog({
-      open: true,
-      item: item
-    })
-  }, [])
-  
   const handleDialogClose = useCallback(() => {
     setDialog({
-      open: false,
-      item: null
-    })
-  }, [])
-  
-  const handleGrantsDialogClose = useCallback(() => {
-    setGrantsDialog({
       open: false,
       item: null
     })
@@ -97,17 +97,11 @@ export const ScriptsListTable = (props) => {
                   Name
                 </TableCell>
                 <TableCell>
-                  Description
-                </TableCell>
-                <TableCell>
-                  Grants
-                </TableCell>
-                <TableCell>
                   Status
                 </TableCell>
-                {userRole === 0 && <TableCell align="right">
+                <TableCell align="right">
                   Actions
-                </TableCell>}
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -122,27 +116,14 @@ export const ScriptsListTable = (props) => {
                       {item.id}
                     </TableCell>
                     <TableCell>
-                      {userRole === 0 ? <Link
+                      <Link
                         color="inherit"
                         component={NextLink}
-                        href={`${paths.roles.index}/${item.id}`}
+                        href={`${paths.scripts.index}/${item.id}`}
                         variant="subtitle2"
                       >
                         {item.name}
-                      </Link> : item.name}
-                    </TableCell>
-                    <TableCell>
-                      {item.description}
-                    </TableCell>
-                    <TableCell>
-                      <Link
-                        href={'#'}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleGrantsDialogOpen(item)
-                        }}
-                        variant={'text'}
-                      >Show</Link>
+                      </Link>
                     </TableCell>
                     <TableCell>
                       <Typography
@@ -154,8 +135,8 @@ export const ScriptsListTable = (props) => {
                         {item.status}
                       </Typography>
                     </TableCell>
-                    {userRole === 0 && <TableCell align="right">
-                      <Tooltip title={item.status === 'active' ? 'Archive' : 'Unzip'}>
+                    <TableCell align="right">
+                      {userRole !== 'manager' && <Tooltip title={item.status === 'active' ? 'Archive' : 'Unzip'}>
                         <IconButton
                           onClick={() => {
                             handleDialogOpen(item)
@@ -165,18 +146,20 @@ export const ScriptsListTable = (props) => {
                             {item.status === 'archived' ? <UnarchiveOutlined/> : <ArchiveOutlined/>}
                           </SvgIcon>
                         </IconButton>
-                      </Tooltip>
+                      </Tooltip>}
                       <Tooltip title={'Edit'}>
                         <IconButton
                           component={NextLink}
                           href={`${paths.roles.index}/${item.id}`}
                         >
                           <SvgIcon color={'primary'}>
-                            <EditOutlined/>
+                            {userRole !== 'manager' ?
+                              <EditOutlined/> : <PreviewOutlined/>}
                           </SvgIcon>
                         </IconButton>
                       </Tooltip>
-                    </TableCell>}
+                    
+                    </TableCell>
                   </TableRow>
                 );
               })}
@@ -206,10 +189,10 @@ export const ScriptsListTable = (props) => {
           >
             <Close/>
           </IconButton>
-          {dialog.item && (dialog.item?.status === 'active' ? `Archive role #${dialog.item?.id}?` : `Unzip role #${dialog.item?.id}?`)}
+          {dialog.item && (dialog.item?.status === 'active' ? `Archive script #${dialog.item?.id}?` : `Unzip script #${dialog.item?.id}?`)}
         </DialogTitle>
         <DialogContent dividers>
-          {dialog.item && 'Role '} <Typography component={'span'} variant={'subtitle1'}>{dialog.item && dialog.item?.name}</Typography>
+          {dialog.item && 'Script '} <Typography component={'span'} variant={'subtitle1'}>{dialog.item && dialog.item?.name}</Typography>
         </DialogContent>
         <DialogActions>
           <Button
@@ -230,44 +213,6 @@ export const ScriptsListTable = (props) => {
             }}
           >
             Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog
-        open={grantsDialog.open}
-        onClose={handleGrantsDialogClose}
-        scroll={'paper'}
-        maxWidth={'sm'}
-        fullWidth
-      >
-        <DialogTitle sx={{pr: 10}}>
-          <IconButton
-            aria-label="close"
-            onClick={handleGrantsDialogClose}
-            sx={{
-              position: 'absolute',
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.primary.main,
-            }}
-          >
-            <Close/>
-          </IconButton>
-          {grantsDialog.item?.name}
-        </DialogTitle>
-        <DialogContent dividers>
-          <Stack direction={'row'} flexWrap={'wrap'} sx={{gap: 2}}>
-            {grantsDialog.item?.grants.map(item=> <Chip label={item} key={item}/>
-            )}
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            type={'button'}
-            variant={'contained'}
-            onClick={handleGrantsDialogClose}
-          >
-            Close
           </Button>
         </DialogActions>
       </Dialog>

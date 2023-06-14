@@ -21,7 +21,7 @@ const tabs = [
 export const QueuesListFilters = (props) => {
   const {onFiltersChange, initialFilters} = props;
   const queryRef = useRef(null);
-  const [currentTab, setCurrentTab] = useState('active');
+  const [currentTab, setCurrentTab] = useState('all');
   const [filters, setFilters] = useState(initialFilters);
   
   const handleFiltersUpdate = useCallback(() => {

@@ -29,7 +29,6 @@ export const fieldsSlice = createSlice({
       loading: false,
       error: false
     },
-    
   },
   reducers: {
     fillField: (state, action) => {

@@ -21,7 +21,7 @@ export const Input = ({children, type, ...props}) => {
   }, [props.value])
   
   const onChange = (e) => {
-    props.onChange(e)
+    props.onChange?.(e)
   }
   
   switch (type) {

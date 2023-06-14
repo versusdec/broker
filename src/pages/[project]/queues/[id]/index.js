@@ -11,8 +11,8 @@ import {
   Tabs,
   Typography
 } from '@mui/material';
-import {CommonTab} from '../../../../components/queue/common-tab';
-import {UsersTab} from '../../../../components/queue/users-tab';
+import {CommonTab} from '../../../../components/queues/common-tab';
+import {UsersTab} from '../../../../components/queues/users-tab';
 import {useQueue} from "../../../../hooks/useQueue";
 import {useRouter} from 'next/router';
 import {useMe} from "../../../../hooks/useMe";
