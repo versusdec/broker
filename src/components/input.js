@@ -10,6 +10,9 @@ const Styled = styled(TextField)({
   },
   'input::-webkit-outer-spin-button, input::-webkit-inner-spin-button': {
     'WebkitAppearance': 'none'
+  },
+  '& .MuiSelect-select': {
+    paddingTop: 21
   }
 })
 

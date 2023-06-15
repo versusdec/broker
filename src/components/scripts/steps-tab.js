@@ -4,11 +4,15 @@ import {
   CardContent,
   MenuItem,
   Stack,
-  Checkbox,
-  FormControlLabel, Paper, CardActions,
+  Paper,
+  Typography,
+  IconButton, Box, Tooltip,
 } from '@mui/material';
+import {CancelOutlined} from "@mui/icons-material";
 import {Input} from "../input";
-import {useState} from "react";
+import {createContext, useCallback, useContext, useEffect, useState} from "react";
+
+const StepsContext = createContext(null);
 
 const initialStep = {
   "title": "",
@@ -20,29 +24,202 @@ const initialStep = {
       "answer": ""
     }
   ],
-  "field_id": 1
+  "field_id": ""
 }
 
-export const Step = (props)=> {
+const Answer = ({step_id, answer, index, stepIndex, ...props}) => {
+  const {steps, onChange} = useContext(StepsContext);
   
-  return <Paper sx={{p: 2}}>
-    IM PAPER
+  const handleChange = useCallback(({name, value}) => {
+    const answers = steps[stepIndex].next;
+    answers[index][name] = value;
+    onChange({index: stepIndex, name: 'next', value: answers})
+  }, [steps])
+  
+  const handleDelete = useCallback((index) => {
+    const answers = [...steps[stepIndex].next];
+    answers.splice(index, 1)
+    onChange({index: stepIndex, name: 'next', value: answers})
+  }, [steps])
+  
+  return <Stack spacing={2} direction={{sm: 'column', md: 'row'}} alignItems={'center'} {...props}>
+    <Input
+      name={'answer'}
+      label={'Answer'}
+      value={answer}
+      onChange={(e) => {
+        handleChange({name: e.target.name, value: e.target.value})
+      }}/>
+    <Input
+      fullWidth
+      label="Next step"
+      name="step_id"
+      onChange={(e) => {
+        handleChange({name: e.target.name, value: e.target.value})
+      }}
+      select
+      value={step_id}
+    >
+      {steps.map(item => (
+        <MenuItem key={item.id} value={item.id}>
+          {item.title}
+        </MenuItem>
+      ))}
+    </Input>
+    <Box
+      sx={{flexShrink: 0}}>
+      <Tooltip title={'Remove Answer'}>
+        <IconButton
+          disabled={steps[stepIndex].next.length === 1}
+        onClick={()=>{handleDelete(index)}}
+        >
+          <CancelOutlined color={steps[stepIndex].next.length === 1 ? '' : 'error'}/>
+        </IconButton>
+      </Tooltip>
+    </Box>
+  </Stack>
+}
+
+const Step = ({id, title, text, field_id, next, index, onDelete, ...props}) => {
+  const {fields, steps, onChange} = useContext(StepsContext);
+  
+  const handleAnswerAdd = useCallback(() => {
+    const answers = [...steps[index].next];
+    answers.push({
+      "step_id": 1,
+      "answer": ""
+    })
+    onChange({index: index, name: 'next', value: answers})
+  }, [steps])
+  
+  return <Paper sx={{p: 2}} key={id} elevation={5} {...props}>
+    <Stack spacing={4} direction={{xs: 'column', md: 'row'}}>
+      <Stack spacing={3} flexGrow={1}>
+        <Stack spacing={2} direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+          <Typography variant={'subtitle1'}>Step #{index + 1}</Typography>
+          <Button
+            variant={'outlined'}
+            disabled={steps.length === 1}
+            onClick={() => {
+              onDelete(index)
+            }}
+          >Delete</Button>
+        </Stack>
+        <Input
+          fullWidth
+          name={'title'}
+          label={'Name'}
+          value={title}
+          onChange={(e) => {
+            onChange({index: index, name: e.target.name, value: e.target.value})
+          }}/>
+        <Input
+          fullWidth
+          multiline
+          maxRows={5}
+          name={'text'}
+          label={'Text'}
+          value={text}
+          onChange={(e) => {
+            onChange({index: index, name: e.target.name, value: e.target.value})
+          }}/>
+        <Input
+          fullWidth
+          label="Qualification"
+          name="field_id"
+          onChange={(e) => {
+            onChange({index: index, name: e.target.name, value: e.target.value})
+          }}
+          select
+          value={field_id}
+        >
+          <MenuItem key={'0'} value={''}>Not selected</MenuItem>
+          {fields.map(item => (
+            <MenuItem key={item.id} value={item.id}>
+              {item.label}
+            </MenuItem>
+          ))}
+        
+        </Input>
+      </Stack>
+      <Stack
+        sx={{
+          width: {
+            sm: '100%',
+            md: '50%',
+            xl: 500
+          }
+        }}
+        spacing={3}
+      >
+        <Stack spacing={2} direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+          <Typography variant={'subtitle1'}>Answer options</Typography>
+          <Button
+            variant={'outlined'}
+            onClick={() => {
+              handleAnswerAdd()
+            }}
+          >Add</Button>
+        </Stack>
+        {next.map((item, i) => (<Answer {...item} stepIndex={index} index={i} key={i}/>))}
+      </Stack>
+    </Stack>
   </Paper>
 }
 
-export const StepsTab = ({onSubmit, onChange, isNew, userRole, item, formik, changeTab, ...props}) => {
+export const StepsTab = ({onSubmit, onChange, isNew, userRole, item, fields, changeTab, formik, ...props}) => {
   const [disabled, setDisabled] = useState(false);
-  const [steps, setSteps] = useState(item.steps || []);
+  const [steps, setSteps] = useState(item.steps.length ? item.steps : [{...initialStep}]);
   
+  const handleStepValueChange = useCallback(({index, name, value}) => {
+    const data = [...steps];
+    data[index][name] = value;
+    setSteps(data)
+  }, [steps])
+  
+  const handleRemoveStep = useCallback((index) => {
+    const data = [...steps]
+    data.splice(index, 1)
+    setSteps(data)
+  }, [steps])
+  
+  const addStep = useCallback(() => {
+    const step = {...initialStep, id: steps[steps.length - 1].id + 1}
+    setSteps(prev => ([...steps, step]))
+  }, [steps])
   
   return (
-    <Stack
-      spacing={4}
-      {...props}>
-      <Card>
-        <CardContent>
+    <StepsContext.Provider
+      value={
+        {
+          fields,
+          steps,
+          onChange: handleStepValueChange
+        }
+      }>
+      <Stack
+        spacing={4}
+        {...props}>
+        <Card>
+          <CardContent>
             <Stack spacing={3}>
-  
+              <Stack direction={'row'} justifyContent={'flex-end'}>
+                <Button
+                  variant={'contained'}
+                  onClick={addStep}
+                >
+                  Add step
+                </Button>
+              </Stack>
+              {steps.map((item, i) => (<Step {...item} index={i} key={i} onDelete={handleRemoveStep}/>))}
+              <Stack direction={'row'} justifyContent={'flex-end'}>
+                <Button
+                  variant={'contained'}
+                  onClick={addStep}
+                >
+                  Add step
+                </Button>
+              </Stack>
               <Stack direction={'row'} justifyContent={'end'}>
                 <Button
                   size="large"
@@ -64,9 +241,10 @@ export const StepsTab = ({onSubmit, onChange, isNew, userRole, item, formik, cha
                 </Button>
               </Stack>
             </Stack>
-        </CardContent>
+          </CardContent>
         
-      </Card>
-    </Stack>
+        </Card>
+      </Stack>
+    </StepsContext.Provider>
   );
 };

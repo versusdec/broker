@@ -43,7 +43,7 @@ const Page = withScriptsAddGuard(() => {
   const {data} = useScript(id);
   const fieldsParams = useMemo(()=>({project_id: project_id, limit: 1000}), [])
   const fields = useFields(fieldsParams);
-
+  
   const [script, setScript] = useState({
     project_id: project_id,
     name: '',
@@ -211,10 +211,10 @@ const Page = withScriptsAddGuard(() => {
             />}
           </div>
         )}
-        {currentTab === 'steps' && <StepsTab
+        {currentTab === 'steps' && fields.data && <StepsTab
           onSubmit={onSubmit}
           item={script}
-          fields={fields.data}
+          fields={Array.isArray(fields.data.items) ? fields.data.items : []}
           formik={formik}
           changeTab={handleTabsChange}
         />}
