@@ -1,0 +1,27 @@
+image: curlimages/curl
+
+stages:
+   - notify
+   - deploy dev
+
+
+Deploy DEV:
+  stage: deploy dev
+  tags:
+    - cal1d
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
+  script:
+    - curl -v -u gitlab:Ooveekiehiut8ju 'http://j.k-c.me/job/dev-broker-front/build?token=aesheegooT4eeF1'
+
+
+notify:
+  stage: notify
+  tags:
+    - cal1d
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
+  script:
+    - 'URL="https://api.telegram.org/bot6258200202:AAGewX01PV1ROGHSaX5FXtL4QGQjXRmEvnI/sendMessage"'
+    - 'TEXT="New changes in branch $CI_COMMIT_REF_NAME in repo $CI_PROJECT_URL. Autodeploy to preprod started."'
+    - 'curl -s --max-time 10 -d "chat_id=-903821577&disable_web_page_preview=1&text=$TEXT" $URL > /dev/null'
