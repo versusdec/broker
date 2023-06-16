@@ -25,6 +25,7 @@ import * as Yup from "yup";
 import {useFormik} from "formik";
 import {wait} from "../../../../utils/wait";
 import {useFields} from "../../../../hooks/useFields";
+import {StatusesTab} from "../../../../components/scripts/statuses-tab";
 
 const tabs = [
   {label: 'Common', value: 'common'},
@@ -32,25 +33,47 @@ const tabs = [
   {label: 'Statuses', value: 'statuses'},
 ];
 
+const initialStep = {
+  "title": "",
+  "text": "",
+  "id": 1,
+  "next": [
+    {
+      "step_id": 1,
+      "answer": ""
+    }
+  ],
+  "field_id": ""
+}
+
+const initialStatus = {
+  "label": "",
+  "name": "",
+  "actions": [
+    {
+      "name": "assign_recall"
+    }
+  ]
+}
+
 const Page = withScriptsAddGuard(() => {
   const dispatch = useDispatch();
   const router = useRouter();
   const me = useMe();
-  const [currentTab, setCurrentTab] = useState('steps');
+  const [currentTab, setCurrentTab] = useState('common');
   const project_id = +router.query.project;
   const id = +router.query.id;
   const isNew = isNaN(id);
   const {data} = useScript(id);
-  const fieldsParams = useMemo(()=>({project_id: project_id, limit: 1000}), [])
+  const fieldsParams = useMemo(() => ({project_id: project_id, limit: 1000}), [])
   const fields = useFields(fieldsParams);
   
-  const [script, setScript] = useState({
+  const [script, setScript] = useState(data ?? {
     project_id: project_id,
     name: '',
     is_default: false,
-    steps: [],
-    statuses: [],
-    // qualification: [],
+    steps: [initialStep],
+    statuses: [initialStatus],
     status: 'active'
   });
   
@@ -68,19 +91,18 @@ const Page = withScriptsAddGuard(() => {
     setCurrentTab(value);
   }, []);
   
-  const handleValuesChange = (value) => {
+  const handleValuesChange = useCallback((value) => {
     setScript(prev => {
       return {
         ...prev,
         ...value
       }
     })
-  };
+  }, [script])
   
   const onSubmit = useCallback(async () => {
-    console.log(script)
-    /*try {
-      const {result, error} = await api.scripts[isNew ? 'add' : 'update'].add(script);
+    try {
+      const {result, error} = await api.scripts[isNew ? 'add' : 'update'](script);
       if (result && !error) {
         if (isNew) {
           toast.success('Script has been created')
@@ -94,7 +116,7 @@ const Page = withScriptsAddGuard(() => {
       }
     } catch (e) {
       console.log(e)
-    }*/
+    }
   }, [script]);
   
   const initialValues = useMemo(() => script, [script]);
@@ -106,6 +128,17 @@ const Page = withScriptsAddGuard(() => {
     status: Yup
       .string()
       .oneOf(['active', 'archived']),
+    statuses: Yup.array().of(
+      Yup.object().shape({
+        name: Yup.string().required("Name required"),
+        label: Yup.string().required("Label required"),
+        actions: Yup.array().of(
+          Yup.object().shape({
+            name: Yup.string(),
+          })
+        )
+      })
+    )
   });
   
   const formik = useFormik({
@@ -207,6 +240,7 @@ const Page = withScriptsAddGuard(() => {
               item={script}
               onSubmit={onSubmit}
               onChange={handleValuesChange}
+              changeTab={handleTabsChange}
               formik={formik}
             />}
           </div>
@@ -217,6 +251,16 @@ const Page = withScriptsAddGuard(() => {
           fields={Array.isArray(fields.data.items) ? fields.data.items : []}
           formik={formik}
           changeTab={handleTabsChange}
+          initialStep={initialStep}
+          onChange={handleValuesChange}
+        />}
+        {currentTab === 'statuses' && <StatusesTab
+          onSubmit={onSubmit}
+          item={script}
+          formik={formik}
+          changeTab={handleTabsChange}
+          initialStatus={initialStatus}
+          onChange={handleValuesChange}
         />}
       </>}
     </>

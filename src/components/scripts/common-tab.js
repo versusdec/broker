@@ -10,7 +10,7 @@ import {
 import {Input} from "../input";
 import {useState} from "react";
 
-export const CommonTab = ({onSubmit, onChange, isNew, userRole, item, formik, ...props}) => {
+export const CommonTab = ({onSubmit, onChange, isNew, userRole, item, formik, changeTab, ...props}) => {
   const [disabled, setDisabled] = useState(false);
   
   return (
@@ -73,6 +73,9 @@ export const CommonTab = ({onSubmit, onChange, isNew, userRole, item, formik, ..
                         setDisabled(false)
                       }, 500)
                       formik.handleSubmit(e);
+                      if(!formik.errors.name && !formik.isValid){
+                        changeTab(e, 'statuses')
+                      }
                     }}
                   >
                     Save

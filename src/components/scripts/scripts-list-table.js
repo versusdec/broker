@@ -1,7 +1,7 @@
 import {useCallback, useState} from 'react';
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
-import {ArchiveOutlined, Close, EditOutlined, UnarchiveOutlined, PreviewOutlined} from '@mui/icons-material'
+import {ArchiveOutlined, Close, EditOutlined, UnarchiveOutlined, PreviewOutlined, ContentCopyOutlined} from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -36,6 +36,8 @@ export const ScriptsListTable = (props) => {
     loading,
     handleStatus,
     userRole,
+    handleClone,
+    project_id,
     ...other
   } = props;
   const [dialog, setDialog] = useState({open: false, item: null});
@@ -53,7 +55,7 @@ export const ScriptsListTable = (props) => {
       item: null
     })
   }, [])
-  
+
   return (
     <Box
       sx={{position: 'relative'}}
@@ -147,17 +149,30 @@ export const ScriptsListTable = (props) => {
                           </SvgIcon>
                         </IconButton>
                       </Tooltip>}
-                      <Tooltip title={'Edit'}>
-                        <IconButton
-                          component={NextLink}
-                          href={`${paths.roles.index}/${item.id}`}
-                        >
-                          <SvgIcon color={'primary'}>
-                            {userRole !== 'manager' ?
-                              <EditOutlined/> : <PreviewOutlined/>}
-                          </SvgIcon>
-                        </IconButton>
-                      </Tooltip>
+                      {userRole !== 'manager' && <>
+                        <Tooltip title={'Edit'}>
+                          <IconButton
+                            component={NextLink}
+                            href={`/${project_id}/scripts/${item.id}`}
+                          >
+                            <SvgIcon color={'primary'}>
+                              
+                              <EditOutlined/>
+                            </SvgIcon>
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title={'Clone'}>
+                          <IconButton
+                            onClick={() => {
+                              handleClone(item)
+                            }}
+                          >
+                            <SvgIcon color={'primary'}>
+                              <ContentCopyOutlined/>
+                            </SvgIcon>
+                          </IconButton>
+                        </Tooltip>
+                      </>}
                     
                     </TableCell>
                   </TableRow>

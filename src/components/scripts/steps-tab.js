@@ -14,19 +14,6 @@ import {createContext, useCallback, useContext, useEffect, useState} from "react
 
 const StepsContext = createContext(null);
 
-const initialStep = {
-  "title": "",
-  "text": "",
-  "id": 1,
-  "next": [
-    {
-      "step_id": 1,
-      "answer": ""
-    }
-  ],
-  "field_id": ""
-}
-
 const Answer = ({step_id, answer, index, stepIndex, ...props}) => {
   const {steps, onChange} = useContext(StepsContext);
   
@@ -62,20 +49,23 @@ const Answer = ({step_id, answer, index, stepIndex, ...props}) => {
     >
       {steps.map(item => (
         <MenuItem key={item.id} value={item.id}>
-          {item.title}
+          {item.title === '' ? `Step #${item.id}` : item.title}
         </MenuItem>
       ))}
     </Input>
     <Box
       sx={{flexShrink: 0}}>
-      <Tooltip title={'Remove Answer'}>
-        <IconButton
-          disabled={steps[stepIndex].next.length === 1}
-        onClick={()=>{handleDelete(index)}}
-        >
+      
+      <IconButton
+        disabled={steps[stepIndex].next.length === 1}
+        onClick={() => {
+          handleDelete(index)
+        }}
+      >
+        <Tooltip title={'Remove Answer'}>
           <CancelOutlined color={steps[stepIndex].next.length === 1 ? '' : 'error'}/>
-        </IconButton>
-      </Tooltip>
+        </Tooltip>
+      </IconButton>
     </Box>
   </Stack>
 }
@@ -167,12 +157,16 @@ const Step = ({id, title, text, field_id, next, index, onDelete, ...props}) => {
   </Paper>
 }
 
-export const StepsTab = ({onSubmit, onChange, isNew, userRole, item, fields, changeTab, formik, ...props}) => {
+export const StepsTab = ({onSubmit, onChange, isNew, userRole, item, fields, changeTab, formik, initialStep, ...props}) => {
   const [disabled, setDisabled] = useState(false);
-  const [steps, setSteps] = useState(item.steps.length ? item.steps : [{...initialStep}]);
+  const [steps, setSteps] = useState(item.steps);
+  
+  useEffect(() => {
+    onChange({steps: steps})
+  }, [steps])
   
   const handleStepValueChange = useCallback(({index, name, value}) => {
-    const data = [...steps];
+    const data = JSON.parse(JSON.stringify(steps));
     data[index][name] = value;
     setSteps(data)
   }, [steps])
@@ -184,9 +178,10 @@ export const StepsTab = ({onSubmit, onChange, isNew, userRole, item, fields, cha
   }, [steps])
   
   const addStep = useCallback(() => {
-    const step = {...initialStep, id: steps[steps.length - 1].id + 1}
-    setSteps(prev => ([...steps, step]))
+    const step = {...initialStep, id: steps[steps.length - 1].id + 1};
+    setSteps(prev => ([...prev, step]))
   }, [steps])
+  
   
   return (
     <StepsContext.Provider
@@ -232,8 +227,10 @@ export const StepsTab = ({onSubmit, onChange, isNew, userRole, item, fields, cha
                       setDisabled(false)
                     }, 500)
                     formik.handleSubmit(e);
-                    if (!formik.isValid) {
+                    if (formik.errors.name) {
                       changeTab(e, 'common')
+                    } else if (formik.errors.statuses) {
+                      changeTab(e, 'statuses')
                     }
                   }}
                 >
