@@ -116,7 +116,7 @@ const Page = () => {
   return (
     <>
       <div>
-        {loading && <Loader/>}
+        {loading && <Loader backdrop/>}
         <Dialog
           open={modalOpen}
           onClose={handleModal}

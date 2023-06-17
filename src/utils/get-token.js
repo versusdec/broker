@@ -7,6 +7,5 @@ export const getToken = () => {
   }
   
   let token = cookies['__token'];
-  
   return token
 }

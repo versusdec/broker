@@ -6,27 +6,20 @@ import {
   Button,
   Card,
   CardContent,
-  Divider, IconButton, InputAdornment, MenuItem,
+  IconButton,
+  InputAdornment,
+  MenuItem,
   Stack,
   SvgIcon,
-  Switch,
   TextField,
   Typography,
-  Unstable_Grid2 as Grid
+  Autocomplete, Checkbox
 } from '@mui/material';
 import {alpha} from '@mui/material/styles';
 import {Input} from "../input";
-import {useFormik} from "formik";
-import * as Yup from "yup";
-import {useCallback, useEffect, useMemo, useState} from "react";
+import {useCallback, useState} from "react";
 import {FileUploader} from "../file-uploader";
-import {Visibility, VisibilityOff} from "@mui/icons-material";
-
-const timezones = [
-  {value: 1, label: '+1'},
-  {value: 2, label: '+2'},
-  {value: 3, label: '+3'},
-]
+import {CheckBox, CheckBoxOutlineBlank, Visibility, VisibilityOff} from "@mui/icons-material";
 
 const languageOptions = [
   {
@@ -35,55 +28,19 @@ const languageOptions = [
     value: 'en'
   },
   {
-    icon: '/assets/flags/flag-de.svg',
-    label: 'German',
-    value: 'de'
-  },
-  {
-    icon: '/assets/flags/flag-es.svg',
-    label: 'Spanish',
-    value: 'es'
+    icon: '/assets/flags/flag-ru.svg',
+    label: 'Russian',
+    value: 'ru'
   }
 ]
 
-const validationSchema = Yup.object({
-  email: Yup
-    .string()
-    .email('Must be a valid email')
-    .max(255)
-    .required('Email is required'),
-  name: Yup
-    .string()
-    .max(255)
-    .required('Name is required'),
-  timezone: Yup
-    .number()
-    .oneOf([0, 1, 2, 3]),
-  language: Yup
-    .string()
-    .oneOf(['en', 'de', 'es']),
-  password: Yup
-    .string()
-    .min(8)
-    .max(255),
-  confirm_password: Yup
-    .string()
-    .max(255)
-    .oneOf([Yup.ref('password')], 'Passwords must match')
-    .when("password", {
-      is: (password) => password && password.length,
-      then: Yup.string().required("Confirm your new password").max(255)
-    }),
-  status: Yup
-    .string()
-    .oneOf(['active', 'blocked'])
-});
-
-export const CommonTab = (props) => {
-  const {user, onSubmit} = props;
-  
+export const CommonTab = ({
+                            onUpload, isAdmin, timezones, user, client, clients, project, projects, roles, formik, onChange,
+                            onClientChange, onProjectChange, onProjectsChange, ...props
+                          }) => {
   const [uploaderOpen, setUploaderOpen] = useState(false);
   const [showPass, setShowPass] = useState(false);
+  const [disabled, setDisabled] = useState(false);
   
   const handleOpen = useCallback(() => {
     setUploaderOpen(true)
@@ -92,51 +49,6 @@ export const CommonTab = (props) => {
   const handleClose = useCallback(() => {
     setUploaderOpen(false)
   }, [])
-  
-  const handleUploader = () => {
-    setUploaderOpen(!uploaderOpen)
-  }
-  
-  const handleUpload = useCallback((val) => {
-    console.log(val)
-  }, [])
-  
-  const initialValues = useMemo(() => {
-    return user || {
-      name: '',
-      email: '',
-      avatar: '',
-      timezone: '',
-      language: '',
-      password: '',
-      confirm_password: '',
-      status: 'active'
-    }
-  }, [user])
-  
-  const formik = useFormik({
-    initialValues,
-    validationSchema,
-    errors: {},
-    onSubmit: (values, helpers) => {
-      try {
-        // onUpdate(values)
-        Object.keys(values).forEach(key => {
-          if (values[key] === '' || values[key] === null) {
-            delete values[key];
-          }
-        });
-        
-        onSubmit(values)
-      } catch (err) {
-        console.error(err);
-        
-        helpers.setStatus({success: false});
-        helpers.setErrors({submit: err.message});
-        helpers.setSubmitting(false);
-      }
-    }
-  })
   
   return (
     <Stack
@@ -208,7 +120,7 @@ export const CommonTab = (props) => {
                     </Stack>
                   </Box>
                   <Avatar
-                    src={user?.avatar || '/assets/avatars/avatar-anika-visser.png'}
+                    src={user?.avatar}
                     sx={{
                       height: 100,
                       width: 100
@@ -265,10 +177,13 @@ export const CommonTab = (props) => {
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
                   select
-                  value={formik.values.timezone || ''}
+                  value={timezones ? formik.values.timezone : ''}
                 >
                   {
-                    timezones.map(option => {
+                    !timezones && <MenuItem value=""/>
+                  }
+                  {
+                    timezones && timezones.map(option => {
                       return (
                         <MenuItem key={option.value} value={option.value}>
                           {option.label}
@@ -319,11 +234,69 @@ export const CommonTab = (props) => {
                     Blocked
                   </MenuItem>
                 </Input>
+                {roles.length && <Input
+                  fullWidth
+                  label="Role"
+                  name="role_id"
+                  onChange={formik.handleChange}
+                  select
+                  value={formik.values.role_id || ''}
+                >
+                  {roles.map(item => {
+                    return <MenuItem key={item.id} value={item.id}>
+                      <Box sx={{textTransform: 'capitalize'}}>
+                        {item.name}
+                      </Box>
+                    </MenuItem>
+                  })}
+                </Input>}
+                {isAdmin ? !!clients.length && <Autocomplete
+                  disablePortal
+                  disableClearable
+                  options={clients}
+                  getOptionLabel={(i) => {
+                    return (i.name ? i.name + ' | ' : '') + i.email
+                  }}
+                  onChange={(e, val) => {
+                    onClientChange(val)
+                  }}
+                  value={client || clients[0] || undefined}
+                  renderInput={(params) => <TextField {...params}
+                                                      fullWidth
+                                                      name="client_id"
+                                                      label="Client"/>}
+                /> : ''}
+                {projects.length && <Autocomplete
+                  multiple
+                  options={projects}
+                  disableCloseOnSelect
+                  getOptionLabel={(option) => option.name}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  value={project.length ? project : [projects[0]]}
+                  renderOption={(props, option, {selected}) => (
+                    <li {...props}>
+                      <Checkbox
+                        icon={<CheckBoxOutlineBlank fontSize={'small'}/>}
+                        checkedIcon={<CheckBox fontSize={'small'}/>}
+                        style={{marginRight: 8}}
+                        checked={selected}
+                      />
+                      {option.name}
+                    </li>
+                  )}
+                  onChange={(e, val) => {
+                    onProjectsChange(val)
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} fullWidth
+                               label="Projects" placeholder="Select projects"/>
+                  )}
+                />}
                 <Input
                   error={!!(formik.touched.password && formik.errors.password)}
                   fullWidth
                   helperText={formik.touched.password && formik.errors.password}
-                  label="New password"
+                  label="Password"
                   name="password"
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
@@ -346,22 +319,29 @@ export const CommonTab = (props) => {
                   }}
                 />
                 <Input
-                  error={!!(formik.touched.password && formik.errors.confirm_password)}
+                  error={!!(formik.touched.password && formik.errors.password_confirm)}
                   fullWidth
-                  helperText={formik.touched.password && formik.errors.confirm_password}
+                  helperText={formik.touched.password && formik.errors.password_confirm}
                   label="Confirm password"
-                  name="confirm_password"
+                  name="password_confirm"
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
                   type="password"
-                  value={formik.values.confirm_password || ''}
+                  value={formik.values.password_confirm || ''}
                 />
                 <Stack direction={'row'} justifyContent={'end'}>
                   <Button
                     size="large"
                     type="submit"
                     variant="contained"
-                    onClick={formik.handleSubmit}
+                    disabled={disabled}
+                    onClick={(e) => {
+                      setDisabled(true)
+                      setTimeout(() => {
+                        setDisabled(false)
+                      }, 500)
+                      formik.handleSubmit(e)
+                    }}
                   >
                     Save
                   </Button>
@@ -374,7 +354,10 @@ export const CommonTab = (props) => {
       <FileUploader
         onClose={handleClose}
         open={uploaderOpen}
-        onUpload={handleUpload}
+        onUpload={(files) => {
+          onUpload(files)
+          handleClose()
+        }}
       />
     </Stack>
   );

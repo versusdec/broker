@@ -1,15 +1,18 @@
 import {useDispatch, useSelector} from "../store";
-import {useEffect} from "react";
+import {useCallback, useEffect} from "react";
 import {usersMe} from "../slices/usersSlice";
 
 export const useMe = () => {
   const dispatch = useDispatch();
-  const me = useSelector(state => state.users.me)
+  const {data, loading, error} = useSelector(state => state.users.me)
 
-  useEffect(() => {
-      if(!me)
-        dispatch(usersMe())
-  }, [me, dispatch])
+  const fetch = useCallback(()=>{
+    dispatch(usersMe())
+  }, [dispatch])
   
-  return me
+  useEffect(() => {
+    fetch()
+  }, [])
+  
+  return {data, loading, error}
 }

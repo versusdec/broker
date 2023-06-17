@@ -1,13 +1,14 @@
-import Head from 'next/head';
 import {
   Box,
   Paper,
   Typography,
   Unstable_Grid2 as Grid
 } from '@mui/material';
+import {useRouter} from 'next/router'
 
 const Page = () => {
-
+ const router = useRouter();
+  // router.replace('/projects')
   
   return (
     <>

@@ -7,11 +7,9 @@ import {
   Button,
   Card,
   CardContent,
-  Divider, MenuItem,
+  MenuItem,
   Stack,
   SvgIcon,
-  Switch,
-  TextField,
   Typography,
   Unstable_Grid2 as Grid
 } from '@mui/material';
@@ -52,10 +50,11 @@ const validationSchema = Yup.object({
     .oneOf(['en', 'ru'])
 });
 
-export const AccountGeneralSettings = (props) => {
-  const {user, onSubmit, updateAvatar} = props;
+export const AccountGeneralSettings = ({user, onSubmit, onUpload, editGrant, isAdmin, ...props}) => {
   const [uploaderOpen, setUploaderOpen] = useState(false);
   const [timezones, setTimezones] = useState(null);
+  const [disabled, setDisabled] = useState(false);
+  const isDisabled = !(isAdmin || editGrant);
   
   useEffect(() => {
     const getTimezones = async () => {
@@ -83,7 +82,7 @@ export const AccountGeneralSettings = (props) => {
   const initialValues = {
     name: user?.name || '',
     email: user?.email || '',
-    avatar: user?.avatar || '/assets/avatars/avatar-anika-visser.png',
+    avatar: user?.avatar || '',
     timezone: user?.timezone || 0,
     language: user?.language || 'en'
   };
@@ -150,7 +149,7 @@ export const AccountGeneralSettings = (props) => {
                         position: 'relative'
                       }}
                     >
-                      <Box
+                      {(isAdmin || editGrant) && <Box
                         sx={{
                           alignItems: 'center',
                           backgroundColor: (theme) => alpha(theme.palette.neutral[700], 0.5),
@@ -188,7 +187,7 @@ export const AccountGeneralSettings = (props) => {
                             Select
                           </Typography>
                         </Stack>
-                      </Box>
+                      </Box>}
                       <Avatar
                         src={user?.avatar || '/assets/avatars/avatar-anika-visser.png'}
                         sx={{
@@ -202,13 +201,13 @@ export const AccountGeneralSettings = (props) => {
                       </Avatar>
                     </Box>
                   </Box>
-                  <Button
+                  {(isAdmin || editGrant) && <Button
                     color="inherit"
                     size="small"
                     onClick={handleOpen}
                   >
                     Change
-                  </Button>
+                  </Button>}
                 </Stack>
                 <form noValidate>
                   <Stack spacing={3}>
@@ -222,6 +221,7 @@ export const AccountGeneralSettings = (props) => {
                       onBlur={formik.handleBlur}
                       onChange={formik.handleChange}
                       value={formik.values.name}
+                      disabled={isDisabled}
                     />
                     <Input
                       fullWidth
@@ -233,6 +233,7 @@ export const AccountGeneralSettings = (props) => {
                       onBlur={formik.handleBlur}
                       onChange={formik.handleChange}
                       value={formik.values.email}
+                      disabled={isDisabled}
                     />
                     <Input
                       name="avatar"
@@ -248,6 +249,7 @@ export const AccountGeneralSettings = (props) => {
                       onChange={formik.handleChange}
                       select
                       value={timezones ? formik.values.timezone : ''}
+                      disabled={isDisabled}
                     >
                       {
                         !timezones && <MenuItem value=""></MenuItem>
@@ -271,6 +273,7 @@ export const AccountGeneralSettings = (props) => {
                       onChange={formik.handleChange}
                       select
                       value={formik.values.language}
+                      disabled={isDisabled}
                     >
                       {
                         languageOptions.map(option => {
@@ -293,9 +296,14 @@ export const AccountGeneralSettings = (props) => {
                     <Stack direction={'row'} justifyContent={'end'}>
                       <Button
                         size="large"
-                        type="submit"
-                        variant="contained"
-                        onClick={formik.handleSubmit}
+                        disabled={disabled}
+                        onClick={(e)=>{
+                          setDisabled(true);
+                          setTimeout(()=>{
+                            setDisabled(false)
+                          }, 500)
+                          formik.handleSubmit(e)
+                        }}
                       >
                         Save
                       </Button>
@@ -311,10 +319,9 @@ export const AccountGeneralSettings = (props) => {
         onClose={handleClose}
         open={uploaderOpen}
         onUpload={(files) => {
-          updateAvatar(files)
+          onUpload(files)
           handleClose()
-        }
-        }
+        }}
         multiple={false}
       />
     </Stack>

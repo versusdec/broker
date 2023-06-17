@@ -6,7 +6,7 @@ import {
   Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton,
   Stack,
   Link,
-  Typography
+  Typography, TextField
 } from '@mui/material';
 import {Layout as AuthLayout} from '../../../layouts/auth';
 import {paths} from '../../../navigation/paths';
@@ -15,7 +15,6 @@ import {Input} from "../../../components/input";
 import toast from 'react-hot-toast';
 import {useAuth} from "../../../hooks/useAuth";
 import {useEffect, useState} from "react";
-import {Close} from "@mui/icons-material";
 
 const initialValues = {
   email: '',
@@ -59,6 +58,7 @@ const Page = () => {
     onSubmit: async (values, helpers) => {
       try {
         const res = await login(values);
+
         if (res && res.method === 'login2fa') {
           setTfaValues(values);
           handleModal();
@@ -101,7 +101,7 @@ const Page = () => {
   return (
     <>
       <div>
-        {loading && <Loader/>}
+        {loading && <Loader backdrop/>}
         <Dialog
           open={modalOpen}
           scroll={'paper'}
@@ -167,7 +167,7 @@ const Page = () => {
           onSubmit={formik.handleSubmit}
         >
           <Stack spacing={3}>
-            <Input
+            <TextField
               error={!!(formik.touched.email && formik.errors.email)}
               fullWidth
               helperText={formik.touched.email && formik.errors.email}
@@ -178,7 +178,7 @@ const Page = () => {
               type="email"
               value={formik.values.email}
             />
-            <Input
+            <TextField
               error={!!(formik.touched.password && formik.errors.password)}
               fullWidth
               helperText={formik.touched.password && formik.errors.password}

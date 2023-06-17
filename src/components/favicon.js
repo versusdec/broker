@@ -17,13 +17,13 @@ const Favicon = () => (
       sizes="16x16"
       href="/favicon/favicon-16x16.png"
     />
-    <link rel="manifest" href="/img/favicon/site.webmanifest" />
+    <link rel="manifest" href="/favicon/site.webmanifest" />
     <link
       rel="mask-icon"
       href="/favicon/safari-pinned-tab.svg"
       color="#5bbad5"
     />
-    <link rel="shortcut icon" href="/img/favicon/favicon.ico" />
+    <link rel="shortcut icon" href="/favicon/favicon.ico" />
     <meta name="msapplication-TileColor" content="#da532c" />
     <meta
       name="msapplication-config"

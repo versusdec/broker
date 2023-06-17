@@ -5,7 +5,7 @@ import { AccountPopover } from './account-popover';
 import {useMe} from "../../../hooks/useMe";
 
 export const AccountButton = () => {
-  const user = useMe();
+  const {data} = useMe();
   
   const anchorRef = useRef(null);
   const [openPopover, setOpenPopover] = useState(false);
@@ -40,7 +40,7 @@ export const AccountButton = () => {
             height: 32,
             width: 32
           }}
-          src={user?.avatar.length ? user.avatar : '/assets/avatars/avatar-anika-visser.png'}
+          src={(data && data.avatar.length) ? data.avatar : ''}
         > 
           <SvgIcon>
             <User01Icon />
