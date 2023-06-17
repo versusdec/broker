@@ -10,7 +10,7 @@ import {usePayments} from "../../hooks/usePayments";
 import {TransactionsTable} from "../../components/transactions-table";
 import {PaymentsTable} from "../../components/payments-table";
 import {wait} from "../../utils/wait";
-import {getGrants} from "../../utils/get-role-grants";
+import {useGrants} from "../../utils/get-role-grants";
 import {withTransactionsListGuard} from "../../hocs/with-transactions-list-guard";
 
 const tabs = [
@@ -31,7 +31,7 @@ const Page = withTransactionsListGuard(() => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentTab, setCurrentTab] = useState('transactions');
   const [clients, setClients] = useState(null);
-  const grants = getGrants(data && data.role_id);
+  const grants = useGrants(data && data.role_id);
   const isAdmin = data && data.role_id === 0;
   
   const handleTabsChange = useCallback((event, value) => {

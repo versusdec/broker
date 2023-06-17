@@ -28,7 +28,7 @@ import {useFormik} from "formik";
 import {QueuesTab} from "../../../components/users/user-queues";
 import {OperatorsTab} from "../../../components/users/user-operators";
 import {usePagination} from "../../../hooks/usePagination";
-import {getGrants} from "../../../utils/get-role-grants";
+import {useGrants} from "../../../utils/get-role-grants";
 
 const Page = withUsersAddGuard(() => {
     const dispatch = useDispatch();
@@ -63,7 +63,7 @@ const Page = withUsersAddGuard(() => {
     const id = +router.query.user;
     const newUser = isNaN(id);
     const {data} = useUser(id);
-    const grants = getGrants(me.data?.role_id);
+    const grants = useGrants(me.data?.role_id);
     const isAdmin = me.data && me.data.role_id === 0;
     const editUsersGrant = isAdmin || grants.includes('users.write');
     const [queuesLoading, setQueuesLoading] = useState(false);

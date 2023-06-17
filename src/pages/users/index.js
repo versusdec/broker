@@ -13,7 +13,7 @@ import {api} from "../../api";
 import toast from "react-hot-toast";
 import {useDispatch} from "../../store";
 import {actions} from '../../slices/usersSlice'
-import {getGrants} from "../../utils/get-role-grants";
+import {useGrants} from "../../utils/get-role-grants";
 
 const Page = withUsersListGuard(() => {
   const dispatch = useDispatch();
@@ -21,7 +21,7 @@ const Page = withUsersListGuard(() => {
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const [filters, setFilters] = useState({});
   const [role, setRole] = useState({grants: []});
-  const grants = getGrants(data?.role_id);
+  const grants = useGrants(data?.role_id);
   const isAdmin = data && data.role_id === 0;
   
   const getRole = useCallback(async (id) => {

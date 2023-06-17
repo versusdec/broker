@@ -49,7 +49,7 @@ const Page = () => {
             color="text.secondary"
             sx={{mt: 0.5}}
           >
-            You don't have access to this page. Contact your supervisor.
+            {'You don\'t have access to this page. Contact your supervisor.'}
           </Typography>
           <Box
             sx={{

@@ -9,7 +9,7 @@ import {root} from "../../api/config";
 import {actions} from "../../slices/usersSlice";
 import toast from "react-hot-toast";
 import {useDispatch} from "../../store";
-import {getGrants} from "../../utils/get-role-grants";
+import {useGrants} from "../../utils/get-role-grants";
 
 const tabs = [
   {label: 'General', value: 'general'},
@@ -41,7 +41,7 @@ const Page = () => {
   const [currentTab, setCurrentTab] = useState('general');
   const {data} = useMe();
   const dispatch = useDispatch();
-  const grants = getGrants(data?.user_id);
+  const grants = useGrants(data?.user_id);
   const editGrant = grants.includes('users.write');
   const isAdmin = data && data.role_id === 0;
   
