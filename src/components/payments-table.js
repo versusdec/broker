@@ -1,10 +1,29 @@
-import {Autocomplete, Avatar, Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, InputAdornment, Link, MenuItem, OutlinedInput, Stack, SvgIcon, Table, TableBody, TableCell, TableHead, TableRow, TextField, Tooltip, Typography} from "@mui/material";
-import SearchMdIcon from "@untitled-ui/icons-react/build/esm/SearchMd";
+import {
+  Avatar,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Link,
+  MenuItem,
+  Stack,
+  SvgIcon,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Tooltip,
+  Typography
+} from "@mui/material";
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import {format} from "date-fns"
-import {Block, BlockOutlined, CheckCircleOutlined, Close, EditOutlined} from "@mui/icons-material";
+import {BlockOutlined, CheckCircleOutlined, Close} from "@mui/icons-material";
 import {useEffect, useState} from "react";
 import * as Yup from "yup";
 import {useFormik} from "formik";
@@ -45,11 +64,11 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
     onFiltersChange({
       limit: limit, offset: offset
     })
-  }, [limit, page, offset])
+  }, [limit, page, offset, onFiltersChange])
   
   useEffect(() => {
     timestamp?.start && timestamp?.end && onFiltersChange({timestamp: timestamp})
-  }, [timestamp])
+  }, [timestamp, onFiltersChange])
   
   const formik = useFormik({
     initialValues,

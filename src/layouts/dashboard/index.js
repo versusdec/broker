@@ -20,13 +20,13 @@ export const Layout = withAuthGuard((props) => {
     const {result} = await api.projects.get(id);
     if (result)
       setProject(result)
-  }, [id])
+  }, [])
   
   useEffect(() => {
     if (id) {
       getProject(id)
     }
-  }, [id])
+  }, [id, getProject])
   
   const commonSections = getSections(t, project);
   

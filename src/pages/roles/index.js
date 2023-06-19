@@ -23,13 +23,13 @@ const Page = withRolesListGuard(() => {
   
   const handleFiltersChange = useCallback((filters) => {
     setFilters(filters)
-  }, [filters])
+  }, [])
   
   const params = useMemo(() => {
     return {
       limit: limit, offset: offset, ...filters
     }
-  }, [limit, page, offset, filters]);
+  }, [limit, offset, filters]);
   
   const {data, loading} = useRoles(params);
   const {items, total} = data || {items: [], limit: limit, total: 0};
@@ -47,7 +47,7 @@ const Page = withRolesListGuard(() => {
     } else {
       toast.error('Something went wrong')
     }
-  }, [items])
+  }, [dispatch, params])
   
   return (
     <>

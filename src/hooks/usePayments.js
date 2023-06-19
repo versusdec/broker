@@ -9,15 +9,15 @@ export const usePayments = (params) => {
   
   const getPayments = useCallback(() => {
       dispatch(paymentsList(params))
-  }, [params])
+  }, [params, dispatch])
   
   const update = useCallback(()=>{
     getPayments()
-  }, [params])
+  }, [getPayments])
   
   useEffect(() => {
     getPayments()
-  }, [params])
+  }, [params, getPayments])
   
   return {data, loading, error, update}
 }

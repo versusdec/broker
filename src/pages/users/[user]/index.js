@@ -28,7 +28,7 @@ import {useFormik} from "formik";
 import {QueuesTab} from "../../../components/users/user-queues";
 import {OperatorsTab} from "../../../components/users/user-operators";
 import {usePagination} from "../../../hooks/usePagination";
-import {useGrants} from "../../../utils/get-role-grants";
+import {useGrants} from "../../../hooks/useGrants";
 
 const Page = withUsersAddGuard(() => {
     const dispatch = useDispatch();
@@ -135,13 +135,13 @@ const Page = withUsersAddGuard(() => {
     useEffect(() => {
       getProjects();
       getRoles();
-    }, [])
+    }, [getProjects, getRoles])
     
     useEffect(() => {
       if (isAdmin) {
         getClients();
       }
-    }, [isAdmin])
+    }, [isAdmin, getClients])
     
     useEffect(() => {
       if (!newUser && (grants.includes('projects.queues.read') || isAdmin)) {
@@ -150,7 +150,7 @@ const Page = withUsersAddGuard(() => {
       if (!newUser && (grants.includes('users.read') || isAdmin)) {
         getOperators();
       }
-    }, [newUser, grants])
+    }, [newUser, grants, getQueues, getOperators, isAdmin])
     
     useEffect(() => {
       if (user.client_id && clients?.length) {
@@ -169,7 +169,7 @@ const Page = withUsersAddGuard(() => {
         })
         setProject(p)
       }
-    }, [user, projects])
+    }, [user, projects, newUser])
     
     useEffect(() => {
       const getTimezones = async () => {
@@ -217,7 +217,7 @@ const Page = withUsersAddGuard(() => {
           toast.error('Something went wrong')
         }
       }
-    }, [user, newUser]);
+    }, [user, newUser, dispatch]);
     
     const handleQueuesChange = useCallback(async () => {
       setQueuesLoading(true)

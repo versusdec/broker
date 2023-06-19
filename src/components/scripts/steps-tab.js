@@ -21,13 +21,13 @@ const Answer = ({step_id, answer, index, stepIndex, ...props}) => {
     const answers = steps[stepIndex].next;
     answers[index][name] = value;
     onChange({index: stepIndex, name: 'next', value: answers})
-  }, [steps])
+  }, [steps, index, onChange, stepIndex])
   
   const handleDelete = useCallback((index) => {
     const answers = [...steps[stepIndex].next];
     answers.splice(index, 1)
     onChange({index: stepIndex, name: 'next', value: answers})
-  }, [steps])
+  }, [steps, onChange, stepIndex])
   
   return <Stack spacing={2} direction={{sm: 'column', md: 'row'}} alignItems={'center'} {...props}>
     <Input
@@ -80,7 +80,7 @@ const Step = ({id, title, text, field_id, next, index, onDelete, ...props}) => {
       "answer": ""
     })
     onChange({index: index, name: 'next', value: answers})
-  }, [steps])
+  }, [steps, index, onChange])
   
   return <Paper sx={{p: 2}} key={id} elevation={5} {...props}>
     <Stack spacing={4} direction={{xs: 'column', md: 'row'}}>
@@ -163,7 +163,7 @@ export const StepsTab = ({onSubmit, onChange, isNew, userRole, item, fields, cha
   
   useEffect(() => {
     onChange({steps: steps})
-  }, [steps])
+  }, [steps, onChange])
   
   const handleStepValueChange = useCallback(({index, name, value}) => {
     const data = JSON.parse(JSON.stringify(steps));
@@ -180,7 +180,7 @@ export const StepsTab = ({onSubmit, onChange, isNew, userRole, item, fields, cha
   const addStep = useCallback(() => {
     const step = {...initialStep, id: steps[steps.length - 1].id + 1};
     setSteps(prev => ([...prev, step]))
-  }, [steps])
+  }, [steps, initialStep])
   
   
   return (

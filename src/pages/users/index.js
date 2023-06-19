@@ -13,7 +13,7 @@ import {api} from "../../api";
 import toast from "react-hot-toast";
 import {useDispatch} from "../../store";
 import {actions} from '../../slices/usersSlice'
-import {useGrants} from "../../utils/get-role-grants";
+import {useGrants} from "../../hooks/useGrants";
 
 const Page = withUsersListGuard(() => {
   const dispatch = useDispatch();
@@ -27,24 +27,24 @@ const Page = withUsersListGuard(() => {
   const getRole = useCallback(async (id) => {
     const {result} = await api.roles.get(id);
     setRole(result)
-  }, [data])
+  }, [])
   
   useEffect(() => {
     if (data.role_id) {
       getRole(data.role_id)
     }
-  }, [data])
+  }, [data, getRole])
   
   const handleFiltersChange = useCallback((filters) => {
     setFilters(filters)
-  }, [filters])
+  }, [])
   
   const params = useMemo(() => {
     return {
       limit: limit, offset: offset,
       ...filters
     }
-  }, [limit, page, offset, filters]);
+  }, [limit, offset, filters]);
   
   const {users, loading, error} = useUsers(params);
   const {items, total} = users || {items: [], limit: limit, total: 0};
@@ -68,7 +68,7 @@ const Page = withUsersListGuard(() => {
     } else {
       toast.error('Something went wrong')
     }
-  }, [items])
+  }, [items, dispatch])
   
   return (
     <>

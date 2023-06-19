@@ -12,7 +12,7 @@ import {api} from "../../api";
 import {projectsList} from "../../slices/projectsSlice";
 import toast from "react-hot-toast";
 import {useDispatch} from "../../store";
-import {useGrants} from "../../utils/get-role-grants";
+import {useGrants} from "../../hooks/useGrants";
 import {withProjectsListGuard} from "../../hocs/with-projects-list-guard";
 
 const Page = withProjectsListGuard(() => {
@@ -25,14 +25,14 @@ const Page = withProjectsListGuard(() => {
   
   const handleFiltersChange = useCallback((filters) => {
     setFilters(filters)
-  }, [filters])
+  }, [])
   
   const params = useMemo(() => {
     return {
       limit: limit, offset: offset,
       ...filters
     }
-  }, [limit, page, offset, filters]);
+  }, [limit, offset, filters]);
   
   const {projects, loading, error} = useProjects(params);
   const {items, total} = projects && projects || {items: [], limit: limit, total: 0};
@@ -48,7 +48,7 @@ const Page = withProjectsListGuard(() => {
     } else {
       toast.error('Something went wrong')
     }
-  }, [items])
+  }, [dispatch, params])
   
   
   return (

@@ -167,7 +167,7 @@ export const FieldsListTable = (props) => {
       })
     );
     formik.setValues(initialValues, false)
-  }, []);
+  }, [formik, initialValues, projectId]);
   
   return (
     <Card>

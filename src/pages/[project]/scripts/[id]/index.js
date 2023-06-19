@@ -61,15 +61,15 @@ const Page = withScriptsAddGuard(() => {
   const router = useRouter();
   const me = useMe();
   const [currentTab, setCurrentTab] = useState('common');
-  const project_id = +router.query.project;
+  const projectId = +router.query.project;
   const id = +router.query.id;
   const isNew = isNaN(id);
   const {data} = useScript(id);
-  const fieldsParams = useMemo(() => ({project_id: project_id, limit: 1000}), [])
+  const fieldsParams = useMemo(() => ({project_id: projectId, limit: 1000}), [projectId])
   const fields = useFields(fieldsParams);
   
   const [script, setScript] = useState(data ?? {
-    project_id: project_id,
+    project_id: projectId,
     name: '',
     is_default: false,
     steps: [initialStep],
@@ -98,7 +98,7 @@ const Page = withScriptsAddGuard(() => {
         ...value
       }
     })
-  }, [script])
+  }, [])
   
   const onSubmit = useCallback(async () => {
     try {
@@ -107,7 +107,7 @@ const Page = withScriptsAddGuard(() => {
         if (isNew) {
           toast.success('Script has been created')
           await wait(500);
-          router.replace(`/${project_id}/scripts`)
+          router.replace(`/${projectId}/scripts`)
         } else {
           toast.success('Script has been updated')
         }
@@ -117,7 +117,7 @@ const Page = withScriptsAddGuard(() => {
     } catch (e) {
       console.log(e)
     }
-  }, [script]);
+  }, [script, isNew, projectId, router]);
   
   const initialValues = useMemo(() => script, [script]);
   const validationSchema = Yup.object({
@@ -167,7 +167,7 @@ const Page = withScriptsAddGuard(() => {
             <Link
               color="text.primary"
               component={NextLink}
-              href={`/${project_id}/scripts`}
+              href={`/${projectId}/scripts`}
               sx={{
                 alignItems: 'center',
                 display: 'inline-flex'

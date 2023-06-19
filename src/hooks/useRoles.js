@@ -11,11 +11,11 @@ export const useRoles = (params) => {
       dispatch(rolesSuggest(params))
     else
       dispatch(rolesList(params))
-  }, [params])
+  }, [params, dispatch])
   
   useEffect(() => {
     getRoles()
-  }, [params])
+  }, [params, getRoles])
   
   return {data, loading, error}
 }

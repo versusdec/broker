@@ -3,7 +3,7 @@ import {useRouter} from 'next/navigation';
 import PropTypes from 'prop-types';
 import {paths} from '../navigation/paths';
 import {useMe} from "../hooks/useMe";
-import {useGrants} from "../utils/get-role-grants";
+import {useGrants} from "../hooks/useGrants";
 
 export const ProjectsAddGuard = (props) => {
   const {children} = props;
@@ -20,11 +20,11 @@ export const ProjectsAddGuard = (props) => {
         router.replace(paths.denied);
       }
     }
-  }, [data, grants]);
+  }, [data, grants, router]);
   
   useEffect(() => {
     check()
-  }, [data, grants])
+  }, [data, grants, check])
   
   if (!checked)
     return null

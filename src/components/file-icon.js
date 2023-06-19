@@ -20,7 +20,7 @@ export const FileIcon = (props) => {
     icon = icons[extension] || '/assets/icons/icon-other.svg';
   }
 
-  return <img src={icon} />;
+  return <img src={icon} alt=""/>;
 };
 
 FileIcon.propTypes = {

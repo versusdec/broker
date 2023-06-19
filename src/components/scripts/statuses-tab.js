@@ -40,11 +40,11 @@ export const StatusesTab = (props) => {
   
   useEffect(() => {
     onChange({statuses: statuses})
-  }, [statuses])
+  }, [statuses, onChange])
   
   const handleAdd = useCallback(() => {
     setStatuses(prev => ([...prev, initialStatus]))
-  }, [statuses])
+  }, [initialStatus])
   
   const handleRemove = useCallback((index) => {
     const data = [...statuses]
@@ -60,7 +60,7 @@ export const StatusesTab = (props) => {
   
   useEffect(() => {
     onChange({statuses: statuses})
-  }, [statuses])
+  }, [statuses, onChange])
   
   return (
     <Card>

@@ -1,4 +1,4 @@
-import {useCallback, useState} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import PropTypes from 'prop-types';
 import PlusIcon from '@untitled-ui/icons-react/build/esm/Plus';
@@ -15,9 +15,7 @@ import {
 } from '@mui/material';
 import {Scrollbar} from '../scrollbar';
 import {paths} from '../../navigation/paths';
-import {useSelector} from '../../store';
 import {ChatSidebarSearch} from './chat-sidebar-search';
-import {ChatThreadItem} from './chat-thread-item';
 
 const getThreadKey = (thread, userId) => {
   let threadKey;
@@ -45,9 +43,9 @@ const useCurrentThreadId = () => {
 
 export const ChatSidebar = (props) => {
   const {container, onClose, open, ...other} = props;
-  const user = {
+  const user = useMemo(() => ({
     avatar: '/assets/avatar-anika-visser.png'
-  };
+  }), [])
   const router = useRouter();
   // const threads = useThreads();
   // const currentThreadId = useCurrentThreadId();

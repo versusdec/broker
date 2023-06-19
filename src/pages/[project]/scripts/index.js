@@ -42,14 +42,14 @@ const Page = withScriptsListGuard(() => {
   
   const handleFiltersChange = useCallback((filters) => {
     setFilters(filters)
-  }, [filters])
+  }, [])
   
   const params = useMemo(() => {
     return {
       limit: limit, offset: offset,
       ...filters
     }
-  }, [limit, page, offset, filters]);
+  }, [limit, offset, filters]);
   
   const {data, loading, error, update} = useScripts(params);
   const {items, total} = data || {items: [], limit: limit, total: 0};
@@ -65,7 +65,7 @@ const Page = withScriptsListGuard(() => {
     } else {
       toast.error('Something went wrong')
     }
-  }, [items])
+  }, [update])
   
   const cloneScript = useCallback(async (id, cb) => {
     setCloning(true);
@@ -86,7 +86,7 @@ const Page = withScriptsListGuard(() => {
     }
     setCloning(false)
     cb()
-  }, [])
+  }, [update])
   
   const handleClone = (item) => {
     setDialog({open: true, item: item})

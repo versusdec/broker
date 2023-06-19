@@ -10,11 +10,11 @@ export const useProject = (id) => {
     if (!!id) {
       dispatch(projectsGet(id))
     }
-  }, [id])
+  }, [id, dispatch])
   
   useEffect(() => {
     getProject()
-  }, [dispatch, id])
+  }, [dispatch, id, getProject])
   
   return {project: data, loading, error}
 }

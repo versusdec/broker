@@ -25,14 +25,14 @@ const Page = withQueuesListGuard(() => {
   
   const handleFiltersChange = useCallback((filters) => {
     setFilters(filters)
-  }, [filters])
+  }, [])
   
   const params = useMemo(() => {
     return {
       limit: limit, offset: offset,
       ...filters
     }
-  }, [limit, page, offset, filters]);
+  }, [limit, offset, filters]);
   
   const {data, loading, error} = useQueues(params);
   const {items, total} = data || {items: [], limit: limit, total: 0};
@@ -56,7 +56,7 @@ const Page = withQueuesListGuard(() => {
     } else {
       toast.error('Something went wrong')
     }
-  }, [items])
+  }, [items, dispatch])
   
   return (
     <>

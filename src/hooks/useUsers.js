@@ -11,11 +11,11 @@ export const useUsers = (params) => {
       dispatch(usersSuggest(params))
     else
       dispatch(usersList(params))
-  }, [params])
+  }, [params, dispatch])
   
   useEffect(() => {
     getUsers()
-  }, [params])
+  }, [params, getUsers])
   
   return {users: data, loading, error}
 }

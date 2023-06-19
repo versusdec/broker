@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import {Box, Stack} from '@mui/material';
 import {SideNavItem} from './side-nav-item';
 import {useMe} from "../../../hooks/useMe";
-import {useGrants} from "../../../utils/get-role-grants";
+import {useGrants} from "../../../hooks/useGrants";
 
 const renderItems = ({depth = 0, items, pathname, grants, isAdmin}) => items.reduce((acc, item) => reduceChildRoutes({
   acc,
