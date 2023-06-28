@@ -11,15 +11,15 @@ export const useQueues = (params) => {
       dispatch(queuesSuggest(params))
     else
       dispatch(queuesList(params))
-  }, [params])
+  }, [params, dispatch])
   
   const update = useCallback(()=>{
     getQueues()
-  }, [params])
+  }, [getQueues])
   
   useEffect(() => {
     getQueues()
-  }, [params])
+  }, [params, getQueues])
   
   return {data, loading, error, update}
 }

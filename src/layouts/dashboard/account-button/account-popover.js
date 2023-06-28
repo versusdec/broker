@@ -36,7 +36,7 @@ export const AccountPopover = (props) => {
       console.error(err);
       toast.error('Something went wrong!');
     }
-  }, [auth, router, onClose]);
+  }, [auth, onClose]);
 
   return (
     <Popover

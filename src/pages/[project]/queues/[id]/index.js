@@ -89,7 +89,7 @@ const Page = withQueuesAddGuard(() => {
     if (result) {
       setUsers(result.items)
     }
-  }, [queue])
+  }, [])
   
   useEffect(() => {
     if(data){
@@ -99,7 +99,7 @@ const Page = withQueuesAddGuard(() => {
   
   useEffect(() => {
     getUsers();
-  }, [])
+  }, [getUsers])
   
   const handleTabsChange = useCallback((event, value) => {
     setCurrentTab(value);
@@ -139,7 +139,7 @@ const Page = withQueuesAddGuard(() => {
     } else {
       itemUpdate(queue, data, dispatch)
     }
-  }, [queue, selectedUsers]);
+  }, [queue, selectedUsers, dispatch, isNew, project, router]);
   
   const initialValues = useMemo(() => queue, [queue]);
   const validationSchema = Yup.object({

@@ -1,11 +1,29 @@
-import {Autocomplete, Avatar, Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, InputAdornment, Link, MenuItem, OutlinedInput, Stack, SvgIcon, Table, TableBody, TableCell, TableHead, TableRow, TextField, Tooltip, Typography} from "@mui/material";
-import SearchMdIcon from "@untitled-ui/icons-react/build/esm/SearchMd";
+import {
+  Autocomplete,
+  Avatar,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Link,
+  MenuItem,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography
+} from "@mui/material";
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
-import {format} from "date-fns"
-import {Block, CheckCircleOutlined, Close, EditOutlined} from "@mui/icons-material";
-import {useEffect, useState} from "react";
+import {Close} from "@mui/icons-material";
+import {useCallback, useEffect, useState} from "react";
 import * as Yup from "yup";
 import {useFormik} from "formik";
 import {Input} from "./input";
@@ -45,7 +63,7 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
     onFiltersChange({
       limit: limit, offset: offset
     })
-  }, [limit, page, offset])
+  }, [limit, page, offset, onFiltersChange])
   
   useEffect(() => {
     if (clients)
@@ -54,11 +72,11 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
   
   useEffect(() => {
     timestamp?.start && timestamp?.end && onFiltersChange({timestamp: timestamp})
-  }, [timestamp])
+  }, [timestamp, onFiltersChange])
   
-  const onClientChange = (client) => {
+  const onClientChange = useCallback((client) => {
     setClient(client)
-  }
+  }, [])
   
   const formik = useFormik({
     initialValues,

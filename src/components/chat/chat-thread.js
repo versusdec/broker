@@ -174,7 +174,7 @@ export const ChatThread = (props) => {
     // Set the new thread as active
 
     dispatch(thunks.setCurrentThread({ threadId }));
-  }, [dispatch, participants, thread, user]);
+  }, [dispatch, participants, thread]);
 
   // Maybe implement a loading state
 

@@ -12,7 +12,7 @@ export const useMe = () => {
   
   useEffect(() => {
     fetch()
-  }, [])
+  }, [fetch])
   
   return {data, loading, error}
 }

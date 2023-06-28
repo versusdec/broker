@@ -10,11 +10,11 @@ export const useQueue = (id) => {
     if (!!id) {
       dispatch(queuesGet(id))
     }
-  }, [id])
+  }, [id, dispatch])
   
   useEffect(() => {
     getQueue()
-  }, [dispatch, id])
+  }, [dispatch, id, getQueue])
   
   return {data, loading, error}
 }

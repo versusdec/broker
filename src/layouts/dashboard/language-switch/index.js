@@ -39,7 +39,7 @@ export const LanguageSwitch = () => {
               }
             }}
           >
-            <img src={flag} />
+            <img src={flag} alt=""/>
           </Box>
         </IconButton>
       </Tooltip>

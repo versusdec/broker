@@ -47,7 +47,7 @@ export const FileDropzone = (props) => {
       console.log(e)
       toast.error('Something went wrong. Try again')
     }
-  }, [files])
+  }, [onUpload])
   
   return (
     <div>

@@ -1,19 +1,14 @@
 import {useCallback, useMemo, useState} from 'react';
-import {Block, CheckCircleOutlined, Close, DeleteOutlined, EditOutlined} from '@mui/icons-material'
-import {MuiColorInput} from 'mui-color-input'
+import {Close, DeleteOutlined, EditOutlined} from '@mui/icons-material'
 import {
-  Avatar,
   Box,
   Button, Card, Dialog, DialogActions, DialogContent, DialogTitle,
   IconButton,
   Stack,
   SvgIcon,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow, Tooltip,
-  Typography, MenuItem, Paper
+  Tooltip,
+  Typography,
+  Paper
 } from '@mui/material';
 import {Scrollbar} from '../scrollbar';
 import {Pagination} from "../pagination";
@@ -129,7 +124,7 @@ export const TagsList = (props) => {
       })
     );
     formik.setValues(initialValues, false)
-  }, []);
+  }, [formik, initialValues, projectId]);
   
   return (
     <Card>

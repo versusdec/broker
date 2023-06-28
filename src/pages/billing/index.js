@@ -10,7 +10,7 @@ import {usePayments} from "../../hooks/usePayments";
 import {TransactionsTable} from "../../components/transactions-table";
 import {PaymentsTable} from "../../components/payments-table";
 import {wait} from "../../utils/wait";
-import {useGrants} from "../../utils/get-role-grants";
+import {useGrants} from "../../hooks/useGrants";
 import {withTransactionsListGuard} from "../../hocs/with-transactions-list-guard";
 
 const tabs = [
@@ -51,7 +51,7 @@ const Page = withTransactionsListGuard(() => {
   
   useEffect(() => {
     getClients()
-  }, [])
+  }, [getClients])
   
   const filtersHandleTransactions = useCallback((filters) => {
     setFiltersTransactions(prev => ({
@@ -59,7 +59,7 @@ const Page = withTransactionsListGuard(() => {
         ...filters
       })
     )
-  }, [filtersTransactions])
+  }, [])
   
   const filtersHandlePayments = useCallback((filters) => {
     setFiltersPayments(prev => ({
@@ -67,7 +67,7 @@ const Page = withTransactionsListGuard(() => {
         ...filters
       })
     )
-  }, [filtersPayments])
+  }, [])
   
   const transactions = useTransactions(filtersTransactions);
   const payments = usePayments(filtersPayments);
@@ -82,7 +82,7 @@ const Page = withTransactionsListGuard(() => {
     if (error) {
       toast.error(error.message)
     }
-  }, [])
+  }, [transactions])
   
   const paymentsCreate = useCallback(async (params) => {
     await wait(500)
@@ -94,7 +94,7 @@ const Page = withTransactionsListGuard(() => {
     if (error) {
       toast.error(error.message)
     }
-  }, [])
+  }, [payments])
   
   const paymentPay = async (id, cb) => {
     const {result, error} = await api.payments.pay(id);

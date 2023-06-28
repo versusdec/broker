@@ -16,11 +16,11 @@ export const RolesAddGuard = (props) => {
     } else {
       setChecked(true);
     }
-  }, [me]);
+  }, [me, router]);
   
   useEffect(()=>{
     check()
-  }, [me])
+  }, [me, check])
   
   if(!checked)
     return null

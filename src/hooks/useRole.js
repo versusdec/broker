@@ -10,11 +10,11 @@ export const useRole = (id) => {
     if (!!id) {
       dispatch(rolesGet(id))
     }
-  }, [id])
+  }, [id, dispatch])
   
   useEffect(() => {
     get()
-  }, [dispatch, id])
+  }, [dispatch, id, get])
   
   return {data, loading, error}
 }

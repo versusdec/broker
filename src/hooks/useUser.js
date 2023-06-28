@@ -10,11 +10,11 @@ export const useUser = (id) => {
     if (!!id) {
       dispatch(usersGet(id))
     }
-  }, [id])
+  }, [id, dispatch])
   
   useEffect(() => {
     getUser()
-  }, [id])
+  }, [id, getUser])
   
   return {data, loading, error}
 }

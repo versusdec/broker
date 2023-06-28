@@ -9,7 +9,7 @@ import {root} from "../../api/config";
 import {actions} from "../../slices/usersSlice";
 import toast from "react-hot-toast";
 import {useDispatch} from "../../store";
-import {useGrants} from "../../utils/get-role-grants";
+import {useGrants} from "../../hooks/useGrants";
 
 const tabs = [
   {label: 'General', value: 'general'},
@@ -51,17 +51,17 @@ const Page = () => {
   
   const handleGeneralSubmit = useCallback((values) => {
     userUpdate(data, values, dispatch)
-  }, [data])
+3  }, [data, dispatch])
   
   const handleSecuritySubmit = useCallback((values) => {
     userUpdate(data, values, dispatch)
-  }, [data])
+  }, [data, dispatch])
   
   const handleAvatarUpload = useCallback((files) => {
     userUpdate(data, {
       avatar: root + files[0].path
     }, dispatch)
-  }, [data])
+  }, [data, dispatch])
   
   const accountGeneralSettingsProps = {
     user:data, onSubmit: handleGeneralSubmit, onUpload: handleAvatarUpload, editGrant, isAdmin

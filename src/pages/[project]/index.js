@@ -78,7 +78,7 @@ const Page = withProjectsAddGuard(() => {
     return {
       limit: limit, offset: offset,
     }
-  }, [limit, page, offset]);
+  }, [limit, offset]);
   
   useEffect(() => {
     if (data.project) {
@@ -117,25 +117,25 @@ const Page = withProjectsAddGuard(() => {
     if (result) {
       setTags(result.items)
     }
-  }, [])
+  }, [id])
   
   useEffect(() => {
     if (!!id) {
       getFields()
     }
-  }, [params])
+  }, [params, getFields, id])
   
   useEffect(() => {
     if (me.data && me.data.role_id === 0) {
       getClients();
     }
-  }, [])
+  }, [getClients, me.data])
   
   useEffect(() => {
     if (!!id) {
       getTags()
     }
-  }, [id])
+  }, [id, getTags])
   
   const handleFieldEdit = useCallback(async (params, cb) => {
     const {result, error} = await api.fields.update(params);
@@ -145,7 +145,7 @@ const Page = withProjectsAddGuard(() => {
     } else if (error) {
       toast.error(error.message)
     }
-  }, [])
+  }, [getFields])
   
   const handleFieldAdd = useCallback(async (params, cb) => {
     const {result, error} = await api.fields.add(params)
@@ -155,7 +155,7 @@ const Page = withProjectsAddGuard(() => {
     } else if (error) {
       toast.error(error.message)
     }
-  }, [])
+  }, [getFields])
   
   const handleFieldStatus = useCallback(async (id, status) => {
     const {result, error} = await api.fields.update({id: id, status: status})
@@ -164,7 +164,7 @@ const Page = withProjectsAddGuard(() => {
     } else if (error) {
       toast.error(error.message)
     }
-  }, [])
+  }, [getFields])
   
   const handleTagStatus = useCallback(async (id, status) => {
     const {result, error} = await api.tags.update({id: id, status: status})
@@ -173,7 +173,7 @@ const Page = withProjectsAddGuard(() => {
     } else if (error) {
       toast.error(error.message)
     }
-  }, [])
+  }, [getTags])
   
   const handleTagEdit = useCallback(async (params, cb) => {
     const {result, error} = await api.tags.update(params);
@@ -183,7 +183,7 @@ const Page = withProjectsAddGuard(() => {
     } else if (error) {
       toast.error(error.message)
     }
-  }, [])
+  }, [getTags])
   
   const handleTagAdd = useCallback(async (params, cb) => {
     const {result, error} = await api.tags.add(params)
@@ -193,7 +193,7 @@ const Page = withProjectsAddGuard(() => {
     } else if (error) {
       toast.error(error.message)
     }
-  }, [])
+  }, [getTags])
   
   
   const handleTabsChange = useCallback((event, value) => {
@@ -215,7 +215,7 @@ const Page = withProjectsAddGuard(() => {
     } else {
       projectUpdate(project, values, dispatch)
     }
-  }, [project]);
+  }, [project, dispatch, newProject, router]);
   
   return (<>
     <Stack spacing={4} mb={3}>

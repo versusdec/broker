@@ -8,15 +8,15 @@ export const useTransactions = (params) => {
   
   const getTransactions = useCallback(() => {
       dispatch(transactionsList(params))
-  }, [params])
+  }, [params, dispatch])
   
   const update = useCallback(()=>{
     getTransactions()
-  }, [params])
+  }, [getTransactions])
   
   useEffect(() => {
     getTransactions()
-  }, [params])
+  }, [params, getTransactions])
   
   return {data, loading, error, update}
 }

@@ -11,11 +11,11 @@ export const useProjects = (params) => {
       dispatch(projectsSuggest(params))
     else
       dispatch(projectsList(params))
-  }, [dispatch, params])
+  }, [dispatch])
   
   useEffect(() => {
     getProjectsList(params)
-  }, [params])
+  }, [params, getProjectsList])
   
   return {projects: data, loading, error}
 }

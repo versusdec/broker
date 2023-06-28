@@ -11,11 +11,11 @@ export const useFields = (params) => {
       dispatch(fieldsSuggest(params))
     else
       dispatch(fieldsList(params))
-  }, [params])
+  }, [dispatch])
   
   useEffect(() => {
     getFieldsList(params)
-  }, [dispatch, params])
+  }, [dispatch, params, getFieldsList])
   
   return {data, loading, error}
 }

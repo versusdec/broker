@@ -11,7 +11,7 @@ export const useGrants = (id) => {
 
   useEffect(() => {
     if (id) getRole()
-  }, [id])
+  }, [id, getRole])
 
   return grants;
 }

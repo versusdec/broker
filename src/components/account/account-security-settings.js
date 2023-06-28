@@ -56,7 +56,7 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
       onUpdate(newValues)
       setTwa(false)
     }
-  }, [twa])
+  }, [twa, user, onUpdate])
   
   useEffect(() => {
     const fetch = async () => {

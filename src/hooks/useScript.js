@@ -10,11 +10,11 @@ export const useScript = (id) => {
     if (!!id) {
       dispatch(scriptsGet(id))
     }
-  }, [id])
+  }, [id, dispatch])
   
   useEffect(() => {
     getScript()
-  }, [dispatch, id])
+  }, [getScript, id])
   
   return {data, loading, error}
 }

@@ -11,15 +11,15 @@ export const useScripts = (params) => {
       dispatch(scriptsSuggest(params))
     else
       dispatch(scriptsList(params))
-  }, [params])
+  }, [params, dispatch])
   
   const update = useCallback(()=>{
     getScripts()
-  }, [params])
+  }, [getScripts])
   
   useEffect(() => {
     getScripts()
-  }, [params])
+  }, [params, getScripts])
   
   return {data, loading, error, update}
 }

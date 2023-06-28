@@ -132,7 +132,7 @@ export const AuthProvider = (props) => {
         }
       });
     }
-  }, [dispatch]);
+  }, [dispatch, router]);
   
   useEffect(() => {
       initialize();
@@ -172,7 +172,7 @@ export const AuthProvider = (props) => {
       setLoading(false);
       toast.error('Something went wrong')
     }
-  }, [dispatch]);
+  }, [dispatch, returnTo, router]);
   
   const login2fa = useCallback(async (values) => {
     try {
@@ -201,7 +201,7 @@ export const AuthProvider = (props) => {
       setLoading(false);
       toast.error('Something went wrong')
     }
-  }, [dispatch]);
+  }, [dispatch, returnTo, router]);
   
   
   const logout = useCallback(() => {
@@ -209,7 +209,7 @@ export const AuthProvider = (props) => {
     document.cookie = `__token=;domain=${domain};expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
     dispatch({type: ActionType.LOGOUT});
     router.replace(paths.login);
-  }, [dispatch])
+  }, [dispatch, router])
   
   const register = useCallback(async (values) => {
     try {
@@ -249,7 +249,7 @@ export const AuthProvider = (props) => {
       toast.error('Something went wrong')
     }
     
-  }, [dispatch]);
+  }, []);
   
   const restore = useCallback(async (values) => {
     try {
@@ -270,7 +270,7 @@ export const AuthProvider = (props) => {
     }
     
     
-  }, [dispatch]);
+  }, []);
   
   
   return (

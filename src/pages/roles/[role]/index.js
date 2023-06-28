@@ -26,7 +26,6 @@ import {Input} from "../../../components/input";
 import {CheckBox, CheckBoxOutlineBlank} from "@mui/icons-material";
 import {api} from "../../../api";
 import toast from "react-hot-toast";
-import {useGrants} from "../../../utils/get-role-grants";
 
 const Page = withRolesAddGuard(() => {
   const dispatch = useDispatch();
