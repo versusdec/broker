@@ -7,26 +7,26 @@ import {
   QuestionAnswerOutlined,
   PeopleAltOutlined,
   LibraryBooksOutlined,
-  CreditCardOutlined, Groups2Outlined
+  CreditCardOutlined, Groups2Outlined, LayersOutlined, TableRowsOutlined
 } from '@mui/icons-material';
 
 
-export const getSections = (t, project) => {
+export const getSections = (t) => {
 
   return [
     {
       items: [
         {
-          title: t(tokens.nav.dashboard),
+          title: t(tokens.nav.overview),
           path: paths.index,
-          hidden: true,
+          hidden: false,
           icon: (
             <SvgIcon fontSize="small">
               <Dashboard/>
             </SvgIcon>
           )
         },
-        {
+        /*{
           title: project?.name,
           path: paths.project.index,
           hidden: !Boolean(project),
@@ -53,24 +53,14 @@ export const getSections = (t, project) => {
             },
             
           ]
-        },
+        },*/
         {
           title: t(tokens.nav.projects),
           path: paths.projects.index,
           grants: 'projects.read',
           icon: (
             <SvgIcon fontSize="small">
-              <LibraryBooksOutlined/>
-            </SvgIcon>
-          )
-        },
-        {
-          title: t(tokens.nav.users),
-          path: paths.users.index,
-          grants: 'users.read',
-          icon: (
-            <SvgIcon fontSize="small">
-              <PeopleAltOutlined/>
+              <LayersOutlined/>
             </SvgIcon>
           )
         },
@@ -80,13 +70,24 @@ export const getSections = (t, project) => {
           grants: 'roles.read',
           icon: (
             <SvgIcon fontSize="small">
-              <Groups2Outlined/>
+              <PeopleAltOutlined/>
+            </SvgIcon>
+          )
+        },
+        {
+          title: t(tokens.nav.staff),
+          path: paths.users.index,
+          grants: 'users.read',
+          icon: (
+            <SvgIcon fontSize="small">
+              <TableRowsOutlined/>
             </SvgIcon>
           )
         },
         {
           title: t(tokens.nav.account),
           path: paths.account,
+          hidden: true,
           icon: (
             <SvgIcon fontSize="small">
               <PortraitOutlined/>

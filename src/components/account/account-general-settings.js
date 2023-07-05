@@ -106,200 +106,149 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, editGrant, isA
   
   return (
     <Stack
-      spacing={4}
       {...props}>
-      <Card>
-        <CardContent>
+      <Stack spacing={4}>
+        <Grid
+          container
+          spacing={3}
+        >
           <Grid
-            container
-            spacing={3}
+            xs={12}
+            md={8}
           >
-            <Grid
-              xs={12}
-              md={4}
-            >
-              <Typography variant="h6">
-                Basic details
-              </Typography>
-            </Grid>
-            <Grid
-              xs={12}
-              md={8}
-            >
-              <Stack spacing={3}>
-                <Stack
-                  alignItems="center"
-                  direction="row"
-                  spacing={2}
-                >
-                  <Box
-                    sx={{
-                      borderColor: 'neutral.300',
-                      borderRadius: '50%',
-                      borderStyle: 'dashed',
-                      borderWidth: 1,
-                      p: '4px'
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        borderRadius: '50%',
-                        height: '100%',
-                        width: '100%',
-                        position: 'relative'
-                      }}
-                    >
-                      {(isAdmin || editGrant) && <Box
-                        sx={{
-                          alignItems: 'center',
-                          backgroundColor: (theme) => alpha(theme.palette.neutral[700], 0.5),
-                          borderRadius: '50%',
-                          color: 'common.white',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          height: '100%',
-                          justifyContent: 'center',
-                          left: 0,
-                          opacity: 0,
-                          position: 'absolute',
-                          top: 0,
-                          width: '100%',
-                          zIndex: 1,
-                          '&:hover': {
-                            opacity: 1
-                          }
-                        }}
-                        onClick={handleOpen}
-                      >
-                        <Stack
-                          alignItems="center"
-                          direction="row"
-                          spacing={1}
-                        >
-                          <SvgIcon color="inherit">
-                            <Camera01Icon/>
-                          </SvgIcon>
-                          <Typography
-                            color="inherit"
-                            variant="subtitle2"
-                            sx={{fontWeight: 700}}
-                          >
-                            Select
-                          </Typography>
-                        </Stack>
-                      </Box>}
-                      <Avatar
-                        src={user?.avatar || '/assets/avatars/avatar-anika-visser.png'}
-                        sx={{
-                          height: 100,
-                          width: 100
-                        }}
-                      >
-                        <SvgIcon>
-                          <User01Icon/>
-                        </SvgIcon>
-                      </Avatar>
-                    </Box>
-                  </Box>
-                  {(isAdmin || editGrant) && <Button
-                    color="inherit"
-                    size="small"
-                    onClick={handleOpen}
-                  >
-                    Change
-                  </Button>}
-                </Stack>
-                <form noValidate>
+            <Stack spacing={3}>
+              <Card>
+                <CardContent>
                   <Stack spacing={3}>
-                    <Input
-                      fullWidth
-                      label="Full name"
-                      name="name"
-                      type="text"
-                      error={!!(formik.touched.name && formik.errors.name)}
-                      helperText={formik.touched.name && formik.errors.name}
-                      onBlur={formik.handleBlur}
-                      onChange={formik.handleChange}
-                      value={formik.values.name}
-                      disabled={isDisabled}
-                    />
-                    <Input
-                      fullWidth
-                      label="Email Address"
-                      name="email"
-                      type="email"
-                      error={!!(formik.touched.email && formik.errors.email)}
-                      helperText={formik.touched.email && formik.errors.email}
-                      onBlur={formik.handleBlur}
-                      onChange={formik.handleChange}
-                      value={formik.values.email}
-                      disabled={isDisabled}
-                    />
-                    <Input
-                      name="avatar"
-                      type="text"
-                      value={formik.values.avatar}
-                      sx={{display: 'none'}}
-                    />
-                    <Input
-                      fullWidth
-                      label="Timezone"
-                      name="timezone"
-                      onBlur={formik.handleBlur}
-                      onChange={formik.handleChange}
-                      select
-                      value={timezones ? formik.values.timezone : ''}
-                      disabled={isDisabled}
-                    >
-                      {
-                        !timezones && <MenuItem value=""></MenuItem>
-                      }
-                      {
-                        timezones && timezones.map(option => {
-                          return (
-                            <MenuItem key={option.value} value={option.value}>
-                              {option.label}
-                            </MenuItem>
-                          )
-                        })
-                      }
-                    
-                    </Input>
-                    <Input
-                      fullWidth
-                      label="Language"
-                      name="language"
-                      onBlur={formik.handleBlur}
-                      onChange={formik.handleChange}
-                      select
-                      value={formik.values.language}
-                      disabled={isDisabled}
-                    >
-                      {
-                        languageOptions.map(option => {
-                          return (
-                            <MenuItem key={option.value} value={option.value}>
-                              <Stack direction={'row'} spacing={2} alignItems={'center'}>
-                                <img
-                                  alt={option.label}
-                                  src={option.icon}
-                                />
-                                <Box>
+                    <Typography variant="h6">
+                      Basic details
+                    </Typography>
+                    <Stack spacing={3}>
+                      <Grid container spacing={2} p={0}>
+                        <Grid xs={12} md={6}>
+                          <Input
+                            fullWidth
+                            label="Full name"
+                            name="name"
+                            type="text"
+                            error={!!(formik.touched.name && formik.errors.name)}
+                            helperText={formik.touched.name && formik.errors.name}
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            value={formik.values.name}
+                            disabled={isDisabled}
+                          />
+                        </Grid>
+                        <Grid xs={12} md={6}>
+                          <Input
+                            fullWidth
+                            label="Email Address"
+                            name="email"
+                            type="email"
+                            error={!!(formik.touched.email && formik.errors.email)}
+                            helperText={formik.touched.email && formik.errors.email}
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            value={formik.values.email}
+                            disabled={isDisabled}
+                          />
+                        </Grid>
+                      </Grid>
+                      
+                      
+                      <Stack direction={'row'} justifyContent={'start'}>
+                        <Button
+                          size="large"
+                          disabled={disabled}
+                          variant={'contained'}
+                          onClick={(e) => {
+                            setDisabled(true);
+                            setTimeout(() => {
+                              setDisabled(false)
+                            }, 500)
+                            formik.handleSubmit(e)
+                          }}
+                        >
+                          Save
+                        </Button>
+                      </Stack>
+                    </Stack>
+                  </Stack>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent>
+                  <Stack spacing={3}>
+                    <Typography variant="h6">
+                      Location
+                    </Typography>
+                    <Grid container p={0} spacing={2}>
+                      <Grid xs={12} md={6}>
+                        <Input
+                          fullWidth
+                          label="Timezone"
+                          name="timezone"
+                          onBlur={formik.handleBlur}
+                          onChange={formik.handleChange}
+                          select
+                          value={timezones ? formik.values.timezone : ''}
+                          disabled={isDisabled}
+                        >
+                          {
+                            !timezones && <MenuItem value=""></MenuItem>
+                          }
+                          {
+                            timezones && timezones.map(option => {
+                              return (
+                                <MenuItem key={option.value} value={option.value}>
                                   {option.label}
-                                </Box>
-                              </Stack>
-                            </MenuItem>
-                          )
-                        })
-                      }
-                    </Input>
-                    <Stack direction={'row'} justifyContent={'end'}>
+                                </MenuItem>
+                              )
+                            })
+                          }
+  
+                        </Input>
+                      </Grid>
+                      <Grid xs={12} md={6}>
+                        <Input
+                          fullWidth
+                          label="Language"
+                          name="language"
+                          onBlur={formik.handleBlur}
+                          onChange={formik.handleChange}
+                          select
+                          value={formik.values.language}
+                          disabled={isDisabled}
+                          size={'small'}
+                        >
+                          {
+                            languageOptions.map(option => {
+                              return (
+                                <MenuItem key={option.value} value={option.value}>
+                                  <Stack direction={'row'} spacing={2} alignItems={'center'}>
+                                    <img
+                                      alt={option.label}
+                                      src={option.icon}
+                                    />
+                                    <Box>
+                                      {option.label}
+                                    </Box>
+                                  </Stack>
+                                </MenuItem>
+                              )
+                            })
+                          }
+                        </Input>
+                      </Grid>
+                    </Grid>
+                    <Stack direction={'row'} justifyContent={'start'}>
                       <Button
                         size="large"
                         disabled={disabled}
-                        onClick={(e)=>{
+                        variant={'contained'}
+                        onClick={(e) => {
                           setDisabled(true);
-                          setTimeout(()=>{
+                          setTimeout(() => {
                             setDisabled(false)
                           }, 500)
                           formik.handleSubmit(e)
@@ -309,12 +258,108 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, editGrant, isA
                       </Button>
                     </Stack>
                   </Stack>
-                </form>
-              </Stack>
-            </Grid>
+                </CardContent>
+              </Card>
+            </Stack>
           </Grid>
-        </CardContent>
-      </Card>
+          <Grid xs={12} md={4}>
+            <Stack>
+              <Card>
+                <CardContent>
+                  <Stack
+                    alignItems="center"
+                    direction="row"
+                    spacing={2}
+                  >
+                    <Box
+                      sx={{
+                        borderColor: 'neutral.300',
+                        borderRadius: '50%',
+                        borderStyle: 'dashed',
+                        borderWidth: 1,
+                        p: '4px'
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          borderRadius: '50%',
+                          height: '100%',
+                          width: '100%',
+                          position: 'relative'
+                        }}
+                      >
+                        {(isAdmin || editGrant) && <Box
+                          sx={{
+                            alignItems: 'center',
+                            backgroundColor: (theme) => alpha(theme.palette.neutral[700], 0.5),
+                            borderRadius: '50%',
+                            color: 'common.white',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            height: '100%',
+                            justifyContent: 'center',
+                            left: 0,
+                            opacity: 0,
+                            position: 'absolute',
+                            top: 0,
+                            width: '100%',
+                            zIndex: 1,
+                            '&:hover': {
+                              opacity: 1
+                            }
+                          }}
+                          onClick={handleOpen}
+                        >
+                          <Stack
+                            alignItems="center"
+                            direction="row"
+                            spacing={1}
+                          >
+                            <SvgIcon color="inherit">
+                              <Camera01Icon/>
+                            </SvgIcon>
+                            <Typography
+                              color="inherit"
+                              variant="subtitle2"
+                              sx={{fontWeight: 700}}
+                            >
+                              Select
+                            </Typography>
+                          </Stack>
+                        </Box>}
+                        <Avatar
+                          src={user?.avatar || '/assets/avatars/avatar-anika-visser.png'}
+                          sx={{
+                            height: 100,
+                            width: 100
+                          }}
+                        >
+                          <SvgIcon>
+                            <User01Icon/>
+                          </SvgIcon>
+                        </Avatar>
+                      </Box>
+                    </Box>
+                    {(isAdmin || editGrant) && <Button
+                      color="inherit"
+                      size="small"
+                      onClick={handleOpen}
+                    >
+                      Change
+                    </Button>}
+                    <Input
+                      name="avatar"
+                      type="text"
+                      value={formik.values.avatar}
+                      sx={{display: 'none'}}
+                    />
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Stack>
+          </Grid>
+        </Grid>
+      </Stack>
       <FileUploader
         onClose={handleClose}
         open={uploaderOpen}

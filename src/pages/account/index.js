@@ -12,8 +12,9 @@ import {useDispatch} from "../../store";
 import {useGrants} from "../../hooks/useGrants";
 
 const tabs = [
-  {label: 'General', value: 'general'},
-  {label: 'Security', value: 'security'}
+  {label: 'Details', value: 'general'},
+  {label: 'Security', value: 'security'},
+  {label: 'Notifications', value: 'notifications'},
 ];
 
 const setUserUpdate = (user, newValues) => {
@@ -26,7 +27,7 @@ const setUserUpdate = (user, newValues) => {
   return newUser
 }
 
-const userUpdate = async (user, newValues, dispatch)=>{
+const userUpdate = async (user, newValues, dispatch) => {
   const u = setUserUpdate(user, newValues)
   const res = await api.users.update(u)
   if (!res.error) {
@@ -51,7 +52,8 @@ const Page = () => {
   
   const handleGeneralSubmit = useCallback((values) => {
     userUpdate(data, values, dispatch)
-3  }, [data, dispatch])
+    3
+  }, [data, dispatch])
   
   const handleSecuritySubmit = useCallback((values) => {
     userUpdate(data, values, dispatch)
@@ -64,7 +66,7 @@ const Page = () => {
   }, [data, dispatch])
   
   const accountGeneralSettingsProps = {
-    user:data, onSubmit: handleGeneralSubmit, onUpload: handleAvatarUpload, editGrant, isAdmin
+    user: data, onSubmit: handleGeneralSubmit, onUpload: handleAvatarUpload, editGrant, isAdmin
   }
   
   return data && <>

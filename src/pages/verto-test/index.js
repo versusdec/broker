@@ -37,7 +37,7 @@ const Page = () => {
     
     let client = new Verto(vertoConfig)
     
-    client.login(vertoConfig);
+    // client.login(vertoConfig);
     
     setClient(client);
     
