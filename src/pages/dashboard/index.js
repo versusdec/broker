@@ -5,6 +5,8 @@ import {
   Unstable_Grid2 as Grid
 } from '@mui/material';
 import {useRouter} from 'next/router'
+import {Button} from "../../components/button";
+import NextLink from "next/link";
 
 const Page = () => {
  const router = useRouter();
@@ -26,8 +28,11 @@ const Page = () => {
         >
           <Grid xs={12}>
             <Paper sx={{p: 2}}>
-              HELLO WORLD
+              <Box>HELLO WORLD</Box>
+              <br/>
+              <Button component={NextLink} href={'/verto-test'}>VERTO</Button>
             </Paper>
+            
           </Grid>
         </Grid>
       </Box>
