@@ -53,8 +53,8 @@ const Page = withUsersAddGuard(() => {
       "role_id": 1
     });
     const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
-    const [clients, setClients] = useState([]);
     const [queues, setQueues] = useState([]);
+    const [clients, setClients] = useState([]);
     const [client, setClient] = useState(null);
     const [project, setProject] = useState([]);
     const [projects, setProjects] = useState([]);
@@ -188,7 +188,7 @@ const Page = withUsersAddGuard(() => {
     
     const onClientChange = useCallback((client) => {
       setClient(client)
-      onChange({client_id: client.id})
+      // onChange({client_id: client.id})
     }, [])
     
     const onProjectChange = useCallback((item) => {
@@ -273,7 +273,7 @@ const Page = withUsersAddGuard(() => {
       role_id: Yup
         .number()
     });
-    
+
     const formik = useFormik({
       enableReinitialize: true,
       initialValues,
@@ -281,6 +281,7 @@ const Page = withUsersAddGuard(() => {
       errors: {},
       onSubmit: async (values, helpers) => {
         const data = {...values}
+        
         if (data.phone === '') delete data.phone;
         
         isAdmin ? data.client_id = client.id : delete data.client_id;
