@@ -90,6 +90,7 @@
     "stylis": "4.1.2",
     "stylis-plugin-rtl": "2.1.1",
     "uuid": "9.0.0",
+    "vertojs": "0.0.5",
     "yup": "0.32.11"
   },
   "devDependencies": {
