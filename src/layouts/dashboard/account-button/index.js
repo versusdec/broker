@@ -40,7 +40,7 @@ export const AccountButton = () => {
             height: 32,
             width: 32
           }}
-          src={(data && data.avatar.length) ? data.avatar : ''}
+          src={data?.avatar}
         > 
           <SvgIcon>
             <User01Icon />

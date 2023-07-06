@@ -19,8 +19,9 @@ const tabs = [
 
 const setUserUpdate = (user, newValues) => {
   const newUser = {...user, ...newValues}
+  //todo phone validation
   for (const i in newUser) {
-    if (newUser[i] === '')
+    if (newUser[i] === '' && i !== 'avatar')
       delete newUser[i]
   }
   
@@ -65,8 +66,14 @@ const Page = () => {
     }, dispatch)
   }, [data, dispatch])
   
+  const handleAvatarRemove = useCallback(() => {
+    userUpdate(data, {
+      avatar: ''
+    }, dispatch)
+  }, [data, dispatch])
+  
   const accountGeneralSettingsProps = {
-    user: data, onSubmit: handleGeneralSubmit, onUpload: handleAvatarUpload, editGrant, isAdmin
+    user: data, onSubmit: handleGeneralSubmit, onUpload: handleAvatarUpload, onRemove: handleAvatarRemove, editGrant, isAdmin
   }
   
   return data && <>
