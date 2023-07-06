@@ -11,24 +11,21 @@ const Page = () => {
   
   useEffect(() => {
     const JsonRpcClientParams = {
-      socketUrl: 'wss://server.example.com:8082',
-      // The URL where the verto interface lives
-      // wss://server.example.com:8082
-      
-      login: 'string',
-      passwd: 'string',
+      socketUrl: 'wss://ws.koala-call.com/',
+      login: '14',
+      passwd: 'testtest',
     }
     
     const vertoConfig = {
       transportConfig: JsonRpcClientParams,
       // Verto transport configuration, check below
       
-      // rtcConfig?      : RTCConfiguration
+      rtcConfig: {},
       // RTCConfiguration object, as described here
       // https://developer.mozilla.org/en-US/docs/Web/API/RTCConfiguration
       // The most important thing is iceServers item that should be set to go over NAT
       
-      // debug?          : boolean
+      debug: true
       // Set true to get some useful debug info in browser console
       
       // ice_timeout?    : number
@@ -50,7 +47,7 @@ const Page = () => {
     if (client) {
       const local_stream = await navigator.mediaDevices.getUserMedia({audio: true})
       
-      const call = client.call(local_stream.getTracks(), "9664")
+      const call = client.call(local_stream.getTracks(), "82222")
       
       call.subscribeEvent('track', (track) => {
         if (track.kind !== 'audio') return
@@ -111,18 +108,42 @@ const Page = () => {
         }}
       >
         <Stack direction={'row'} flexWrap={'wrap'} maxWidth={300}>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={()=>{sendDTMF('1')}}>1</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={()=>{sendDTMF('2')}}>2</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={()=>{sendDTMF('3')}}>3</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={()=>{sendDTMF('4')}}>4</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={()=>{sendDTMF('5')}}>5</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={()=>{sendDTMF('6')}}>6</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={()=>{sendDTMF('7')}}>7</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={()=>{sendDTMF('8')}}>8</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={()=>{sendDTMF('9')}}>9</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={()=>{sendDTMF('*')}}>*</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={()=>{sendDTMF('0')}}>0</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={()=>{sendDTMF('#')}}>#</Button>
+          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+            sendDTMF('1')
+          }}>1</Button>
+          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+            sendDTMF('2')
+          }}>2</Button>
+          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+            sendDTMF('3')
+          }}>3</Button>
+          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+            sendDTMF('4')
+          }}>4</Button>
+          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+            sendDTMF('5')
+          }}>5</Button>
+          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+            sendDTMF('6')
+          }}>6</Button>
+          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+            sendDTMF('7')
+          }}>7</Button>
+          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+            sendDTMF('8')
+          }}>8</Button>
+          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+            sendDTMF('9')
+          }}>9</Button>
+          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+            sendDTMF('*')
+          }}>*</Button>
+          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+            sendDTMF('0')
+          }}>0</Button>
+          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+            sendDTMF('#')
+          }}>#</Button>
         </Stack>
       </Dialog>
     </Stack>
