@@ -10,6 +10,7 @@ import {actions} from "../../slices/usersSlice";
 import toast from "react-hot-toast";
 import {useDispatch} from "../../store";
 import {useGrants} from "../../hooks/useGrants";
+import {AccountNotificationsSettings} from "../../components/account/account-notifications-settings";
 
 const tabs = [
   {label: 'Details', value: 'general'},
@@ -118,6 +119,12 @@ const Page = () => {
           editGrant={editGrant}
         />
       )}
+      {currentTab === 'notifications' && (
+        <AccountNotificationsSettings
+          user={data}
+        />
+      )}
+    
     </Box>
   </>;
 };

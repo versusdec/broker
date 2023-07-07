@@ -126,7 +126,7 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, onRemove, edit
                     <Typography variant="h6">
                       Basic details
                     </Typography>
-                    <Stack spacing={2}>
+                    <Stack spacing={3}>
                       <Box>
                         <Grid container spacing={2} p={0}>
                           <Grid xs={12} md={6}>
