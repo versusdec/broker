@@ -36,14 +36,17 @@ export const AccountNotificationsSettings = ({user, ...props}) => {
               <Typography variant="h6">
                 Notifications Type
               </Typography>
-              <Box sx={{position: 'relative'}}>
-                <Scrollbar>
-                  <Table sx={{minWidth: 700}}>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell padding="checkbox" >
-                          <Stack direction={'row'} spacing={2} alignItems={'center'}>
-                            {/*<Checkbox
+              
+            </Stack>
+          </CardContent>
+          <Box sx={{position: 'relative'}}>
+            <Scrollbar>
+              <Table sx={{minWidth: 700}}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell padding="checkbox" >
+                      <Stack direction={'row'} spacing={2} alignItems={'center'}>
+                        {/*<Checkbox
                                   checked={false}
                                   onChange={(event) => {
                                     const {checked} = event.target;
@@ -56,47 +59,45 @@ export const AccountNotificationsSettings = ({user, ...props}) => {
                                   }}
                                   value={''}
                                 />*/}
-                            <Box sx={{whiteSpace: 'nowrap', flexShrink: 0}}>Event Type</Box>
-                          </Stack>
-                        </TableCell>
-                        <TableCell align={'center'}>
-                          In App
-                        </TableCell>
-                        <TableCell align={'center'}>
-                          Email
-                        </TableCell>
-                        <TableCell align={'center'}>
-                          Telegram
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      <TableRow>
-                        <TableCell width={'50%'}>
-                          <Typography >Projects Update</Typography>
-                          <Typography color={'neutral.500'} variant={'body2'}>Stay tuned if something in your project has changed</Typography>
-                        </TableCell>
-                        <TableCell align={'center'}>
-                          <Switch
-                          onChange={(e)=>{
-                            console.log(e.target.checked)
-                          }}
-                          />
-                        </TableCell>
-                        <TableCell align={'center'}>
-                          <Switch />
-                        </TableCell>
-                        <TableCell align={'center'}>
-                          <Switch />
-                        </TableCell>
-                        
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </Scrollbar>
-              </Box>
-            </Stack>
-          </CardContent>
+                        <Box sx={{whiteSpace: 'nowrap', flexShrink: 0}}>Event Type</Box>
+                      </Stack>
+                    </TableCell>
+                    <TableCell align={'center'}>
+                      In App
+                    </TableCell>
+                    <TableCell align={'center'}>
+                      Email
+                    </TableCell>
+                    <TableCell align={'center'}>
+                      Telegram
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow>
+                    <TableCell width={'50%'}>
+                      <Typography >Projects Update</Typography>
+                      <Typography color={'neutral.500'} variant={'body2'}>Stay tuned if something in your project has changed</Typography>
+                    </TableCell>
+                    <TableCell align={'center'}>
+                      <Switch
+                        onChange={(e)=>{
+                          console.log(e.target.checked)
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell align={'center'}>
+                      <Switch />
+                    </TableCell>
+                    <TableCell align={'center'}>
+                      <Switch />
+                    </TableCell>
+          
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </Scrollbar>
+          </Box>
         </Card>
       </Stack>
     </>

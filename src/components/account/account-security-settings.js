@@ -45,12 +45,11 @@ const validationSchema = Yup.object({
     .required('Password is required')
 });
 
-
 export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) => {
   const [showPass, setShowPass] = useState(false);
   const [disabled, setDisabled] = useState(true);
   const [newPassDisabled, setNewPassDisabled] = useState(true);
-  const [twa, setTwa] = useState(user.twofa.status === 'enabled');
+  const [twa, setTwa] = useState(undefined);
   const [key, setKey] = useState('');
   const [code, setCode] = useState('');
   const [dialog, setDialog] = useState(false);
@@ -63,32 +62,37 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
   const ref = useRef(null);
   const dispatch = useDispatch();
   
+  useEffect(() => {
+    setTwa(user.twofa.status === 'enabled')
+  }, [user])
+  
   const handleTwaStatus = useCallback(async (code, status) => {
-    const {result, error} = api.users.status2fa({code: code, status: status})
+    const {result, error} = await api.users.status2fa({code: code, status: status})
     return {result, error}
   }, [])
   
   const disableTwofa = useCallback(async () => {
-    const {result, error} = await api.users.status2fa({code: code, status: 'disabled'})
+    const {result, error} = await handleTwaStatus(code, 'disabled')
     if (result) {
-      const {result} = api.users.me()
+      const {result} = await api.users.me()
       dispatch(actions.fillMe(result))
       setTwa(false)
       setConfirm(false)
     }
     if (error) toast.error(error.message)
-  }, []);
+  }, [code]);
   
   const activateTwa = useCallback(async () => {
     let code = '';
     ref.current.querySelectorAll('input').forEach(i => {
       code += i.value
     })
-    const {result, error} = handleTwaStatus(code, 'enabled')
+    const {result, error} = await handleTwaStatus(code, 'enabled')
     
     if (result) {
-      const {result} = api.users.me()
+      const {result} = await api.users.me()
       dispatch(actions.fillMe(result))
+      setStep(3)
     } else if (error) {
       toast.error(error.message)
     }
@@ -216,7 +220,7 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
                       }}
                     >Change Password</Button>
                     <Button
-                      variant={'text'}
+                      variant={'outlined'}
                       onClick={(e) => {
                       
                       }}
@@ -321,9 +325,12 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
           Disable Two Factor Authentication
         </DialogTitle>
         <DialogContent dividers>
-          <Typography variant={'h6'}>Enter 6 digit code from authentication app</Typography>
+          <Typography variant={'h6'} mb={2}>Enter 6 digit code from authentication app</Typography>
           <Input
-            onChange={(e)=>{
+            label={'Code'}
+            fullWidth
+            value={code}
+            onChange={(e) => {
               setCode(e.target.value)
             }}
           />
@@ -429,9 +436,8 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
                           }}
                         >Confirm Password</Button>
                         <Button
-                          variant={'text'}
+                          variant={'outlined'}
                         >Forgot password</Button>
-                      
                       </Stack>
                     </Stack>
                   </CardContent>
@@ -671,7 +677,7 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
                 <Card>
                   <CardContent>
                     <Stack spacing={3}>
-                      <Typography variant={'h6'}>Confirm your password</Typography>
+                      <Typography variant={'h6'}>Two-factor authentication enabled</Typography>
                       <Typography variant={'body2'}>Now when logging in from an unfamiliar device, we will ask for a login code.</Typography>
                       <Typography variant={'body2'} sx={{mt: '8px!important'}}>To change your contact information, open the Details Section in your Account.</Typography>
                       
