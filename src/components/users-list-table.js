@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
-import {Block, CheckCircleOutlined, Close, EditOutlined} from '@mui/icons-material'
+import {Block, CheckCircleOutlined, Circle, Close, EditOutlined} from '@mui/icons-material'
 import {
   Avatar,
   Box,
@@ -10,7 +10,7 @@ import {
   IconButton,
   Link,
   Stack,
-  SvgIcon,
+  SvgIcon, Switch,
   Table,
   TableBody,
   TableCell,
@@ -92,20 +92,18 @@ export const UsersListTable = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell>
-                  ID
-                </TableCell>
-                <TableCell>
                   Name
                 </TableCell>
                 <TableCell>
                   Role
                 </TableCell>
                 <TableCell>
+                  Manager
+                </TableCell>
+                <TableCell>
                   Status
                 </TableCell>
-                {editGrant && <TableCell align="right">
-                  Actions
-                </TableCell>}
+                {editGrant && <TableCell/>}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -116,9 +114,6 @@ export const UsersListTable = (props) => {
                     hover
                     key={user.id}
                   >
-                    <TableCell>
-                      {user.id}
-                    </TableCell>
                     <TableCell>
                       <Stack
                         alignItems="center"
@@ -151,16 +146,27 @@ export const UsersListTable = (props) => {
                       </Stack>
                     </TableCell>
                     <TableCell sx={{textTransform: 'capitalize'}}>
-                      {user.role}
+                      <Stack direction={'row'} alignItems={'center'} spacing={1}>
+                        <SvgIcon sx={{
+                          fontSize: 10,
+                          color: user.role === 'manager' ? 'warning.main' : 'info.main'
+                        }}>
+                          <Circle/>
+                        </SvgIcon>
+                        <Box>{user.role}</Box>
+                      </Stack>
                     </TableCell>
                     <TableCell>
-                      <Typography
-                        sx={{
-                          textTransform: 'capitalize',
-                          color: (user.status === 'active') ? 'success.main' : 'error.main'
-                        }}
-                      >
-                        {user.status}
+                    
+                    </TableCell>
+                    <TableCell>
+                      <Typography>
+                        <Switch
+                          checked={user.status === 'active'}
+                          onChange={(e) => {
+                            console.log(e.target.checked)
+                          }}
+                        />
                       </Typography>
                     </TableCell>
                     {editGrant && <TableCell align="right">
@@ -178,7 +184,7 @@ export const UsersListTable = (props) => {
                       <Tooltip title={'Edit'}>
                         <IconButton
                           component={NextLink}
-                          href={`${paths.users.index}/${user.id}`}
+                          href={`${paths.users.index}/edit/${user.id}`}
                         >
                           <SvgIcon color={'primary'}>
                             <EditOutlined/>

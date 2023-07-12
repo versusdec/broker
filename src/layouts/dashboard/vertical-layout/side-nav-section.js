@@ -17,6 +17,11 @@ const checkExact = (pathname, itemPath) => {
   if (pathname === itemPath) {
     return true;
   }
+  switch (pathname.split('/')[1]) {
+    case 'users':
+      return pathname === itemPath
+    default: void 0;
+  }
   if (!Number.isInteger(+pathname.split('/')[1])) {
     return pathname.split('/')[1] === itemPath.split('/')[1]
   }

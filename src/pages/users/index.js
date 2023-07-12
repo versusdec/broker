@@ -14,26 +14,17 @@ import toast from "react-hot-toast";
 import {useDispatch} from "../../store";
 import {actions} from '../../slices/usersSlice'
 import {useGrants} from "../../hooks/useGrants";
+import {useRouter} from "next/router";
 
 const Page = withUsersListGuard(() => {
   const dispatch = useDispatch();
+  const router = useRouter();
+  const role = router.query.role ?? ''
   const {data} = useMe();
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const [filters, setFilters] = useState({});
-  const [role, setRole] = useState({grants: []});
   const grants = useGrants(data?.role_id);
   const isAdmin = data && data.role_id === 0;
-  
-  const getRole = useCallback(async (id) => {
-    const {result} = await api.roles.get(id);
-    setRole(result)
-  }, [])
-  
-  useEffect(() => {
-    if (data.role_id) {
-      getRole(data.role_id)
-    }
-  }, [data, getRole])
   
   const handleFiltersChange = useCallback((filters) => {
     setFilters(filters)
@@ -88,7 +79,7 @@ const Page = withUsersListGuard(() => {
             direction="row"
             spacing={3}
           >
-            {data && (data.role_id === 0 || role.grants.includes('users.write')) && <Button
+            {data && (isAdmin || grants.includes('users.write')) && <Button
               component={NextLink}
               href={paths.users.add}
               startIcon={(
@@ -118,6 +109,7 @@ const Page = withUsersListGuard(() => {
             handleStatus={handleStatus}
             grants={grants}
             isAdmin={isAdmin}
+            role={role}
           />
         </Card>
       </Stack>

@@ -17,20 +17,8 @@ const SIDE_NAV_WIDTH = 280;
 
 export const TopNav = (props) => {
   const {onMobileNavOpen, ...other} = props;
-  const [projects, setProjects] = useState(null);
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
   const {data} = useMe();
-  const projectParams = useMemo(() => ({limit: 100, status: 'active'}), [])
-  const {id, setProjectId} = useProjects()
-  
-  const getProjects = useCallback(async () => {
-    const {result, error} = await api.projects.list(projectParams)
-    if (result && result.items.length) setProjects(result.items)
-  }, [])
-  
-  useEffect(() => {
-    getProjects()
-  }, [getProjects])
   
   return (
     <Box
@@ -64,34 +52,6 @@ export const TopNav = (props) => {
           alignItems="center"
           direction="row"
           spacing={2}
-          width={200}
-        >
-          {projects && projects.length && <Input
-            fullWidth
-            label="Project"
-            onChange={(e) => {
-              setProjectId(e.target.value)
-            }}
-            select
-            size={'small'}
-            value={id ?? 0}
-          >
-            <MenuItem key={'select'} value={0}>
-              Select project
-            </MenuItem>
-            {projects && projects.map((item, i) => {
-              
-              return <MenuItem key={i} value={item.id}>
-                {item.name}
-              </MenuItem>
-            })}
-          
-          </Input>}
-        </Stack>
-        <Stack
-          alignItems="center"
-          direction="row"
-          spacing={2}
         >
           {!lgUp && (
             <IconButton onClick={onMobileNavOpen}>
@@ -107,7 +67,12 @@ export const TopNav = (props) => {
           direction="row"
           spacing={2}
         >
-          <Typography variant={'subtitle2'}>{data && data.balance} $</Typography>
+          <Typography variant={'subtitle2'}>
+            {data && <Box color={'neutral.500'} display={'flex'}>
+              Your balance:
+              <Box ml={1} color={'text.primary'} fontWeight={500}>${data.balance}</Box>
+            </Box>}
+          </Typography>
           {/*<LanguageSwitch />*/}
           <NotificationsButton/>
           <AccountButton/>

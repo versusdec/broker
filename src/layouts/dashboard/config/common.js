@@ -12,7 +12,7 @@ import {
 
 
 export const getSections = (t) => {
-
+  
   return [
     {
       items: [
@@ -75,14 +75,32 @@ export const getSections = (t) => {
           )
         },
         {
-          title: t(tokens.nav.staff),
+          title: t(tokens.nav.staff.index),
           path: paths.users.index,
           grants: 'users.read',
           icon: (
             <SvgIcon fontSize="small">
               <TableRowsOutlined/>
             </SvgIcon>
-          )
+          ),
+          items: [
+            {
+              title: t(tokens.nav.staff.all),
+              path: paths.users.index,
+              grants: 'users.read',
+            },
+            {
+              title: t(tokens.nav.staff.supervisor),
+              path: paths.users.index + '/supervisor',
+              grants: 'users.read',
+            },
+            {
+              title: t(tokens.nav.staff.operator),
+              path: paths.users.index + '/operator',
+              grants: 'users.read',
+            },
+            
+          ]
         },
         {
           title: t(tokens.nav.account),
@@ -114,8 +132,8 @@ export const getSections = (t) => {
             </SvgIcon>
           )
         },
-    
-    
+      
+      
       ]
     },
   ];

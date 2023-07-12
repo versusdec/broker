@@ -10,7 +10,12 @@ export const tokens = {
     support: 'nav.support',
     billing: 'nav.billing',
     users: 'nav.users',
-    staff: 'nav.staff',
+    staff: {
+      index: 'nav.staff.index',
+      all: 'nav.staff.all',
+      supervisor: 'nav.staff.supervisor',
+      operator: 'nav.staff.operator',
+    },
     projects: 'nav.projects',
     roles: 'nav.roles',
     queues: 'nav.queues',

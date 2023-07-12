@@ -11,8 +11,8 @@ export const paths = Object.freeze({
   support: '/support',
   users: {
     index: '/users',
-    edit: '/users/:user',
-    add: '/users/add'
+    edit: '/users/edit/:user',
+    add: '/users/edit/new'
   },
   projects: {
     index: '/projects',

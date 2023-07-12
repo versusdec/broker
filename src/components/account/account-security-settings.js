@@ -219,13 +219,6 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
                         formik.handleSubmit(e)
                       }}
                     >Change Password</Button>
-                    <Button
-                      variant={'outlined'}
-                      onClick={(e) => {
-                      
-                      }}
-                    >Forgot password?</Button>
-                  
                   </Stack>
                 </Stack>
               </Stack>
@@ -435,9 +428,6 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
                             }
                           }}
                         >Confirm Password</Button>
-                        <Button
-                          variant={'outlined'}
-                        >Forgot password</Button>
                       </Stack>
                     </Stack>
                   </CardContent>

@@ -84,7 +84,7 @@ export const SideNavItem = (props) => {
               component="span"
               sx={{
                 alignItems: 'center',
-                color: 'var(--nav-item-icon-color)',
+                color: 'var(--nav-item-icon-active-color)',
                 display: 'inline-flex',
                 justifyContent: 'center',
                 mr: 2,
@@ -184,7 +184,7 @@ export const SideNavItem = (props) => {
             component="span"
             sx={{
               alignItems: 'center',
-              color: 'var(--nav-item-icon-color)',
+              color: 'var(--nav-item-icon-active-color)',
               display: 'inline-flex',
               justifyContent: 'center',
               mr: 2,

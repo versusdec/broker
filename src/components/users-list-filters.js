@@ -1,7 +1,8 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 import SearchMdIcon from '@untitled-ui/icons-react/build/esm/SearchMd';
-import {Box, Divider, InputAdornment, OutlinedInput, Stack, SvgIcon, Tab, Tabs} from '@mui/material';
+import {Box, Divider, InputAdornment, MenuItem, OutlinedInput, Stack, SvgIcon, Tab, Tabs} from '@mui/material';
+import {Input} from "./input";
 
 const tabs = [
   {
@@ -18,7 +19,7 @@ const tabs = [
   }
 ];
 
-export const UsersListFilters = (props) => {
+export const UsersListFilters = ({role, ...props}) => {
   const {onFiltersChange} = props;
   const queryRef = useRef(null);
   const [currentTab, setCurrentTab] = useState('all');
@@ -92,7 +93,7 @@ export const UsersListFilters = (props) => {
             defaultValue=""
             fullWidth
             inputProps={{ref: queryRef}}
-            placeholder="Search users"
+            placeholder="Search by name or email"
             startAdornment={(
               <InputAdornment position="start">
                 <SvgIcon>
@@ -102,23 +103,15 @@ export const UsersListFilters = (props) => {
             )}
           />
         </Box>
-        {/*<TextField
-          label="Sort By"
-          name="sort"
-          onChange={handleSortChange}
+        <Input
           select
-          SelectProps={{ native: true }}
-          value={`${sortBy}|${sortDir}`}
+          value={role ?? ''}
+          label={'Role'}
         >
-          {sortOptions.map((option) => (
-            <option
-              key={option.value}
-              value={option.value}
-            >
-              {option.label}
-            </option>
-          ))}
-        </TextField>*/}
+          <MenuItem>
+          
+          </MenuItem>
+        </Input>
       </Stack>
     </>
   );
