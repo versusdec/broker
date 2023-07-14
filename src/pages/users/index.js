@@ -30,6 +30,10 @@ const Page = withUsersListGuard(() => {
     setFilters(filters)
   }, [])
   
+  useEffect(() => {
+    role !== '' ? setFilters({role: role === 'supervisor' ? 'manager' : role}) : void 0;
+  }, [])
+  
   const params = useMemo(() => {
     return {
       limit: limit, offset: offset,

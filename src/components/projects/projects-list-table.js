@@ -46,7 +46,7 @@ export const ProjectsListTable = (props) => {
     setHidden(i)
   }, [])
   
-  const handleMouseOut = useCallback((i) => {
+  const handleMouseOut = useCallback(() => {
     setHidden(null)
   }, [])
   

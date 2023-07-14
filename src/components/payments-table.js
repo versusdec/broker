@@ -17,14 +17,16 @@ import {
   TableHead,
   TableRow,
   Tooltip,
-  Typography
+  Typography,
+  Menu,
+  Alert
 } from "@mui/material";
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import {format} from "date-fns"
-import {BlockOutlined, CheckCircleOutlined, Close} from "@mui/icons-material";
-import {useEffect, useState} from "react";
+import {ArrowDropDown, BlockOutlined, CheckCircleOutlined, Close, CreditCardOutlined, Done, Loop, Add, PrintOutlined} from "@mui/icons-material";
+import {useCallback, useEffect, useState} from "react";
 import * as Yup from "yup";
 import {useFormik} from "formik";
 import {Input} from "./input";
@@ -34,6 +36,7 @@ import NextLink from "next/link";
 import {paths} from "../navigation/paths";
 import {Pagination} from "./pagination";
 import {usePagination} from "../hooks/usePagination";
+
 
 const initialValues = {
   type: 'invoice',
@@ -53,12 +56,31 @@ const validationSchema = Yup.object({
     .string()
 });
 
-export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClose, onSubmit, isAdmin, onPay, onCancel}) => {
+export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClose, onSubmit, isAdmin, onPay, onCancel, filters}) => {
   const [timestamp, setTimestamp] = useState(null);
   const [confirmPay, setConfirmPay] = useState({item: null, open: false});
   const [confirmCancel, setConfirmCancel] = useState({item: null, open: false});
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const {data, loading} = payments;
+  const [hidden, setHidden] = useState(null)
+  const [anchorEl, setAnchorEl] = useState(null);
+  const periodOpen = Boolean(anchorEl);
+  
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  
+  const handleMouseOver = useCallback((i) => {
+    setHidden(i)
+  }, [])
+  
+  const handleMouseOut = useCallback(() => {
+    setHidden(null)
+  }, [])
   
   useEffect(() => {
     onFiltersChange({
@@ -87,7 +109,6 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
     }
   })
   
-  
   return <>
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Stack
@@ -109,7 +130,74 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
             end: Math.floor(val.getTime() / 1000)
           }))
         }}/>
-      
+        <Button
+          id={'period-button'}
+          endIcon={<ArrowDropDown/>}
+          variant={'outlined'}
+          sx={{
+            color: 'neutral.500',
+            borderColor: 'neutral.200',
+            height: 55,
+            borderRadius: '8px',
+            transition: 'none',
+            pl: '12px',
+            ':hover': {borderColor: 'neutral.200',}
+          }}
+          aria-controls={periodOpen ? 'period-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={periodOpen ? 'true' : undefined}
+          onClick={handleClick}
+        >
+          Period
+        </Button>
+        <Menu
+          id="period-menu"
+          aria-labelledby="period-button"
+          anchorEl={anchorEl}
+          open={periodOpen}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          
+        >
+          <Box p={2}>
+            <Box mb={2}>
+              DATEPICKER HERE
+            </Box>
+            <Button
+              onClick={handleClose}
+              fullWidth
+              variant={'contained'}
+            >
+              OK
+            </Button>
+          </Box>
+        </Menu>
+        <Input
+          width={96}
+          sx={{width: 96}}
+          select
+          value={filters.status ?? ''}
+          label={'Status'}
+          onChange={(e) => {
+            if (e.target.value === '') delete filters.status
+            const f = {...filters}
+            e.target.value === '' ? void 0 : f.status = e.target.value
+            onFiltersChange(f)
+          }}
+        >
+          <MenuItem value={''}>All</MenuItem>
+          <MenuItem value={'new'}>New</MenuItem>
+          <MenuItem value={'payed'}>Paid</MenuItem>
+          <MenuItem value={'pending'}>Pending</MenuItem>
+          <MenuItem value={'canceled'}>Canceled</MenuItem>
+        </Input>
       </Stack>
     </LocalizationProvider>
     <Box
@@ -146,6 +234,9 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
           <>
             <TableHead>
               <TableRow>
+                <TableCell sx={{whiteSpace: 'nowrap'}}>
+                  Payment ID
+                </TableCell>
                 <TableCell>
                   Date
                 </TableCell>
@@ -162,19 +253,22 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
                 <TableCell>
                   Status
                 </TableCell>
-                <TableCell align="right">
-                  Actions
-                </TableCell>
+                <TableCell width/>
               </TableRow>
             </TableHead>
             <TableBody>
-              {data && data.items?.length && data.items.map((item) => {
+              {data && data.items?.length && data.items.map((item, i) => {
                 return (
                   <TableRow
                     hover
                     key={item.id}
+                    onMouseOver={() => {
+                      handleMouseOver(i)
+                    }}
+                    onMouseOut={handleMouseOut}
                   >
-                    <TableCell>
+                    <TableCell>{item.id}</TableCell>
+                    <TableCell sx={{whiteSpace: 'nowrap'}}>
                       {format(new Date(item.created * 1000), 'yyyy-MM-dd HH:mm:ss')}
                     </TableCell>
                     
@@ -210,7 +304,7 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
                       </Stack>
                     </TableCell>}
                     <TableCell>
-                      {item.amount}
+                      ${item.amount}
                     </TableCell>
                     <TableCell>
                       {item.type === 100 ? 'Invoice' : 'Bonus'}
@@ -219,29 +313,74 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
                       {item.comment}
                     </TableCell>
                     <TableCell>
-                      <Box sx={{textTransform: 'capitalize'}}>{item.status}</Box>
-                    </TableCell>
-                    <TableCell align="right">
-                      <Tooltip title="Pay">
-                        <IconButton
-                          onClick={() => {
-                            setConfirmPay({item: item, open: true})
-                          }}
+                      <Box sx={{textTransform: 'capitalize'}}>
+                        {<Alert severity={item.status === 'payed' ? 'success'
+                          : item.status === 'new' ? 'info'
+                            : item.status === 'pending' ? 'warning'
+                              : item.status === 'canceled' ? 'error' : ''}
+                                sx={{
+                                  '.MuiAlert-message': {padding: 0},
+                                  '.MuiAlert-icon': {mr: 1, fontSize: '10px'}
+                                }}
+                                iconMapping={{
+                                  success: <SvgIcon fontSize={'10px'}>
+                                    <Done sx={{fontSize: '10px'}}/>
+                                  </SvgIcon>,
+                                  info: <SvgIcon fontSize={'10px'}>
+                                    <Add sx={{fontSize: '10px'}}/>
+                                  </SvgIcon>,
+                                  warning: <SvgIcon fontSize={'10px'}>
+                                    <Loop sx={{fontSize: '10px'}}/>
+                                  </SvgIcon>,
+                                  error: <SvgIcon fontSize={'10px'}>
+                                    <Close sx={{fontSize: '10px'}}/>
+                                  </SvgIcon>
+                                }}
                         >
-                          <SvgIcon color={'primary'}>
-                            <CheckCircleOutlined/>
-                          </SvgIcon>
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title={'Cancel'}>
-                        <IconButton onClick={() => {
-                          setConfirmCancel({item: item, open: true})
-                        }}>
-                          <SvgIcon color={'error'}>
-                            <BlockOutlined/>
-                          </SvgIcon>
-                        </IconButton>
-                      </Tooltip>
+                          {item.status}
+                        </Alert>}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box hidden={false}>
+                        <Stack direction={'row'} justifyContent={'end'}>
+                          <Tooltip title="Pay">
+                            <IconButton
+                              onClick={() => {
+                                setConfirmPay({item: item, open: true})
+                              }}
+                            >
+                              <SvgIcon sx={{
+                                ':hover': {color: 'primary.main'}
+                              }}>
+                                <CreditCardOutlined/>
+                              </SvgIcon>
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title={'Cancel'}>
+                            <IconButton onClick={() => {
+                              setConfirmCancel({item: item, open: true})
+                            }}>
+                              <SvgIcon sx={{
+                                ':hover': {color: 'error.main'}
+                              }}>
+                                <Close/>
+                              </SvgIcon>
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title={'Print'}>
+                            <IconButton onClick={() => {
+                            
+                            }}>
+                              <SvgIcon sx={{
+                                ':hover': {color: 'primary.main'}
+                              }}>
+                                <PrintOutlined/>
+                              </SvgIcon>
+                            </IconButton>
+                          </Tooltip>
+                        </Stack>
+                      </Box>
                     </TableCell>
                   </TableRow>
                 );
