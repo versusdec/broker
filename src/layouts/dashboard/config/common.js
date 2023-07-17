@@ -90,13 +90,13 @@ export const getSections = (t) => {
               grants: 'users.read',
             },
             {
-              title: t(tokens.nav.staff.supervisor),
-              path: paths.users.index + '/supervisor',
+              title: t(tokens.nav.staff.manager),
+              path: paths.users.manager,
               grants: 'users.read',
             },
             {
               title: t(tokens.nav.staff.operator),
-              path: paths.users.index + '/operator',
+              path: paths.users.operator,
               grants: 'users.read',
             },
             

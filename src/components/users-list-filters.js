@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import SearchMdIcon from '@untitled-ui/icons-react/build/esm/SearchMd';
 import {Box, Divider, InputAdornment, MenuItem, OutlinedInput, Stack, SvgIcon, Tab, Tabs} from '@mui/material';
 import {Input} from "./input";
+import {paths} from "../navigation/paths";
+import {useRouter} from "next/router";
 
 const tabs = [
   {
@@ -21,6 +23,7 @@ const tabs = [
 
 export const UsersListFilters = ({role, ...props}) => {
   const {onFiltersChange} = props;
+  const router = useRouter();
   const queryRef = useRef(null);
   const [currentTab, setCurrentTab] = useState('all');
   const [filters, setFilters] = useState(props.initialFilters);
@@ -103,15 +106,52 @@ export const UsersListFilters = ({role, ...props}) => {
             )}
           />
         </Box>
-        <Input
-          select
-          value={role ?? ''}
-          label={'Role'}
-        >
-          <MenuItem>
-          
-          </MenuItem>
-        </Input>
+        <Box width={82}>
+          <Input
+            fullWidth
+            select
+            value={role ?? ''}
+            label={'Role'}
+            onChange={e => {
+              router.replace(e.target.value)
+            }}
+          >
+            <MenuItem value={paths.users.index}>All</MenuItem>
+            <MenuItem value={paths.users.manager}>Manager</MenuItem>
+            <MenuItem value={paths.users.operator}>Operator</MenuItem>
+          </Input>
+        </Box>
+        <Box width={112}>
+          <Input
+            fullWidth
+            select
+            value={role ?? ''}
+            label={'Manager'}
+            onChange={e => {
+            
+            }}
+          >
+            <MenuItem value={paths.users.index}>All</MenuItem>
+          </Input>
+        </Box>
+        <Box width={96}>
+          <Input
+            fullWidth
+            select
+            value={role ?? ''}
+            label={'Status'}
+            onChange={e => {
+              const f = {...filters}
+              e.target.value === '' ? delete f.status : void 0;
+              onFiltersChange({status: e.target.value})
+            }}
+          >
+            <MenuItem value={''}>All</MenuItem>
+            <MenuItem value={'active'}>Active</MenuItem>
+            <MenuItem value={'blocked'}>Blocked</MenuItem>
+          </Input>
+        </Box>
+      
       </Stack>
     </>
   );

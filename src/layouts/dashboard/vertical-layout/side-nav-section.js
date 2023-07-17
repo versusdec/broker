@@ -17,6 +17,7 @@ const checkExact = (pathname, itemPath) => {
   if (pathname === itemPath) {
     return true;
   }
+  
   switch (pathname.split('/')[1]) {
     case 'users':
       return pathname === itemPath
@@ -29,7 +30,8 @@ const checkExact = (pathname, itemPath) => {
 
 const reduceChildRoutes = ({acc, depth, item, pathname, grants, isAdmin}) => {
   const checkPath = !!(item.path && pathname);
-  const partialMatch = checkPath ? (pathname.includes(item.path) || Number.isInteger(+pathname.split('/')[1])) : false;
+  const isId = +pathname.split('/')[1] !== 0 && Number.isInteger(+pathname.split('/')[1]);
+  const partialMatch = checkPath ? (pathname.includes(item.path) || isId) : false;
   let exactMatch = checkPath ? checkExact(pathname, item.path) : false;
 
   if (item.items) {

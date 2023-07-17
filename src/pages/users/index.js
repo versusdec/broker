@@ -31,8 +31,8 @@ const Page = withUsersListGuard(() => {
   }, [])
   
   useEffect(() => {
-    role !== '' ? setFilters({role: role === 'supervisor' ? 'manager' : role}) : void 0;
-  }, [])
+    role !== '' ? setFilters({role: role}) : setFilters({});
+  }, [role])
   
   const params = useMemo(() => {
     return {
@@ -44,13 +44,12 @@ const Page = withUsersListGuard(() => {
   const {users, loading, error} = useUsers(params);
   const {items, total} = users || {items: [], limit: limit, total: 0};
   
-  const handleStatus = useCallback(async (id, status, cb) => {
+  const handleStatus = useCallback(async (id, status) => {
     const res = await api.users.update({
       id: +id,
       status: status === 'blocked' ? 'active' : 'blocked'
     })
     if (res) {
-      cb();
       const newItems = items.map((i) => {
         if (i.id === +id) {
           return {

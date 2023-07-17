@@ -12,6 +12,7 @@ export const en = {
   [tokens.nav.staff.index]: 'Staff',
   [tokens.nav.staff.all]: 'All Roles',
   [tokens.nav.staff.supervisor]: 'Supervisor',
+  [tokens.nav.staff.manager]: 'Manager',
   [tokens.nav.staff.operator]: 'Operator',
   [tokens.nav.projects]: 'Projects',
   [tokens.nav.queues]: 'Queues',

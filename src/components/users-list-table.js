@@ -38,22 +38,7 @@ export const UsersListTable = (props) => {
     isAdmin,
     ...other
   } = props;
-  const [dialog, setDialog] = useState({open: false, user: null});
   const editGrant = (isAdmin || grants.includes('users.write'))
-  
-  const handleDialogOpen = useCallback((user) => {
-    setDialog({
-      open: true,
-      user: user
-    })
-  }, [])
-  
-  const handleDialogClose = useCallback(() => {
-    setDialog({
-      open: false,
-      user: null
-    })
-  }, [])
   
   return (
     <Box
@@ -131,7 +116,7 @@ export const UsersListTable = (props) => {
                           {editGrant ? <Link
                             color="inherit"
                             component={NextLink}
-                            href={`${paths.users.index}/${user.id}`}
+                            href={`${paths.users.index}edit/${user.id}/`}
                             variant="subtitle2"
                           >
                             {user.name}
@@ -163,30 +148,19 @@ export const UsersListTable = (props) => {
                       <Typography>
                         <Switch
                           checked={user.status === 'active'}
-                          onChange={(e) => {
-                            console.log(e.target.checked)
+                          onChange={() => {
+                            handleStatus(user.id, user.status)
                           }}
                         />
                       </Typography>
                     </TableCell>
                     {editGrant && <TableCell align="right">
-                      <Tooltip title={user.status === 'active' ? 'Block' : 'Unblock'}>
-                        <IconButton
-                          onClick={() => {
-                            handleDialogOpen(user)
-                          }}
-                        >
-                          <SvgIcon color={user.status === 'blocked' ? 'success' : 'error'}>
-                            {user.status === 'blocked' ? <CheckCircleOutlined/> : <Block/>}
-                          </SvgIcon>
-                        </IconButton>
-                      </Tooltip>
                       <Tooltip title={'Edit'}>
                         <IconButton
                           component={NextLink}
-                          href={`${paths.users.index}/edit/${user.id}`}
+                          href={`${paths.users.index}edit/${user.id}`}
                         >
-                          <SvgIcon color={'primary'}>
+                          <SvgIcon sx={{':hover': {color: 'primary'}}} fontSize={'small'}>
                             <EditOutlined/>
                           </SvgIcon>
                         </IconButton>
@@ -201,53 +175,6 @@ export const UsersListTable = (props) => {
         </Table>
       </Scrollbar>
       <Pagination limit={limit} total={total} page={page} onPageChange={onPageChange} onLimitChange={handleLimitChange}/>
-      <Dialog
-        open={dialog.open}
-        onClose={handleDialogClose}
-        scroll={'paper'}
-        maxWidth={'sm'}
-        fullWidth
-      >
-        <DialogTitle sx={{pr: 10}}>
-          <IconButton
-            aria-label="close"
-            onClick={handleDialogClose}
-            sx={{
-              position: 'absolute',
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.primary.main,
-            }}
-          >
-            <Close/>
-          </IconButton>
-          {dialog.user && (dialog.user?.status === 'active' ? `Block user #${dialog.user?.id}?` : `Unblock user #${dialog.user?.id}?`)}
-        </DialogTitle>
-        <DialogContent dividers>
-          {dialog.user && 'User '} {dialog.user && dialog.user?.name + ' | ' + dialog.user?.email}
-        </DialogContent>
-        <DialogActions>
-          <Button
-            type={'button'}
-            variant={'outlined'}
-            color={'error'}
-            onClick={handleDialogClose}
-          >
-            Cancel
-          </Button>
-          <Button
-            type={'button'}
-            variant={'contained'}
-            onClick={() => {
-              handleStatus(dialog.user?.id, dialog.user?.status, () => {
-                handleDialogClose()
-              })
-            }}
-          >
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };
