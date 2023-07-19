@@ -164,7 +164,7 @@ const Page = withUsersAddGuard(() => {
     useEffect(() => {
       if (projects.length && !newUser) {
         let p = [];
-        user.projects?.forEach(i => {
+        user && user.projects?.length && user.projects.forEach(i => {
           p.push(projects.find(p => p.id === i));
         })
         setProject(p)

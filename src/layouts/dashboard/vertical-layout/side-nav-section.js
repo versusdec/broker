@@ -72,7 +72,7 @@ const reduceChildRoutes = ({acc, depth, item, pathname, grants, isAdmin}) => {
   } else {
     (item.grants ? (isAdmin || grants.includes(item.grants)) : true) && !item.hidden && acc.push(
       <SideNavItem
-        active={exactMatch || (Number.isInteger(+pathname.split('/')[1]) && item.path.split('/')[2]?.length && (item.path.split('/')[2] === pathname.split('/')[2]))}
+        active={exactMatch}
         depth={depth}
         disabled={item.disabled}
         icon={item.icon}
