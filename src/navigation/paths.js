@@ -8,7 +8,6 @@ export const paths = Object.freeze({
   reset: '/auth/restore/',
   account: '/account/',
   billing: '/billing/',
-  support: '/support/',
   users: {
     index: '/users/',
     manager: '/users/manager/',
@@ -38,4 +37,9 @@ export const paths = Object.freeze({
     add: '/scripts/add/',
     edit: '/scripts/:id/'
   },
+  support: {
+    index: '/support/',
+    add: '/support/add/',
+    ticket: '/support/:id/'
+  }
 });

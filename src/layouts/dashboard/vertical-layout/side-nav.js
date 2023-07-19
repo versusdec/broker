@@ -214,7 +214,7 @@ export const SideNav = (props) => {
             <Stack spacing={1} >
               <Button
                 component={NextLink}
-                href={paths.support}
+                href={paths.support.index}
                 size={'small'}
                 startIcon={(
                   <SvgIcon fontSize="small">
