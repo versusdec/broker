@@ -1,7 +1,7 @@
 import {useCallback, useState} from 'react';
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
-import {Block, CheckCircleOutlined, Close, EditOutlined} from '@mui/icons-material'
+import {Block, CheckCircleOutlined, Close, DeleteOutlined, EditOutlined, UnarchiveOutlined} from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -10,7 +10,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  Link,
+  Link, Stack,
   SvgIcon,
   Table,
   TableBody,
@@ -22,6 +22,7 @@ import {
 import {Scrollbar} from '../scrollbar';
 import {Pagination} from "../pagination";
 import {Loader} from "../loader";
+import {format} from 'date-fns';
 
 export const ProjectsListTable = (props) => {
   const {
@@ -38,7 +39,16 @@ export const ProjectsListTable = (props) => {
     ...other
   } = props;
   const [dialog, setDialog] = useState({open: false, project: null});
-  const editGrant = (isAdmin || grants.includes('projects.write'))
+  const [hidden, setHidden] = useState(null);
+  const editGrant = (isAdmin || grants.includes('projects.write'));
+  
+  const handleMouseOver = useCallback((i) => {
+    setHidden(i)
+  }, [])
+  
+  const handleMouseOut = useCallback(() => {
+    setHidden(null)
+  }, [])
   
   const handleDialogOpen = useCallback((project) => {
     setDialog({
@@ -94,70 +104,77 @@ export const ProjectsListTable = (props) => {
                   ID
                 </TableCell>
                 <TableCell>
-                  Name
+                  Project title
                 </TableCell>
                 <TableCell>
-                  Status
+                  Creation date
                 </TableCell>
-                {editGrant && <TableCell align="right">
-                  Actions
-                </TableCell>}
+                {editGrant && <TableCell sx={{width: 300}}/>}
               </TableRow>
             </TableHead>
             <TableBody>
-              {projects.map((project) => {
+              {projects.map((project, i) => {
                 
                 return (
                   <TableRow
                     hover
                     key={project.id}
+                    onMouseOver={() => {
+                      handleMouseOver(i)
+                    }}
+                    onMouseOut={handleMouseOut}
+                    height={72}
                   >
                     <TableCell>
                       {project.id}
                     </TableCell>
                     <TableCell>
-                      {editGrant ? <Link color={'inherit'}
-                             variant="subtitle2"
-                             component={NextLink}
-                             href={`/${project.id}`}
-                      >
-                        {project.name}
-                      </Link> : project.name
-                      }
+                      {project.name}
                     </TableCell>
                     <TableCell>
-                      <Typography
-                        sx={{
-                          textTransform: 'capitalize',
-                          color: (project.status === 'active') ? 'success.main' : 'error.main'
-                        }}
-                      >
-                        {project.status}
-                      </Typography>
+                      {format(project.created * 1000, 'dd/MM/yyyy hh:mm')}
                     </TableCell>
-                    {editGrant && <TableCell align="right">
-                      <Tooltip title={project.status === 'active' ? 'Archive' : 'Unzip'}>
-                        <IconButton
-                          onClick={() => {
-                            handleDialogOpen(project)
-                          }}
-                        >
-                          <SvgIcon color={project.status === 'archived' ? 'success' : 'error'}>
-                            {project.status === 'archived' ? <CheckCircleOutlined/> : <Block/>}
-                          </SvgIcon>
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title={'Edit'}>
-                        <IconButton
-                          component={NextLink}
-                          href={`/${project.id}`}
-                        >
-                          <SvgIcon color={'primary'}>
-                            <EditOutlined/>
-                          </SvgIcon>
-                        </IconButton>
-                      </Tooltip>
-                    </TableCell>}
+                    <TableCell>
+                      <Box hidden={hidden !== i}>
+                        <Stack direction={'row'} spacing={1} justifyContent={'end'}>
+                          <Button
+                            variant={'contained'}
+                            component={NextLink}
+                            href={'#'}
+                            sx={{mr: 2}}
+                          >
+                            Go to Project
+                          </Button>
+                          {editGrant && <>
+                            <Tooltip title={'Edit'}>
+                              <IconButton
+                                component={NextLink}
+                                href={`/${project.id}`}
+                              >
+                                <SvgIcon sx={{
+                                  ':hover': {color: 'primary.main'}
+                                }} fontSize={'small'}>
+                                  <EditOutlined/>
+                                </SvgIcon>
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title={project.status === 'active' ? 'Archive' : 'Unarchive'}>
+                              <IconButton
+                                onClick={() => {
+                                  handleDialogOpen(project)
+                                }}
+                              >
+                                <SvgIcon sx={{
+                                  ':hover': {color: 'primary.main'}
+                                }} fontSize={'small'}>
+                                  {project.status === 'archived' ? <UnarchiveOutlined/> : <DeleteOutlined/>}
+                                </SvgIcon>
+                              </IconButton>
+                            </Tooltip>
+                          </>}
+                        </Stack>
+                      </Box>
+                    </TableCell>
                   </TableRow>
                 );
               })}

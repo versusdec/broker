@@ -14,17 +14,27 @@ const renderItems = ({depth = 0, items, pathname, grants, isAdmin}) => items.red
 }), []);
 
 const checkExact = (pathname, itemPath) => {
+  const section = pathname.split('/')[1] ?? false;
+
   if (pathname === itemPath) {
     return true;
   }
-  if (!Number.isInteger(+pathname.split('/')[1])) {
+  
+  switch (section) {
+    case 'users':
+      return pathname === itemPath
+    default: void 0;
+  }
+  
+  if (!Number.isInteger(+section)) {
     return pathname.split('/')[1] === itemPath.split('/')[1]
   }
 }
 
 const reduceChildRoutes = ({acc, depth, item, pathname, grants, isAdmin}) => {
   const checkPath = !!(item.path && pathname);
-  const partialMatch = checkPath ? (pathname.includes(item.path) || Number.isInteger(+pathname.split('/')[1])) : false;
+  const isId = +pathname.split('/')[1] !== 0 && Number.isInteger(+pathname.split('/')[1]);
+  const partialMatch = checkPath ? (pathname.includes(item.path) || isId) : false;
   let exactMatch = checkPath ? checkExact(pathname, item.path) : false;
 
   if (item.items) {
@@ -62,7 +72,7 @@ const reduceChildRoutes = ({acc, depth, item, pathname, grants, isAdmin}) => {
   } else {
     (item.grants ? (isAdmin || grants.includes(item.grants)) : true) && !item.hidden && acc.push(
       <SideNavItem
-        active={exactMatch || (Number.isInteger(+pathname.split('/')[1]) && item.path.split('/')[2]?.length && (item.path.split('/')[2] === pathname.split('/')[2]))}
+        active={exactMatch}
         depth={depth}
         disabled={item.disabled}
         icon={item.icon}

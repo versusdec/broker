@@ -66,33 +66,35 @@ export const ProjectsListFilters = (props) => {
         ))}
       </Tabs>
       <Divider/>
-      <Stack
-        alignItems="center"
-        direction="row"
-        flexWrap="wrap"
-        spacing={3}
-        sx={{p: 3}}
-      >
-        <Box
-          component="form"
-          onSubmit={handleQueryChange}
-          sx={{flexGrow: 1}}
+      <Box hidden>
+        <Stack
+          alignItems="center"
+          direction="row"
+          flexWrap="wrap"
+          spacing={3}
+          sx={{p: 3}}
         >
-          <OutlinedInput
-            defaultValue=""
-            fullWidth
-            inputProps={{ref: queryRef}}
-            placeholder="Search projects"
-            startAdornment={(
-              <InputAdornment position="start">
-                <SvgIcon>
-                  <SearchMdIcon/>
-                </SvgIcon>
-              </InputAdornment>
-            )}
-          />
-        </Box>
-      </Stack>
+          <Box
+            component="form"
+            onSubmit={handleQueryChange}
+            sx={{flexGrow: 1}}
+          >
+            <OutlinedInput
+              defaultValue=""
+              fullWidth
+              inputProps={{ref: queryRef}}
+              placeholder="Search projects"
+              startAdornment={(
+                <InputAdornment position="start">
+                  <SvgIcon>
+                    <SearchMdIcon/>
+                  </SvgIcon>
+                </InputAdornment>
+              )}
+            />
+          </Box>
+        </Stack>
+      </Box>
     </>
   );
 };

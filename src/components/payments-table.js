@@ -17,14 +17,16 @@ import {
   TableHead,
   TableRow,
   Tooltip,
-  Typography
+  Typography,
+  Menu,
+  Alert, OutlinedInput, InputAdornment
 } from "@mui/material";
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import {format} from "date-fns"
-import {BlockOutlined, CheckCircleOutlined, Close} from "@mui/icons-material";
-import {useEffect, useState} from "react";
+import {ArrowDropDown, Close, CreditCardOutlined, Done, Loop, Add, PrintOutlined} from "@mui/icons-material";
+import {useCallback, useEffect, useRef, useState} from "react";
 import * as Yup from "yup";
 import {useFormik} from "formik";
 import {Input} from "./input";
@@ -34,6 +36,8 @@ import NextLink from "next/link";
 import {paths} from "../navigation/paths";
 import {Pagination} from "./pagination";
 import {usePagination} from "../hooks/usePagination";
+import SearchMdIcon from "@untitled-ui/icons-react/build/esm/SearchMd";
+
 
 const initialValues = {
   type: 'invoice',
@@ -53,12 +57,23 @@ const validationSchema = Yup.object({
     .string()
 });
 
-export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClose, onSubmit, isAdmin, onPay, onCancel}) => {
+export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClose, onSubmit, isAdmin, onPay, onCancel, filters}) => {
   const [timestamp, setTimestamp] = useState(null);
   const [confirmPay, setConfirmPay] = useState({item: null, open: false});
   const [confirmCancel, setConfirmCancel] = useState({item: null, open: false});
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const {data, loading} = payments;
+  const [anchorEl, setAnchorEl] = useState(null);
+  const periodOpen = Boolean(anchorEl);
+  const queryRef = useRef(null);
+  
+  const handleClick = useCallback((event) => {
+    setAnchorEl(event.currentTarget);
+  }, []);
+  
+  const handleClose = useCallback(() => {
+    setAnchorEl(null);
+  }, [])
   
   useEffect(() => {
     onFiltersChange({
@@ -66,9 +81,12 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
     })
   }, [limit, page, offset, onFiltersChange])
   
-  useEffect(() => {
-    timestamp?.start && timestamp?.end && onFiltersChange({timestamp: timestamp})
-  }, [timestamp, onFiltersChange])
+  const getSeverity = useCallback(status => {
+    return status === 'payed' ? 'success'
+      : status === 'new' ? 'info'
+        : status === 'pending' ? 'warning'
+          : status === 'canceled' ? 'error' : ''
+  }, [])
   
   const formik = useFormik({
     initialValues,
@@ -87,29 +105,147 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
     }
   })
   
+  const handleQueryChange = useCallback((event) => {
+    event.preventDefault();
+    /*onFiltersChange((prevState) => ({
+      ...prevState,
+      q: queryRef.current?.value
+    }));*/
+  }, []);
+  
   
   return <>
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Stack
         alignItems="center"
         direction="row"
-        flexWrap="wrap"
+        flexWrap="nowrap"
         spacing={3}
         sx={{p: 3}}
       >
-        <DatePicker label="From" onChange={val => {
-          setTimestamp(prev => ({
-            ...prev,
-            start: Math.floor(val.getTime() / 1000)
-          }))
-        }}/>
-        <DatePicker label="To" onChange={val => {
-          setTimestamp(prev => ({
-            ...prev,
-            end: Math.floor(val.getTime() / 1000)
-          }))
-        }}/>
-      
+        <Box
+          component="form"
+          onSubmit={handleQueryChange}
+          sx={{flexGrow: 1}}
+        >
+          <OutlinedInput
+            defaultValue=""
+            fullWidth
+            inputProps={{ref: queryRef}}
+            placeholder="Search payments"
+            startAdornment={(
+              <InputAdornment position="start">
+                <SvgIcon>
+                  <SearchMdIcon/>
+                </SvgIcon>
+              </InputAdornment>
+            )}
+          />
+        </Box>
+        <Button
+          id={'period-button'}
+          endIcon={<ArrowDropDown/>}
+          variant={'outlined'}
+          sx={{
+            color: 'neutral.500',
+            borderColor: 'neutral.200',
+            height: 55,
+            width: 96,
+            borderRadius: '8px',
+            transition: 'none',
+            pl: '12px',
+            ':hover': {borderColor: 'neutral.200'},
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis'
+          }}
+          aria-controls={periodOpen ? 'period-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={periodOpen ? 'true' : undefined}
+          onClick={handleClick}
+        >
+          {'Period'}
+        </Button>
+        <Menu
+          id="period-menu"
+          aria-labelledby="period-button"
+          anchorEl={anchorEl}
+          open={periodOpen}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+        
+        >
+          <Box p={2}>
+            <Stack mb={2} direction={'column'} spacing={1}>
+              <DatePicker
+                label="From"
+                onChange={val => {
+                  setTimestamp(prev => ({
+                    ...prev,
+                    start: Math.floor(val.getTime() / 1000)
+                  }))
+                }}
+                defaultValue={(timestamp?.start * 1000) || undefined}
+                views={['year', 'month', 'day']}
+              />
+              <DatePicker
+                label="To"
+                onChange={val => {
+                  setTimestamp(prev => ({
+                    ...prev,
+                    end: Math.floor(val.getTime() / 1000)
+                  }))
+                }}
+                defaultValue={(timestamp?.end * 1000) || undefined}
+                views={['year', 'month', 'day']}
+              />
+            </Stack>
+            <Stack direction={'row'} spacing={2}>
+              <Button
+                onClick={() => {
+                  onFiltersChange({timestamp: timestamp})
+                  handleClose()
+                }}
+                fullWidth
+                variant={'contained'}
+              >
+                Apply
+              </Button>
+              <Button
+                onClick={handleClose}
+                fullWidth
+                variant={'outlined'}
+              >
+                Cancel
+              </Button>
+            </Stack>
+          </Box>
+        </Menu>
+        <Input
+          width={96}
+          sx={{width: 96}}
+          select
+          value={filters.status ?? ''}
+          label={'Status'}
+          onChange={(e) => {
+            if (e.target.value === '') delete filters.status
+            const f = {...filters}
+            e.target.value === '' ? void 0 : f.status = e.target.value
+            onFiltersChange(f)
+          }}
+        >
+          <MenuItem value={''}>All</MenuItem>
+          <MenuItem value={'new'}>New</MenuItem>
+          <MenuItem value={'payed'}>Paid</MenuItem>
+          <MenuItem value={'pending'}>Pending</MenuItem>
+          <MenuItem value={'canceled'}>Canceled</MenuItem>
+        </Input>
       </Stack>
     </LocalizationProvider>
     <Box
@@ -146,6 +282,9 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
           <>
             <TableHead>
               <TableRow>
+                <TableCell sx={{whiteSpace: 'nowrap'}}>
+                  Payment ID
+                </TableCell>
                 <TableCell>
                   Date
                 </TableCell>
@@ -162,20 +301,19 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
                 <TableCell>
                   Status
                 </TableCell>
-                <TableCell align="right">
-                  Actions
-                </TableCell>
+                <TableCell/>
               </TableRow>
             </TableHead>
             <TableBody>
-              {data && data.items?.length && data.items.map((item) => {
+              {data && data.items?.length && data.items.map((item, i) => {
                 return (
                   <TableRow
                     hover
                     key={item.id}
                   >
-                    <TableCell>
-                      {format(new Date(item.created * 1000), 'yyyy-MM-dd HH:mm:ss')}
+                    <TableCell>{item.id}</TableCell>
+                    <TableCell sx={{whiteSpace: 'nowrap'}}>
+                      {format(item.created * 1000, 'dd/MM/yyyy HH:mm')}
                     </TableCell>
                     
                     {isAdmin && <TableCell>
@@ -195,7 +333,7 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
                           <Link
                             color="inherit"
                             component={NextLink}
-                            href={`${paths.users.index}/${item.user.id}`}
+                            href={`${paths.users.index}edit/${item.user.id}/`}
                             variant="subtitle2"
                           >
                             {item.user.name}
@@ -210,7 +348,7 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
                       </Stack>
                     </TableCell>}
                     <TableCell>
-                      {item.amount}
+                      USD ${item.amount}
                     </TableCell>
                     <TableCell>
                       {item.type === 100 ? 'Invoice' : 'Bonus'}
@@ -219,29 +357,72 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
                       {item.comment}
                     </TableCell>
                     <TableCell>
-                      <Box sx={{textTransform: 'capitalize'}}>{item.status}</Box>
-                    </TableCell>
-                    <TableCell align="right">
-                      <Tooltip title="Pay">
-                        <IconButton
-                          onClick={() => {
-                            setConfirmPay({item: item, open: true})
-                          }}
+                      <Box sx={{textTransform: 'capitalize'}}>
+                        {<Alert severity={getSeverity(item.status)}
+                                sx={{
+                                  '.MuiAlert-message': {padding: 0},
+                                  '.MuiAlert-icon': {mr: 1, fontSize: '10px'}
+                                }}
+                                iconMapping={{
+                                  success: <SvgIcon fontSize={'10px'}>
+                                    <Done sx={{fontSize: '10px'}}/>
+                                  </SvgIcon>,
+                                  info: <SvgIcon fontSize={'10px'}>
+                                    <Add sx={{fontSize: '10px'}}/>
+                                  </SvgIcon>,
+                                  warning: <SvgIcon fontSize={'10px'}>
+                                    <Loop sx={{fontSize: '10px'}}/>
+                                  </SvgIcon>,
+                                  error: <SvgIcon fontSize={'10px'}>
+                                    <Close sx={{fontSize: '10px'}}/>
+                                  </SvgIcon>
+                                }}
                         >
-                          <SvgIcon color={'primary'}>
-                            <CheckCircleOutlined/>
-                          </SvgIcon>
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title={'Cancel'}>
-                        <IconButton onClick={() => {
-                          setConfirmCancel({item: item, open: true})
-                        }}>
-                          <SvgIcon color={'error'}>
-                            <BlockOutlined/>
-                          </SvgIcon>
-                        </IconButton>
-                      </Tooltip>
+                          {item.status}
+                        </Alert>}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{width: '120px'}}/>
+                      <Stack direction={'row'} justifyContent={'end'}>
+                        {item.status === 'new' && <>
+                          <Tooltip title="Pay">
+                            <IconButton
+                              onClick={() => {
+                                setConfirmPay({item: item, open: true})
+                              }}
+                            >
+                              <SvgIcon sx={{
+                                ':hover': {color: 'primary.main'}
+                              }}>
+                                <CreditCardOutlined/>
+                              </SvgIcon>
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title={'Cancel'}>
+                            <IconButton onClick={() => {
+                              setConfirmCancel({item: item, open: true})
+                            }}>
+                              <SvgIcon sx={{
+                                ':hover': {color: 'error.main'}
+                              }}>
+                                <Close/>
+                              </SvgIcon>
+                            </IconButton>
+                          </Tooltip>
+                        </>}
+                        <Tooltip title={'Print'}>
+                          <IconButton onClick={() => {
+                          
+                          }}>
+                            <SvgIcon sx={{
+                              ':hover': {color: 'primary.main'}
+                            }}>
+                              <PrintOutlined/>
+                            </SvgIcon>
+                          </IconButton>
+                        </Tooltip>
+                      </Stack>
                     </TableCell>
                   </TableRow>
                 );

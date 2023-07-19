@@ -17,11 +17,11 @@ import {withProjectsListGuard} from "../../hocs/with-projects-list-guard";
 
 const Page = withProjectsListGuard(() => {
   const dispatch = useDispatch();
-  const {data} = useMe();
+  const me = useMe();
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const [filters, setFilters] = useState({status: 'active'});
-  const grants = useGrants(data?.role_id)
-  const isAdmin = data && data.role_id === 0;
+  const grants = useGrants(me.data?.role_id);
+  const isAdmin = me.data && me.data.role_id === 0;
   
   const handleFiltersChange = useCallback((filters) => {
     setFilters(filters)
@@ -34,8 +34,8 @@ const Page = withProjectsListGuard(() => {
     }
   }, [limit, offset, filters]);
   
-  const {projects, loading, error} = useProjects(params);
-  const {items, total} = projects && projects || {items: [], limit: limit, total: 0};
+  const {data, loading, error} = useProjects(params);
+  const {items, total} = data && data || {items: [], limit: limit, total: 0};
   
   const handleStatus = useCallback(async (id, status, cb) => {
     const res = await api.projects.update({
@@ -69,7 +69,7 @@ const Page = withProjectsListGuard(() => {
             direction="row"
             spacing={3}
           >
-            {data && (data.role_id === 0 || grants.includes('projects.write')) && <Button
+            {me.data && (me.data.role_id === 0 || grants.includes('projects.write')) && <Button
               component={NextLink}
               href={paths.projects.add}
               startIcon={(

@@ -2,14 +2,13 @@ import { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
-import {Box, Button, Drawer, IconButton, Stack, SvgIcon, Typography} from '@mui/material';
+import {Box, Button, Drawer, Stack, SvgIcon, Typography} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Logo } from '../../../components/logo';
 import { Scrollbar } from '../../../components/scrollbar';
 import { paths } from '../../../navigation/paths';
-import { TenantSwitch } from '../tenant-switch';
 import { SideNavSection } from './side-nav-section';
-import ChevronDownIcon from "@untitled-ui/icons-react/build/esm/ChevronDown";
+import {InsertDriveFileOutlined, QuestionAnswerOutlined} from "@mui/icons-material";
 
 const SIDE_NAV_WIDTH = 280;
 
@@ -211,6 +210,51 @@ export const SideNav = (props) => {
               />
             ))}
           </Stack>
+          <Box sx={{ p: 3 }}>
+            <Stack spacing={1} >
+              <Button
+                component={NextLink}
+                href={paths.support}
+                size={'small'}
+                startIcon={(
+                  <SvgIcon fontSize="small">
+                    <QuestionAnswerOutlined/>
+                  </SvgIcon>
+                )}
+                variant="text"
+                sx={{
+                  color: 'var(--nav-section-title-color)',
+                  justifyContent: 'flex-start'
+                }}
+              >
+                Support
+              </Button>
+              <Button
+                component={NextLink}
+                href={'#'}
+                size={'small'}
+                startIcon={(
+                  <SvgIcon fontSize="small">
+                    <InsertDriveFileOutlined/>
+                  </SvgIcon>
+                )}
+                variant="text"
+                sx={{
+                  color: 'var(--nav-section-title-color)',
+                  justifyContent: 'flex-start'
+                }}
+              >
+                Documentation
+              </Button>
+                <Typography
+                  color="neutral.400"
+                  textAlign={'center'}
+                  variant="body2"
+                >
+                  © {new Date().getFullYear()}. All rights reserved.
+                </Typography>
+            </Stack>
+          </Box>
         </Stack>
       </Scrollbar>
     </Drawer>

@@ -4,7 +4,6 @@ import {Button, Card, Divider, Stack, SvgIcon, Tab, Tabs, Typography} from '@mui
 import {useMe} from "../../hooks/useMe";
 import {api} from "../../api";
 import toast from "react-hot-toast";
-import {useDispatch} from "../../store";
 import {useTransactions} from "../../hooks/useTransactions";
 import {usePayments} from "../../hooks/usePayments";
 import {TransactionsTable} from "../../components/transactions-table";
@@ -13,23 +12,14 @@ import {wait} from "../../utils/wait";
 import {useGrants} from "../../hooks/useGrants";
 import {withTransactionsListGuard} from "../../hocs/with-transactions-list-guard";
 
-const tabs = [
-  {
-    label: 'Transactions',
-    value: 'transactions'
-  },
-  {
-    label: 'Payments',
-    value: 'payments'
-  }
-];
+
 
 const Page = withTransactionsListGuard(() => {
   const {data} = useMe();
   const [filtersTransactions, setFiltersTransactions] = useState({limit: 10});
   const [filtersPayments, setFiltersPayments] = useState({});
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [currentTab, setCurrentTab] = useState('transactions');
+  const [currentTab, setCurrentTab] = useState('payments');
   const [clients, setClients] = useState(null);
   const grants = useGrants(data && data.role_id);
   const isAdmin = data && data.role_id === 0;
@@ -148,7 +138,7 @@ const Page = withTransactionsListGuard(() => {
               )}
               variant="contained"
             >
-              Add Transaction
+              Make New Transaction
             </Button>}
             {isAdmin && currentTab === 'payments' && <Button
               onClick={() => {
@@ -161,7 +151,7 @@ const Page = withTransactionsListGuard(() => {
               )}
               variant="contained"
             >
-              Create Payment
+              Make New Payment
             </Button>}
           </Stack>
         </Stack>
@@ -175,33 +165,18 @@ const Page = withTransactionsListGuard(() => {
             value={currentTab}
             variant="scrollable"
           >
-            <Tab
-              key={'transactions'}
-              label={'Transactions'}
-              value={'transactions'}
-            />
             {(isAdmin || grants.includes('payments.read')) && <Tab
               key={'payments'}
               label={'Payments'}
               value={'payments'}
             />}
+            <Tab
+              key={'transactions'}
+              label={'Transactions'}
+              value={'transactions'}
+            />
           </Tabs>
           <Divider/>
-          {currentTab === 'transactions' && (
-            <div>
-              {<TransactionsTable
-                transactions={transactions}
-                onFiltersChange={filtersHandleTransactions}
-                dialogOpen={dialogOpen}
-                dialogClose={() => {
-                  setDialogOpen(false)
-                }}
-                clients={clients}
-                onSubmit={transactionsCreate}
-                isAdmin={isAdmin}
-              />}
-            </div>
-          )}
           {currentTab === 'payments' && (
             <div>
               {<PaymentsTable
@@ -215,6 +190,23 @@ const Page = withTransactionsListGuard(() => {
                 isAdmin={isAdmin}
                 onPay={paymentPay}
                 onCancel={paymentCancel}
+                filters={filtersPayments}
+              />}
+            </div>
+          )}
+          {currentTab === 'transactions' && (
+            <div>
+              {<TransactionsTable
+                transactions={transactions}
+                onFiltersChange={filtersHandleTransactions}
+                dialogOpen={dialogOpen}
+                dialogClose={() => {
+                  setDialogOpen(false)
+                }}
+                clients={clients}
+                onSubmit={transactionsCreate}
+                isAdmin={isAdmin}
+                filters={filtersTransactions}
               />}
             </div>
           )}

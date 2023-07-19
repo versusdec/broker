@@ -1,19 +1,25 @@
 import PropTypes from 'prop-types';
 import Menu01Icon from '@untitled-ui/icons-react/build/esm/Menu01';
-import { Box, IconButton, Stack, SvgIcon, useMediaQuery } from '@mui/material';
-import { alpha } from '@mui/material/styles';
-import { AccountButton } from '../account-button';
-import { LanguageSwitch } from '../language-switch';
-import { NotificationsButton } from '../notifications-button';
-import { SearchButton } from '../search-button';
+import {Box, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, SvgIcon, Typography, useMediaQuery} from '@mui/material';
+import {alpha} from '@mui/material/styles';
+import {AccountButton} from '../account-button';
+import {LanguageSwitch} from '../language-switch';
+import {NotificationsButton} from '../notifications-button';
+import {SearchButton} from '../search-button';
+import {useMe} from "../../../hooks/useMe";
+import {useProjects} from "../../../hooks/useProjects";
+import {Input} from "../../../components/input";
+import {useCallback, useEffect, useMemo, useState} from "react";
+import {api} from "../../../api";
 
 const TOP_NAV_HEIGHT = 64;
 const SIDE_NAV_WIDTH = 280;
 
 export const TopNav = (props) => {
-  const { onMobileNavOpen, ...other } = props;
+  const {onMobileNavOpen, ...other} = props;
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
-
+  const {data} = useMe();
+  
   return (
     <Box
       component="header"
@@ -50,7 +56,7 @@ export const TopNav = (props) => {
           {!lgUp && (
             <IconButton onClick={onMobileNavOpen}>
               <SvgIcon>
-                <Menu01Icon />
+                <Menu01Icon/>
               </SvgIcon>
             </IconButton>
           )}
@@ -61,9 +67,15 @@ export const TopNav = (props) => {
           direction="row"
           spacing={2}
         >
+          <Typography variant={'subtitle2'}>
+            {data && <Box color={'neutral.500'} display={'flex'}>
+              Your balance:
+              <Box ml={1} color={'text.primary'} fontWeight={500}>${data.balance}</Box>
+            </Box>}
+          </Typography>
           {/*<LanguageSwitch />*/}
-          {/*<NotificationsButton />*/}
-          <AccountButton />
+          <NotificationsButton/>
+          <AccountButton/>
         </Stack>
       </Stack>
     </Box>
