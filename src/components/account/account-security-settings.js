@@ -96,7 +96,7 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
     } else if (error) {
       toast.error(error.message)
     }
-  }, [ref, user, dispatch, handleTwaStatus])
+  }, [ref, dispatch, handleTwaStatus])
   
   const handleTwa = useCallback(() => {
     if (!twa) {
