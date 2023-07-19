@@ -80,7 +80,7 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
       setConfirm(false)
     }
     if (error) toast.error(error.message)
-  }, [code]);
+  }, [code, dispatch, handleTwaStatus]);
   
   const activateTwa = useCallback(async () => {
     let code = '';
@@ -96,7 +96,7 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
     } else if (error) {
       toast.error(error.message)
     }
-  }, [ref, user])
+  }, [ref, user, dispatch, handleTwaStatus])
   
   const handleTwa = useCallback(() => {
     if (!twa) {
@@ -104,7 +104,7 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
     } else {
       setConfirm(true)
     }
-  }, [twa, user, onUpdate])
+  }, [twa])
   
   useEffect(() => {
     const fetch = async () => {

@@ -21,9 +21,9 @@ const tabs = [
 const setUserUpdate = (user, newValues) => {
   const newUser = {...user, ...newValues}
   //todo phone validation
-  for (const i in newUser) {
-    if (newUser[i] === '' && i !== 'avatar')
-      delete newUser[i]
+  for (const key in newUser) {
+    if (newUser[key] === '' && key !== 'avatar')
+      delete newUser[key]
   }
   
   return newUser

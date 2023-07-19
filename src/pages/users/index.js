@@ -15,23 +15,25 @@ import {useDispatch} from "../../store";
 import {actions} from '../../slices/usersSlice'
 import {useGrants} from "../../hooks/useGrants";
 import {useRouter} from "next/router";
+import {useRoles} from "../../hooks/useRoles";
 
 const Page = withUsersListGuard(() => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const role = router.query.role ?? ''
   const {data} = useMe();
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const [filters, setFilters] = useState({});
   const grants = useGrants(data?.role_id);
   const isAdmin = data && data.role_id === 0;
+  const roles = useRoles(useMemo(()=>({limit: 1000, status: 'active'}), []))
+  const role = router.query.id ?? ''
   
   const handleFiltersChange = useCallback((filters) => {
     setFilters(filters)
   }, [])
   
   useEffect(() => {
-    role !== '' ? setFilters({role: role}) : setFilters({});
+    role !== '' ? setFilters({role_id: +role}) : setFilters({});
   }, [role])
   
   const params = useMemo(() => {
@@ -100,6 +102,8 @@ const Page = withUsersListGuard(() => {
           <UsersListFilters
             onFiltersChange={handleFiltersChange}
             initialFilters={filters}
+            roles={roles.data?.items}
+            role={role}
           />
           <UsersListTable
             users={items}

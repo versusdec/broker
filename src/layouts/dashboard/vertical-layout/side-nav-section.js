@@ -14,16 +14,19 @@ const renderItems = ({depth = 0, items, pathname, grants, isAdmin}) => items.red
 }), []);
 
 const checkExact = (pathname, itemPath) => {
+  const section = pathname.split('/')[1] ?? false;
+
   if (pathname === itemPath) {
     return true;
   }
   
-  switch (pathname.split('/')[1]) {
+  switch (section) {
     case 'users':
       return pathname === itemPath
     default: void 0;
   }
-  if (!Number.isInteger(+pathname.split('/')[1])) {
+  
+  if (!Number.isInteger(+section)) {
     return pathname.split('/')[1] === itemPath.split('/')[1]
   }
 }

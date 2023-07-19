@@ -1,17 +1,10 @@
 import {
   Box,
-  Card,
-  CardContent,
-  Stack,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Table,
   Typography,
-  Unstable_Grid2 as Grid, SvgIcon, Tooltip
+  Unstable_Grid2 as Grid, Paper
 } from '@mui/material';
-import {useRouter} from 'next/router'
+import {useCallback, useEffect, useState} from "react";
+import {useProjects} from "../../hooks/useProjects";
 
 const Page = () => {
   const [projects, setProjects] = useState(null)
@@ -24,8 +17,6 @@ const Page = () => {
   useEffect(() => {
     if (projectsData.data?.items) setProjects(projectsData.data.items)
   }, [projectsData])
-  
-  console.log(projects)
   
   return (
     <>

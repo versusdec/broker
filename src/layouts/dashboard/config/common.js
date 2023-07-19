@@ -6,12 +6,29 @@ import {
   PortraitOutlined,
   QuestionAnswerOutlined,
   PeopleAltOutlined,
-  LibraryBooksOutlined,
-  CreditCardOutlined, Groups2Outlined, LayersOutlined, TableRowsOutlined
+  CreditCardOutlined,
+  LayersOutlined,
+  TableRowsOutlined
 } from '@mui/icons-material';
+import {useRoles} from "../../../hooks/useRoles";
 
 
-export const getSections = (t) => {
+export const getSections = (t, roles) => {
+  const r = [
+    {
+      title: t(tokens.nav.staff.all),
+      path: paths.users.index,
+      grants: 'users.read',
+    }
+  ]
+  
+  roles?.map(item => {
+    r.push({
+      title: item.name,
+      path: paths.users.index + item.name + `/${item.id}/`,
+      grants: 'users.read',
+    })
+  })
   
   return [
     {
@@ -83,24 +100,7 @@ export const getSections = (t) => {
               <TableRowsOutlined/>
             </SvgIcon>
           ),
-          items: [
-            {
-              title: t(tokens.nav.staff.all),
-              path: paths.users.index,
-              grants: 'users.read',
-            },
-            {
-              title: t(tokens.nav.staff.manager),
-              path: paths.users.manager,
-              grants: 'users.read',
-            },
-            {
-              title: t(tokens.nav.staff.operator),
-              path: paths.users.operator,
-              grants: 'users.read',
-            },
-            
-          ]
+          items: r
         },
         {
           title: t(tokens.nav.account),

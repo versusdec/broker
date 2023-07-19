@@ -21,13 +21,14 @@ const tabs = [
   }
 ];
 
-export const UsersListFilters = ({role, ...props}) => {
+export const UsersListFilters = ({role, roles, ...props}) => {
   const {onFiltersChange} = props;
   const router = useRouter();
   const queryRef = useRef(null);
   const [currentTab, setCurrentTab] = useState('all');
   const [filters, setFilters] = useState(props.initialFilters);
-  
+  const theRole = roles && roles.find(r => (r.id === +role))
+
   const handleFiltersUpdate = useCallback(() => {
     onFiltersChange?.(filters);
   }, [filters, onFiltersChange]);
@@ -61,7 +62,7 @@ export const UsersListFilters = ({role, ...props}) => {
   
   return (
     <>
-      <Tabs
+     {/* <Tabs
         indicatorColor="primary"
         onChange={handleTabsChange}
         scrollButtons="auto"
@@ -78,7 +79,7 @@ export const UsersListFilters = ({role, ...props}) => {
           />
         ))}
       </Tabs>
-      <Divider/>
+      <Divider/>*/}
       
       <Stack
         alignItems="center"
@@ -110,40 +111,40 @@ export const UsersListFilters = ({role, ...props}) => {
           <Input
             fullWidth
             select
-            value={role ?? ''}
+            value={role !== '' ? `${paths.users.index + theRole.name}/${role}/` : role}
             label={'Role'}
             onChange={e => {
               router.replace(e.target.value)
             }}
+            options={roles}
           >
             <MenuItem value={paths.users.index}>All</MenuItem>
-            <MenuItem value={paths.users.manager}>Manager</MenuItem>
-            <MenuItem value={paths.users.operator}>Operator</MenuItem>
+            {roles && roles.map(item=>(<MenuItem key={item.id} value={paths.users.index + item.name + `/${item.id}/`}>{item.name}</MenuItem>))}
           </Input>
         </Box>
         <Box width={112}>
           <Input
             fullWidth
             select
-            value={role ?? ''}
+            value={''}
             label={'Manager'}
             onChange={e => {
             
             }}
           >
-            <MenuItem value={paths.users.index}>All</MenuItem>
+            <MenuItem value={''}>All</MenuItem>
           </Input>
         </Box>
         <Box width={96}>
           <Input
             fullWidth
             select
-            value={role ?? ''}
+            value={filters.status ?? ''}
             label={'Status'}
             onChange={e => {
               const f = {...filters}
-              e.target.value === '' ? delete f.status : void 0;
-              onFiltersChange({status: e.target.value})
+              e.target.value === '' ? delete f.status : f.status = e.target.value;
+              onFiltersChange(f)
             }}
           >
             <MenuItem value={''}>All</MenuItem>

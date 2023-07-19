@@ -46,19 +46,6 @@ export const AccountNotificationsSettings = ({user, ...props}) => {
                   <TableRow>
                     <TableCell padding="checkbox" >
                       <Stack direction={'row'} spacing={2} alignItems={'center'}>
-                        {/*<Checkbox
-                                  checked={false}
-                                  onChange={(event) => {
-                                    const {checked} = event.target;
-                                    
-                                    if (checked) {
-                                      // selectOne(customer.id);
-                                    } else {
-                                      // deselectOne(customer.id);
-                                    }
-                                  }}
-                                  value={''}
-                                />*/}
                         <Box sx={{whiteSpace: 'nowrap', flexShrink: 0}}>Event Type</Box>
                       </Stack>
                     </TableCell>

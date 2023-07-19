@@ -7,12 +7,10 @@ export const useProjects = (params) => {
   const {data, loading, error} = useSelector(state => state.projects.list)
   
   const getProjectsList = useCallback((params) => {
-    if (params) {
-      if (params.q)
-        dispatch(projectsSuggest(params))
-      else
-        dispatch(projectsList(params))
-    }
+    if (params?.q)
+      dispatch(projectsSuggest(params))
+    else
+      dispatch(projectsList(params))
   }, [dispatch])
   
   useEffect(() => {

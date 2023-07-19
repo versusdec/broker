@@ -92,6 +92,13 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
     timestamp?.start && timestamp?.end && onFiltersChange({timestamp: timestamp})
   }, [timestamp, onFiltersChange])
   
+  const getSeverity = useCallback(status => {
+    return status === 'payed' ? 'success'
+      : status === 'new' ? 'info'
+        : status === 'pending' ? 'warning'
+          : status === 'canceled' ? 'error' : ''
+  }, [])
+  
   const formik = useFormik({
     initialValues,
     validationSchema,
@@ -164,7 +171,7 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
             vertical: 'top',
             horizontal: 'right',
           }}
-          
+        
         >
           <Box p={2}>
             <Box mb={2}>
@@ -314,10 +321,7 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
                     </TableCell>
                     <TableCell>
                       <Box sx={{textTransform: 'capitalize'}}>
-                        {<Alert severity={item.status === 'payed' ? 'success'
-                          : item.status === 'new' ? 'info'
-                            : item.status === 'pending' ? 'warning'
-                              : item.status === 'canceled' ? 'error' : ''}
+                        {<Alert severity={getSeverity(item.status)}
                                 sx={{
                                   '.MuiAlert-message': {padding: 0},
                                   '.MuiAlert-icon': {mr: 1, fontSize: '10px'}

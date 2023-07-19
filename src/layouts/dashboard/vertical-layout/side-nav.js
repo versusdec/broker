@@ -2,21 +2,19 @@ import { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
-import {Box, Button, Drawer, IconButton, Stack, SvgIcon, Typography} from '@mui/material';
+import {Box, Button, Drawer, Stack, SvgIcon, Typography} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Logo } from '../../../components/logo';
 import { Scrollbar } from '../../../components/scrollbar';
 import { paths } from '../../../navigation/paths';
-import { TenantSwitch } from '../tenant-switch';
 import { SideNavSection } from './side-nav-section';
-import ChevronDownIcon from "@untitled-ui/icons-react/build/esm/ChevronDown";
-import {InsertDriveFileOutlined, QuestionAnswerOutlined, SettingsOutlined} from "@mui/icons-material";
+import {InsertDriveFileOutlined, QuestionAnswerOutlined} from "@mui/icons-material";
 
 const SIDE_NAV_WIDTH = 280;
 
 const useCssVars = (color) => {
   const theme = useTheme();
-  console.log(theme.palette)
+
   return useMemo(() => {
     switch (color) {
       case 'blend-in':
