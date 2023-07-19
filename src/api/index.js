@@ -149,6 +149,19 @@ export const api = Object.freeze({
         }
       }
     },
+    status2fa: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'users.status2fa'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    
   },
   roles: {
     update: async (params) => {

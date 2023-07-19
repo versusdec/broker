@@ -1,5 +1,5 @@
 import {useDispatch, useSelector} from "../store";
-import {useCallback, useEffect} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {projectsList, projectsSuggest} from "../slices/projectsSlice";
 
 export const useProjects = (params) => {
@@ -7,7 +7,7 @@ export const useProjects = (params) => {
   const {data, loading, error} = useSelector(state => state.projects.list)
   
   const getProjectsList = useCallback((params) => {
-    if (params.q)
+    if (params?.q)
       dispatch(projectsSuggest(params))
     else
       dispatch(projectsList(params))
@@ -17,5 +17,5 @@ export const useProjects = (params) => {
     getProjectsList(params)
   }, [params, getProjectsList])
   
-  return {projects: data, loading, error}
+  return {data, loading, error}
 }

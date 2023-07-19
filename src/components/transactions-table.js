@@ -7,23 +7,23 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  IconButton,
-  Link,
-  MenuItem,
-  Stack,
+  IconButton, InputAdornment,
+  Link, Menu,
+  MenuItem, OutlinedInput,
+  Stack, SvgIcon,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  TextField,
+  TextField, Tooltip,
   Typography
 } from "@mui/material";
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
-import {Close} from "@mui/icons-material";
-import {useCallback, useEffect, useState} from "react";
+import {ArrowDropDown, Close, PrintOutlined} from "@mui/icons-material";
+import {useCallback, useEffect, useRef, useState} from "react";
 import * as Yup from "yup";
 import {useFormik} from "formik";
 import {Input} from "./input";
@@ -33,6 +33,7 @@ import NextLink from "next/link";
 import {paths} from "../navigation/paths";
 import {Pagination} from "./pagination";
 import {usePagination} from "../hooks/usePagination";
+import SearchMdIcon from "@untitled-ui/icons-react/build/esm/SearchMd";
 
 const initialValues = {
   type: 100,
@@ -53,11 +54,22 @@ const validationSchema = Yup.object({
     .string()
 });
 
-export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, dialogClose, clients, onSubmit, isAdmin}) => {
+export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, dialogClose, clients, onSubmit, isAdmin, filters}) => {
   const [timestamp, setTimestamp] = useState(null)
   const [client, setClient] = useState(null)
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const {data, loading, error} = transactions;
+  const [anchorEl, setAnchorEl] = useState(null);
+  const periodOpen = Boolean(anchorEl);
+  const queryRef = useRef(null);
+  
+  const handleClick = useCallback((event) => {
+    setAnchorEl(event.currentTarget);
+  }, []);
+  
+  const handleClose = useCallback(() => {
+    setAnchorEl(null);
+  }, [])
   
   useEffect(() => {
     onFiltersChange({
@@ -69,10 +81,6 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
     if (clients)
       setClient(clients[0])
   }, [clients])
-  
-  useEffect(() => {
-    timestamp?.start && timestamp?.end && onFiltersChange({timestamp: timestamp})
-  }, [timestamp, onFiltersChange])
   
   const onClientChange = useCallback((client) => {
     setClient(client)
@@ -96,29 +104,127 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
     }
   })
   
+  const handleQueryChange = useCallback((event) => {
+    event.preventDefault();
+    /*onFiltersChange((prevState) => ({
+      ...prevState,
+      q: queryRef.current?.value
+    }));*/
+  }, []);
   
   return <>
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Stack
         alignItems="center"
         direction="row"
-        flexWrap="wrap"
+        flexWrap="nowrap"
         spacing={3}
         sx={{p: 3}}
       >
-        <DatePicker label="From" onChange={val => {
-          setTimestamp(prev => ({
-            ...prev,
-            start: Math.floor(val.getTime() / 1000)
-          }))
-        }}/>
-        <DatePicker label="To" onChange={val => {
-          setTimestamp(prev => ({
-            ...prev,
-            end: Math.floor(val.getTime() / 1000)
-          }))
-        }}/>
-      
+        <Box
+          component="form"
+          onSubmit={handleQueryChange}
+          sx={{flexGrow: 1}}
+        >
+          <OutlinedInput
+            defaultValue=""
+            fullWidth
+            inputProps={{ref: queryRef}}
+            placeholder="Search payments"
+            startAdornment={(
+              <InputAdornment position="start">
+                <SvgIcon>
+                  <SearchMdIcon/>
+                </SvgIcon>
+              </InputAdornment>
+            )}
+          />
+        </Box>
+        <Button
+          id={'period-button'}
+          endIcon={<ArrowDropDown/>}
+          variant={'outlined'}
+          sx={{
+            color: 'neutral.500',
+            borderColor: 'neutral.200',
+            height: 55,
+            width: 96,
+            borderRadius: '8px',
+            transition: 'none',
+            pl: '12px',
+            ':hover': {borderColor: 'neutral.200'},
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis'
+          }}
+          aria-controls={periodOpen ? 'period-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={periodOpen ? 'true' : undefined}
+          onClick={handleClick}
+        >
+          {'Period'}
+        </Button>
+        <Menu
+          id="period-menu"
+          aria-labelledby="period-button"
+          anchorEl={anchorEl}
+          open={periodOpen}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+        
+        >
+          <Box p={2}>
+            <Stack mb={2} direction={'column'} spacing={1}>
+              <DatePicker
+                label="From"
+                onChange={val => {
+                  setTimestamp(prev => ({
+                    ...prev,
+                    start: Math.floor(val.getTime() / 1000)
+                  }))
+                }}
+                defaultValue={(timestamp?.start * 1000) || undefined}
+                views={['year', 'month', 'day']}
+              />
+              <DatePicker
+                label="To"
+                onChange={val => {
+                  setTimestamp(prev => ({
+                    ...prev,
+                    end: Math.floor(val.getTime() / 1000)
+                  }))
+                }}
+                defaultValue={(timestamp?.end * 1000) || undefined}
+                views={['year', 'month', 'day']}
+              />
+            </Stack>
+            <Stack direction={'row'} spacing={2}>
+              <Button
+                onClick={() => {
+                  onFiltersChange({timestamp: timestamp})
+                  handleClose()
+                }}
+                fullWidth
+                variant={'contained'}
+              >
+                Apply
+              </Button>
+              <Button
+                onClick={handleClose}
+                fullWidth
+                variant={'outlined'}
+              >
+                Cancel
+              </Button>
+            </Stack>
+          </Box>
+        </Menu>
       </Stack>
     </LocalizationProvider>
     <Box
@@ -156,6 +262,9 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
             <TableHead>
               <TableRow>
                 <TableCell>
+                  Transaction id
+                </TableCell>
+                <TableCell>
                   Date
                 </TableCell>
                 {isAdmin && <TableCell>User</TableCell>}
@@ -168,6 +277,7 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
                 <TableCell>
                   Comment
                 </TableCell>
+                <TableCell/>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -178,6 +288,9 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
                     hover
                     key={item.id}
                   >
+                    <TableCell>
+                      {item.id}
+                    </TableCell>
                     <TableCell>
                       {item.timestamp}
                     </TableCell>
@@ -199,7 +312,7 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
                           <Link
                             color="inherit"
                             component={NextLink}
-                            href={`${paths.users.index}/${item.user.id}`}
+                            href={`${paths.users.index}edit/${item.user.id}/`}
                             variant="subtitle2"
                           >
                             {item.user.name}
@@ -214,13 +327,26 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
                       </Stack>
                     </TableCell>}
                     <TableCell>
-                      {item.amount}
+                      USD ${item.amount}
                     </TableCell>
                     <TableCell>
                       {item.type === 100 ? 'Invoice' : 'Bonus'}
                     </TableCell>
                     <TableCell>
                       {item.comment}
+                    </TableCell>
+                    <TableCell>
+                      <Tooltip title={'Print'}>
+                        <IconButton onClick={() => {
+                        
+                        }}>
+                          <SvgIcon sx={{
+                            ':hover': {color: 'primary.main'}
+                          }}>
+                            <PrintOutlined/>
+                          </SvgIcon>
+                        </IconButton>
+                      </Tooltip>
                     </TableCell>
                   </TableRow>
                 );

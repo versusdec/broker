@@ -1,16 +1,22 @@
 import {
   Box,
-  Paper,
   Typography,
-  Unstable_Grid2 as Grid
+  Unstable_Grid2 as Grid, Paper
 } from '@mui/material';
-import {useRouter} from 'next/router'
-import {Button} from "../../components/button";
-import NextLink from "next/link";
+import {useCallback, useEffect, useState} from "react";
+import {useProjects} from "../../hooks/useProjects";
 
 const Page = () => {
- const router = useRouter();
-  // router.replace('/projects')
+  const [projects, setProjects] = useState(null)
+  
+  const projectsData = useProjects(useCallback(() => ({
+    status: 'active',
+    limit: '10'
+  }), []))
+  
+  useEffect(() => {
+    if (projectsData.data?.items) setProjects(projectsData.data.items)
+  }, [projectsData])
   
   return (
     <>
@@ -28,13 +34,11 @@ const Page = () => {
         >
           <Grid xs={12}>
             <Paper sx={{p: 2}}>
-              <Box>HELLO WORLD</Box>
-              <br/>
-              <Button component={NextLink} href={'/verto-test'}>VERTO</Button>
+              HELLO WORLD
             </Paper>
-            
           </Grid>
         </Grid>
+      
       </Box>
     </>
   );

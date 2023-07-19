@@ -12,23 +12,23 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
-import {paths} from '../../../navigation/paths';
-import {CommonTab} from '../../../components/users/user-common';
-import {useUser} from "../../../hooks/useUser";
+import {paths} from '../../../../navigation/paths';
+import {CommonTab} from '../../../../components/users/user-common';
+import {useUser} from "../../../../hooks/useUser";
 import {useRouter} from 'next/router'
-import {useMe} from "../../../hooks/useMe";
-import {root} from "../../../api/config";
-import {api} from "../../../api";
-import {actions} from "../../../slices/usersSlice";
+import {useMe} from "../../../../hooks/useMe";
+import {root} from "../../../../api/config";
+import {api} from "../../../../api";
+import {actions} from "../../../../slices/usersSlice";
 import toast from "react-hot-toast";
-import {useDispatch} from "../../../store";
-import {withUsersAddGuard} from "../../../hocs/with-users-add-guard";
+import {useDispatch} from "../../../../store";
+import {withUsersAddGuard} from "../../../../hocs/with-users-add-guard";
 import * as Yup from "yup";
 import {useFormik} from "formik";
-import {QueuesTab} from "../../../components/users/user-queues";
-import {OperatorsTab} from "../../../components/users/user-operators";
-import {usePagination} from "../../../hooks/usePagination";
-import {useGrants} from "../../../hooks/useGrants";
+import {QueuesTab} from "../../../../components/users/user-queues";
+import {OperatorsTab} from "../../../../components/users/user-operators";
+import {usePagination} from "../../../../hooks/usePagination";
+import {useGrants} from "../../../../hooks/useGrants";
 
 const Page = withUsersAddGuard(() => {
     const dispatch = useDispatch();
@@ -53,8 +53,8 @@ const Page = withUsersAddGuard(() => {
       "role_id": 1
     });
     const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
-    const [clients, setClients] = useState([]);
     const [queues, setQueues] = useState([]);
+    const [clients, setClients] = useState([]);
     const [client, setClient] = useState(null);
     const [project, setProject] = useState([]);
     const [projects, setProjects] = useState([]);
@@ -164,7 +164,7 @@ const Page = withUsersAddGuard(() => {
     useEffect(() => {
       if (projects.length && !newUser) {
         let p = [];
-        user.projects?.forEach(i => {
+        user && user.projects?.length && user.projects.forEach(i => {
           p.push(projects.find(p => p.id === i));
         })
         setProject(p)
@@ -188,7 +188,7 @@ const Page = withUsersAddGuard(() => {
     
     const onClientChange = useCallback((client) => {
       setClient(client)
-      onChange({client_id: client.id})
+      // onChange({client_id: client.id})
     }, [])
     
     const onProjectChange = useCallback((item) => {
@@ -273,7 +273,7 @@ const Page = withUsersAddGuard(() => {
       role_id: Yup
         .number()
     });
-    
+
     const formik = useFormik({
       enableReinitialize: true,
       initialValues,
@@ -281,6 +281,7 @@ const Page = withUsersAddGuard(() => {
       errors: {},
       onSubmit: async (values, helpers) => {
         const data = {...values}
+        
         if (data.phone === '') delete data.phone;
         
         isAdmin ? data.client_id = client.id : delete data.client_id;

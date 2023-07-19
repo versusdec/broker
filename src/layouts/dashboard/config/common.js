@@ -6,27 +6,44 @@ import {
   PortraitOutlined,
   QuestionAnswerOutlined,
   PeopleAltOutlined,
-  LibraryBooksOutlined,
-  CreditCardOutlined, Groups2Outlined
+  CreditCardOutlined,
+  LayersOutlined,
+  TableRowsOutlined
 } from '@mui/icons-material';
+import {useRoles} from "../../../hooks/useRoles";
 
 
-export const getSections = (t, project) => {
-
+export const getSections = (t, roles) => {
+  const r = [
+    {
+      title: t(tokens.nav.staff.all),
+      path: paths.users.index,
+      grants: 'users.read',
+    }
+  ]
+  
+  roles?.map(item => {
+    r.push({
+      title: item.name,
+      path: paths.users.index + item.name + `/${item.id}/`,
+      grants: 'users.read',
+    })
+  })
+  
   return [
     {
       items: [
         {
-          title: t(tokens.nav.dashboard),
+          title: t(tokens.nav.overview),
           path: paths.index,
-          hidden: true,
+          hidden: false,
           icon: (
             <SvgIcon fontSize="small">
               <Dashboard/>
             </SvgIcon>
           )
         },
-        {
+        /*{
           title: project?.name,
           path: paths.project.index,
           hidden: !Boolean(project),
@@ -53,24 +70,14 @@ export const getSections = (t, project) => {
             },
             
           ]
-        },
+        },*/
         {
           title: t(tokens.nav.projects),
           path: paths.projects.index,
           grants: 'projects.read',
           icon: (
             <SvgIcon fontSize="small">
-              <LibraryBooksOutlined/>
-            </SvgIcon>
-          )
-        },
-        {
-          title: t(tokens.nav.users),
-          path: paths.users.index,
-          grants: 'users.read',
-          icon: (
-            <SvgIcon fontSize="small">
-              <PeopleAltOutlined/>
+              <LayersOutlined/>
             </SvgIcon>
           )
         },
@@ -80,13 +87,25 @@ export const getSections = (t, project) => {
           grants: 'roles.read',
           icon: (
             <SvgIcon fontSize="small">
-              <Groups2Outlined/>
+              <PeopleAltOutlined/>
             </SvgIcon>
           )
         },
         {
+          title: t(tokens.nav.staff.index),
+          path: paths.users.index,
+          grants: 'users.read',
+          icon: (
+            <SvgIcon fontSize="small">
+              <TableRowsOutlined/>
+            </SvgIcon>
+          ),
+          items: r
+        },
+        {
           title: t(tokens.nav.account),
           path: paths.account,
+          hidden: true,
           icon: (
             <SvgIcon fontSize="small">
               <PortraitOutlined/>
@@ -113,8 +132,8 @@ export const getSections = (t, project) => {
             </SvgIcon>
           )
         },
-    
-    
+      
+      
       ]
     },
   ];

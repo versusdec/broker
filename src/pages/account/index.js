@@ -10,23 +10,26 @@ import {actions} from "../../slices/usersSlice";
 import toast from "react-hot-toast";
 import {useDispatch} from "../../store";
 import {useGrants} from "../../hooks/useGrants";
+import {AccountNotificationsSettings} from "../../components/account/account-notifications-settings";
 
 const tabs = [
-  {label: 'General', value: 'general'},
-  {label: 'Security', value: 'security'}
+  {label: 'Details', value: 'general'},
+  {label: 'Security', value: 'security'},
+  {label: 'Notifications', value: 'notifications'},
 ];
 
 const setUserUpdate = (user, newValues) => {
   const newUser = {...user, ...newValues}
-  for (const i in newUser) {
-    if (newUser[i] === '')
-      delete newUser[i]
+  //todo phone validation
+  for (const key in newUser) {
+    if (newUser[key] === '' && key !== 'avatar')
+      delete newUser[key]
   }
   
   return newUser
 }
 
-const userUpdate = async (user, newValues, dispatch)=>{
+const userUpdate = async (user, newValues, dispatch) => {
   const u = setUserUpdate(user, newValues)
   const res = await api.users.update(u)
   if (!res.error) {
@@ -51,7 +54,8 @@ const Page = () => {
   
   const handleGeneralSubmit = useCallback((values) => {
     userUpdate(data, values, dispatch)
-3  }, [data, dispatch])
+    3
+  }, [data, dispatch])
   
   const handleSecuritySubmit = useCallback((values) => {
     userUpdate(data, values, dispatch)
@@ -63,8 +67,14 @@ const Page = () => {
     }, dispatch)
   }, [data, dispatch])
   
+  const handleAvatarRemove = useCallback(() => {
+    userUpdate(data, {
+      avatar: ''
+    }, dispatch)
+  }, [data, dispatch])
+  
   const accountGeneralSettingsProps = {
-    user:data, onSubmit: handleGeneralSubmit, onUpload: handleAvatarUpload, editGrant, isAdmin
+    user: data, onSubmit: handleGeneralSubmit, onUpload: handleAvatarUpload, onRemove: handleAvatarRemove, editGrant, isAdmin
   }
   
   return data && <>
@@ -109,6 +119,12 @@ const Page = () => {
           editGrant={editGrant}
         />
       )}
+      {currentTab === 'notifications' && (
+        <AccountNotificationsSettings
+          user={data}
+        />
+      )}
+    
     </Box>
   </>;
 };

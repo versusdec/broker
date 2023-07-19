@@ -14,30 +14,27 @@ import toast from "react-hot-toast";
 import {useDispatch} from "../../store";
 import {actions} from '../../slices/usersSlice'
 import {useGrants} from "../../hooks/useGrants";
+import {useRouter} from "next/router";
+import {useRoles} from "../../hooks/useRoles";
 
 const Page = withUsersListGuard(() => {
   const dispatch = useDispatch();
+  const router = useRouter();
   const {data} = useMe();
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const [filters, setFilters] = useState({});
-  const [role, setRole] = useState({grants: []});
   const grants = useGrants(data?.role_id);
   const isAdmin = data && data.role_id === 0;
-  
-  const getRole = useCallback(async (id) => {
-    const {result} = await api.roles.get(id);
-    setRole(result)
-  }, [])
-  
-  useEffect(() => {
-    if (data.role_id) {
-      getRole(data.role_id)
-    }
-  }, [data, getRole])
+  const roles = useRoles(useMemo(()=>({limit: 1000, status: 'active'}), []))
+  const role = router.query.id ?? ''
   
   const handleFiltersChange = useCallback((filters) => {
     setFilters(filters)
   }, [])
+  
+  useEffect(() => {
+    role !== '' ? setFilters({role_id: +role}) : setFilters({});
+  }, [role])
   
   const params = useMemo(() => {
     return {
@@ -49,13 +46,12 @@ const Page = withUsersListGuard(() => {
   const {users, loading, error} = useUsers(params);
   const {items, total} = users || {items: [], limit: limit, total: 0};
   
-  const handleStatus = useCallback(async (id, status, cb) => {
+  const handleStatus = useCallback(async (id, status) => {
     const res = await api.users.update({
       id: +id,
       status: status === 'blocked' ? 'active' : 'blocked'
     })
     if (res) {
-      cb();
       const newItems = items.map((i) => {
         if (i.id === +id) {
           return {
@@ -88,7 +84,7 @@ const Page = withUsersListGuard(() => {
             direction="row"
             spacing={3}
           >
-            {data && (data.role_id === 0 || role.grants.includes('users.write')) && <Button
+            {data && (isAdmin || grants.includes('users.write')) && <Button
               component={NextLink}
               href={paths.users.add}
               startIcon={(
@@ -106,6 +102,8 @@ const Page = withUsersListGuard(() => {
           <UsersListFilters
             onFiltersChange={handleFiltersChange}
             initialFilters={filters}
+            roles={roles.data?.items}
+            role={role}
           />
           <UsersListTable
             users={items}
@@ -118,6 +116,7 @@ const Page = withUsersListGuard(() => {
             handleStatus={handleStatus}
             grants={grants}
             isAdmin={isAdmin}
+            role={role}
           />
         </Card>
       </Stack>
