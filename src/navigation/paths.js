@@ -39,7 +39,7 @@ export const paths = Object.freeze({
   },
   support: {
     index: '/support/',
-    add: '/support/add/',
+    new: '/support/new/',
     ticket: '/support/:id/'
   }
 });

@@ -14,6 +14,7 @@ const SIDE_NAV_WIDTH = 280;
 
 const useCssVars = (color) => {
   const theme = useTheme();
+  console.log(theme.palette)
 
   return useMemo(() => {
     switch (color) {
@@ -217,14 +218,22 @@ export const SideNav = (props) => {
                 href={paths.support.index}
                 size={'small'}
                 startIcon={(
-                  <SvgIcon fontSize="small">
+                  <SvgIcon fontSize="small" color={pathname === paths.support.index ? 'primary' : ''}>
                     <QuestionAnswerOutlined/>
                   </SvgIcon>
                 )}
                 variant="text"
                 sx={{
                   color: 'var(--nav-section-title-color)',
-                  justifyContent: 'flex-start'
+                  ...(pathname === paths.support.index && {
+                    color: 'var(--nav-item-active-color)',
+                    ':hover': {
+                      backgroundColor: 'var(--nav-item-active-bg)'
+                    }
+                  }),
+                  justifyContent: 'flex-start',
+                  backgroundColor: pathname === paths.support.index ? 'var(--nav-item-active-bg)' : '',
+                  transition: 'none'
                 }}
               >
                 Support
@@ -234,14 +243,22 @@ export const SideNav = (props) => {
                 href={'#'}
                 size={'small'}
                 startIcon={(
-                  <SvgIcon fontSize="small">
+                  <SvgIcon fontSize="small" color={pathname === 'paths.docs.index' ? 'primary' : ''}>
                     <InsertDriveFileOutlined/>
                   </SvgIcon>
                 )}
                 variant="text"
                 sx={{
                   color: 'var(--nav-section-title-color)',
-                  justifyContent: 'flex-start'
+                  ...(pathname === 'paths.docs.index' && {
+                    color: 'var(--nav-item-active-color)',
+                    ':hover': {
+                      backgroundColor: 'var(--nav-item-active-bg)'
+                    }
+                  }),
+                  justifyContent: 'flex-start',
+                  backgroundColor: pathname === 'paths.docs.index' ? 'var(--nav-item-active-bg)' : '',
+                  transition: 'none'
                 }}
               >
                 Documentation

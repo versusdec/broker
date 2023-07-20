@@ -2,7 +2,7 @@ import {useDispatch, useSelector} from "../store";
 import {useCallback, useEffect, useState} from "react";
 import {ticketsList} from "../slices/ticketsSlice";
 
-export const useSupport = (params) => {
+export const useTickets = (params) => {
   const dispatch = useDispatch();
   const {data, loading, error} = useSelector(state => state.tickets.list)
   

@@ -1,8 +1,9 @@
 import {useCallback, useState} from 'react';
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
-import {Close, DeleteOutlined, EditOutlined, UnarchiveOutlined} from '@mui/icons-material'
+import {Add, ChatBubbleOutline, Close, DeleteOutlined, Done, EditOutlined, FileOpenOutlined, Loop, QuestionAnswerOutlined, RestoreFromTrashOutlined, UnarchiveOutlined} from '@mui/icons-material'
 import {
+  Alert,
   Box,
   Button,
   Dialog,
@@ -34,22 +35,26 @@ export const TicketsListTable = (props) => {
     limit,
     loading,
     handleStatus,
+    handleClose,
+    handleReopen,
     tickets,
     ...other
   } = props;
-  const [dialog, setDialog] = useState({open: false, project: null});
+  const [dialog, setDialog] = useState({open: false, item: null, action: undefined});
   
-  const handleDialogOpen = useCallback((item) => {
+  const handleDialogOpen = useCallback((item, action) => {
     setDialog({
       open: true,
-      item: item
+      item: item,
+      action: action
     })
   }, [])
   
   const handleDialogClose = useCallback(() => {
     setDialog({
       open: false,
-      item: null
+      item: null,
+      action: undefined
     })
   }, [])
   
@@ -93,10 +98,16 @@ export const TicketsListTable = (props) => {
                   ID
                 </TableCell>
                 <TableCell>
-                  Project title
+                  Title
                 </TableCell>
                 <TableCell>
-                  Creation date
+                  Date
+                </TableCell>
+                <TableCell>
+                  Status
+                </TableCell>
+                <TableCell>
+                  Messages
                 </TableCell>
                 <TableCell sx={{width: 100}}/>
               </TableRow>
@@ -119,37 +130,73 @@ export const TicketsListTable = (props) => {
                       {format(item.created * 1000, 'dd/MM/yyyy hh:mm')}
                     </TableCell>
                     <TableCell>
-                      <Box hidden={hidden !== i}>
-                        <Stack direction={'row'} spacing={1} justifyContent={'end'}>
-                          
-                            <Tooltip title={'Edit'}>
-                              <IconButton
-                                component={NextLink}
-                                href={`${paths.support.index + item.id}/`}
-                              >
-                                <SvgIcon sx={{
-                                  ':hover': {color: 'primary.main'}
-                                }} fontSize={'small'}>
-                                  <EditOutlined/>
-                                </SvgIcon>
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title={item.status === 'active' ? 'Archive' : 'Unarchive'}>
-                              <IconButton
-                                onClick={() => {
-                                  handleDialogOpen(item)
-                                }}
-                              >
-                                <SvgIcon sx={{
-                                  ':hover': {color: 'primary.main'}
-                                }} fontSize={'small'}>
-                                  {item.status === 'archived' ? <UnarchiveOutlined/> : <DeleteOutlined/>}
-                                </SvgIcon>
-                              </IconButton>
-                            </Tooltip>
-                      
-                        </Stack>
-                      </Box>
+                      {<Alert severity={item.status === 'archived' ? 'warning' : item.status === 'closed' ? 'info' : 'success'}
+                              sx={{
+                                '.MuiAlert-message': {padding: 0},
+                                textTransform: 'capitalize'
+                              }}
+                              icon={false}
+                      >
+                        {item.status}
+                      </Alert>}
+                    </TableCell>
+                    <TableCell>
+                      {item.messages}
+                    </TableCell>
+                    <TableCell>
+                      <Stack direction={'row'} spacing={1} justifyContent={'end'}>
+                        <Tooltip title={'Open'}>
+                          <IconButton
+                            component={NextLink}
+                            href={`${paths.support.index + item.id}/`}
+                          >
+                            <SvgIcon sx={{
+                              ':hover': {color: 'primary.main'}
+                            }} fontSize={'small'}>
+                              <QuestionAnswerOutlined/>
+                            </SvgIcon>
+                          </IconButton>
+                        </Tooltip>
+                        {item.status === 'closed' && <Tooltip title={'Archive'}>
+                          <IconButton
+                            onClick={() => {
+                              handleDialogOpen(item)
+                            }}
+                          >
+                            <SvgIcon sx={{
+                              ':hover': {color: 'primary.main'}
+                            }} fontSize={'small'}>
+                              <DeleteOutlined/>
+                            </SvgIcon>
+                          </IconButton>
+                        </Tooltip>}
+                        {item.status === 'active' && <Tooltip title={'Close'}>
+                          <IconButton
+                            onClick={() => {
+                              handleDialogOpen(item)
+                            }}
+                          >
+                            <SvgIcon sx={{
+                              ':hover': {color: 'primary.main'}
+                            }} fontSize={'small'}>
+                              <Close/>
+                            </SvgIcon>
+                          </IconButton>
+                        </Tooltip>}
+                        {item.status === 'closed' && <Tooltip title={'Reopen'}>
+                          <IconButton
+                            onClick={() => {
+                              handleDialogOpen(item)
+                            }}
+                          >
+                            <SvgIcon sx={{
+                              ':hover': {color: 'primary.main'}
+                            }} fontSize={'small'}>
+                              <FileOpenOutlined/>
+                            </SvgIcon>
+                          </IconButton>
+                        </Tooltip>}
+                      </Stack>
                     </TableCell>
                   </TableRow>
                 );
@@ -180,10 +227,12 @@ export const TicketsListTable = (props) => {
           >
             <Close/>
           </IconButton>
-          {dialog.item && (dialog.item?.status === 'active' ? `Archive project #${dialog.item?.id}?` : `Unarchive project #${dialog.item?.id}?`)}
+          Confirm action
         </DialogTitle>
         <DialogContent dividers>
-          {dialog.item && 'Project '} {dialog.item && dialog.item?.name}
+          {dialog.item && dialog.action === 'archive' && `Archive ticket ${<Typography variant={'subtitle1'}>{dialog.item.name}</Typography>}?`}
+          {dialog.item && dialog.action === 'close' && `Close ticket ${<Typography variant={'subtitle1'}>{dialog.item.name}</Typography>}?`}
+          {dialog.item && dialog.action === 'reopen' && `Reopen ticket ${<Typography variant={'subtitle1'}>{dialog.item.name}</Typography>}?`}
         </DialogContent>
         <DialogActions>
           <Button
@@ -198,9 +247,25 @@ export const TicketsListTable = (props) => {
             type={'button'}
             variant={'contained'}
             onClick={() => {
-              handleStatus(dialog.item?.id, dialog.item?.status, () => {
-                handleDialogClose()
-              })
+              switch (dialog.action) {
+                case 'archive':
+                  handleStatus(dialog.item.id, () => {
+                    handleDialogClose()
+                  })
+                  break;
+                case 'close':
+                  handleClose(dialog.item.id, () => {
+                    handleDialogClose()
+                  })
+                  break;
+                case 'reopen':
+                  handleReopen(dialog.item.id, () => {
+                    handleDialogClose()
+                  })
+                  break;
+                default:
+                  break;
+              }
             }}
           >
             Confirm
