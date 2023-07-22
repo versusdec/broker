@@ -19,14 +19,14 @@ import {
   Tooltip,
   Typography,
   Menu,
-  Alert
+  Alert, OutlinedInput, InputAdornment
 } from "@mui/material";
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import {format} from "date-fns"
-import {ArrowDropDown, BlockOutlined, CheckCircleOutlined, Close, CreditCardOutlined, Done, Loop, Add, PrintOutlined} from "@mui/icons-material";
-import {useCallback, useEffect, useState} from "react";
+import {ArrowDropDown, Close, CreditCardOutlined, Done, Loop, Add, PrintOutlined} from "@mui/icons-material";
+import {useCallback, useEffect, useRef, useState} from "react";
 import * as Yup from "yup";
 import {useFormik} from "formik";
 import {Input} from "./input";
@@ -36,6 +36,7 @@ import NextLink from "next/link";
 import {paths} from "../navigation/paths";
 import {Pagination} from "./pagination";
 import {usePagination} from "../hooks/usePagination";
+import SearchMdIcon from "@untitled-ui/icons-react/build/esm/SearchMd";
 
 
 const initialValues = {
@@ -62,24 +63,16 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
   const [confirmCancel, setConfirmCancel] = useState({item: null, open: false});
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const {data, loading} = payments;
-  const [hidden, setHidden] = useState(null)
   const [anchorEl, setAnchorEl] = useState(null);
   const periodOpen = Boolean(anchorEl);
+  const queryRef = useRef(null);
   
-  const handleClick = (event) => {
+  const handleClick = useCallback((event) => {
     setAnchorEl(event.currentTarget);
-  };
+  }, []);
   
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setAnchorEl(null);
-  };
-  
-  const handleMouseOver = useCallback((i) => {
-    setHidden(i)
-  }, [])
-  
-  const handleMouseOut = useCallback(() => {
-    setHidden(null)
   }, [])
   
   useEffect(() => {
@@ -87,10 +80,6 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
       limit: limit, offset: offset
     })
   }, [limit, page, offset, onFiltersChange])
-  
-  useEffect(() => {
-    timestamp?.start && timestamp?.end && onFiltersChange({timestamp: timestamp})
-  }, [timestamp, onFiltersChange])
   
   const getSeverity = useCallback(status => {
     return status === 'payed' ? 'success'
@@ -116,27 +105,43 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
     }
   })
   
+  const handleQueryChange = useCallback((event) => {
+    event.preventDefault();
+    /*onFiltersChange((prevState) => ({
+      ...prevState,
+      q: queryRef.current?.value
+    }));*/
+  }, []);
+  
+  
   return <>
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Stack
         alignItems="center"
         direction="row"
-        flexWrap="wrap"
+        flexWrap="nowrap"
         spacing={3}
         sx={{p: 3}}
       >
-        <DatePicker label="From" onChange={val => {
-          setTimestamp(prev => ({
-            ...prev,
-            start: Math.floor(val.getTime() / 1000)
-          }))
-        }}/>
-        <DatePicker label="To" onChange={val => {
-          setTimestamp(prev => ({
-            ...prev,
-            end: Math.floor(val.getTime() / 1000)
-          }))
-        }}/>
+        <Box
+          component="form"
+          onSubmit={handleQueryChange}
+          sx={{flexGrow: 1}}
+        >
+          <OutlinedInput
+            defaultValue=""
+            fullWidth
+            inputProps={{ref: queryRef}}
+            placeholder="Search payments"
+            startAdornment={(
+              <InputAdornment position="start">
+                <SvgIcon>
+                  <SearchMdIcon/>
+                </SvgIcon>
+              </InputAdornment>
+            )}
+          />
+        </Box>
         <Button
           id={'period-button'}
           endIcon={<ArrowDropDown/>}
@@ -145,17 +150,20 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
             color: 'neutral.500',
             borderColor: 'neutral.200',
             height: 55,
+            width: 96,
             borderRadius: '8px',
             transition: 'none',
             pl: '12px',
-            ':hover': {borderColor: 'neutral.200',}
+            ':hover': {borderColor: 'neutral.200'},
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis'
           }}
           aria-controls={periodOpen ? 'period-menu' : undefined}
           aria-haspopup="true"
           aria-expanded={periodOpen ? 'true' : undefined}
           onClick={handleClick}
         >
-          Period
+          {'Period'}
         </Button>
         <Menu
           id="period-menu"
@@ -174,16 +182,49 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
         
         >
           <Box p={2}>
-            <Box mb={2}>
-              DATEPICKER HERE
-            </Box>
-            <Button
-              onClick={handleClose}
-              fullWidth
-              variant={'contained'}
-            >
-              OK
-            </Button>
+            <Stack mb={2} direction={'column'} spacing={1}>
+              <DatePicker
+                label="From"
+                onChange={val => {
+                  setTimestamp(prev => ({
+                    ...prev,
+                    start: Math.floor(val.getTime() / 1000)
+                  }))
+                }}
+                defaultValue={(timestamp?.start * 1000) || undefined}
+                views={['year', 'month', 'day']}
+              />
+              <DatePicker
+                label="To"
+                onChange={val => {
+                  setTimestamp(prev => ({
+                    ...prev,
+                    end: Math.floor(val.getTime() / 1000)
+                  }))
+                }}
+                defaultValue={(timestamp?.end * 1000) || undefined}
+                views={['year', 'month', 'day']}
+              />
+            </Stack>
+            <Stack direction={'row'} spacing={2}>
+              <Button
+                onClick={() => {
+                  onFiltersChange({timestamp: timestamp})
+                  handleClose()
+                }}
+                fullWidth
+                variant={'contained'}
+              >
+                Apply
+              </Button>
+              <Button
+                onClick={handleClose}
+                fullWidth
+                variant={'outlined'}
+              >
+                Cancel
+              </Button>
+            </Stack>
           </Box>
         </Menu>
         <Input
@@ -260,7 +301,7 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
                 <TableCell>
                   Status
                 </TableCell>
-                <TableCell width/>
+                <TableCell/>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -269,14 +310,10 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
                   <TableRow
                     hover
                     key={item.id}
-                    onMouseOver={() => {
-                      handleMouseOver(i)
-                    }}
-                    onMouseOut={handleMouseOut}
                   >
                     <TableCell>{item.id}</TableCell>
                     <TableCell sx={{whiteSpace: 'nowrap'}}>
-                      {format(new Date(item.created * 1000), 'yyyy-MM-dd HH:mm:ss')}
+                      {format(item.created * 1000, 'dd/MM/yyyy HH:mm')}
                     </TableCell>
                     
                     {isAdmin && <TableCell>
@@ -296,7 +333,7 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
                           <Link
                             color="inherit"
                             component={NextLink}
-                            href={`${paths.users.index}/${item.user.id}`}
+                            href={`${paths.users.index}edit/${item.user.id}/`}
                             variant="subtitle2"
                           >
                             {item.user.name}
@@ -311,7 +348,7 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
                       </Stack>
                     </TableCell>}
                     <TableCell>
-                      ${item.amount}
+                      USD ${item.amount}
                     </TableCell>
                     <TableCell>
                       {item.type === 100 ? 'Invoice' : 'Bonus'}
@@ -346,8 +383,9 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
                       </Box>
                     </TableCell>
                     <TableCell>
-                      <Box hidden={false}>
-                        <Stack direction={'row'} justifyContent={'end'}>
+                      <Box sx={{width: '120px'}}/>
+                      <Stack direction={'row'} justifyContent={'end'}>
+                        {item.status === 'new' && <>
                           <Tooltip title="Pay">
                             <IconButton
                               onClick={() => {
@@ -372,19 +410,19 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
                               </SvgIcon>
                             </IconButton>
                           </Tooltip>
-                          <Tooltip title={'Print'}>
-                            <IconButton onClick={() => {
-                            
+                        </>}
+                        <Tooltip title={'Print'}>
+                          <IconButton onClick={() => {
+                          
+                          }}>
+                            <SvgIcon sx={{
+                              ':hover': {color: 'primary.main'}
                             }}>
-                              <SvgIcon sx={{
-                                ':hover': {color: 'primary.main'}
-                              }}>
-                                <PrintOutlined/>
-                              </SvgIcon>
-                            </IconButton>
-                          </Tooltip>
-                        </Stack>
-                      </Box>
+                              <PrintOutlined/>
+                            </SvgIcon>
+                          </IconButton>
+                        </Tooltip>
+                      </Stack>
                     </TableCell>
                   </TableRow>
                 );

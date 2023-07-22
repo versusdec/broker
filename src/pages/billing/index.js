@@ -138,7 +138,7 @@ const Page = withTransactionsListGuard(() => {
               )}
               variant="contained"
             >
-              Add Transaction
+              Make New Transaction
             </Button>}
             {isAdmin && currentTab === 'payments' && <Button
               onClick={() => {
@@ -151,7 +151,7 @@ const Page = withTransactionsListGuard(() => {
               )}
               variant="contained"
             >
-              Create Payment
+              Make New Payment
             </Button>}
           </Stack>
         </Stack>
@@ -191,6 +191,22 @@ const Page = withTransactionsListGuard(() => {
                 onPay={paymentPay}
                 onCancel={paymentCancel}
                 filters={filtersPayments}
+              />}
+            </div>
+          )}
+          {currentTab === 'transactions' && (
+            <div>
+              {<TransactionsTable
+                transactions={transactions}
+                onFiltersChange={filtersHandleTransactions}
+                dialogOpen={dialogOpen}
+                dialogClose={() => {
+                  setDialogOpen(false)
+                }}
+                clients={clients}
+                onSubmit={transactionsCreate}
+                isAdmin={isAdmin}
+                filters={filtersTransactions}
               />}
             </div>
           )}
