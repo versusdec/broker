@@ -14,6 +14,7 @@ const SIDE_NAV_WIDTH = 280;
 
 const useCssVars = (color) => {
   const theme = useTheme();
+  //todo remove
   console.log(theme.palette)
 
   return useMemo(() => {
@@ -218,21 +219,21 @@ export const SideNav = (props) => {
                 href={paths.support.index}
                 size={'small'}
                 startIcon={(
-                  <SvgIcon fontSize="small" color={pathname === paths.support.index ? 'primary' : ''}>
+                  <SvgIcon fontSize="small" color={pathname.split('/')[1] === 'support' ? 'primary' : ''}>
                     <QuestionAnswerOutlined/>
                   </SvgIcon>
                 )}
                 variant="text"
                 sx={{
                   color: 'var(--nav-section-title-color)',
-                  ...(pathname === paths.support.index && {
+                  ...(pathname.split('/')[1] === 'support' && {
                     color: 'var(--nav-item-active-color)',
                     ':hover': {
                       backgroundColor: 'var(--nav-item-active-bg)'
                     }
                   }),
                   justifyContent: 'flex-start',
-                  backgroundColor: pathname === paths.support.index ? 'var(--nav-item-active-bg)' : '',
+                  backgroundColor: pathname.split('/')[1] === 'support' ? 'var(--nav-item-active-bg)' : '',
                   transition: 'none'
                 }}
               >
