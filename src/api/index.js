@@ -711,9 +711,9 @@ export const api = Object.freeze({
         }
       }
     },
-    stats: async (params) => {
+    stats: async () => {
       try {
-        const {result, error} = await fetch(root, init({params: params, method: 'support.stats'})).then(res => res.json());
+        const {result, error} = await fetch(root, init({method: 'support.stats'})).then(res => res.json());
         return {
           result, error
         }

@@ -17,12 +17,12 @@ export const Attachment = ({children, onRemove, ...props}) => {
     }}
     {...props}>
     <Box fontWeight={500}>{children}</Box>
-    <IconButton
+    {onRemove && <IconButton
       color={'primary'}
       size={'small'}
       onClick={onRemove}
     >
       <Close fontSize={'small'}/>
-    </IconButton>
+    </IconButton>}
   </Stack>
 }

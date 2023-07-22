@@ -1,10 +1,24 @@
-import {useCallback, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import PlusIcon from '@untitled-ui/icons-react/build/esm/Plus';
-import {Button, Card, Divider, Stack, SvgIcon, Tab, Tabs, Typography} from '@mui/material';
+import {
+  Button,
+  Card,
+  CardContent,
+  Divider, Paper,
+  Stack,
+  SvgIcon,
+  Tab,
+  Table,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Tabs,
+  Typography,
+  Unstable_Grid2 as Grid
+} from '@mui/material';
 import {TicketsListTable} from '../../components/support/tickets-list-table';
 import NextLink from "next/link";
 import {paths} from "../../navigation/paths";
-import {useMe} from "../../hooks/useMe";
 import {usePagination} from "../../hooks/usePagination";
 import {api} from "../../api";
 import {ticketsList} from "../../slices/ticketsSlice";
@@ -30,14 +44,9 @@ const tabs = [
 
 const Page = () => {
   const dispatch = useDispatch();
-  const me = useMe();
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const [filters, setFilters] = useState({status: 'active', theme: 'tech'});
   const [currentTab, setCurrentTab] = useState('tech');
-  
-  const handleFiltersChange = useCallback((filters) => {
-    setFilters(filters)
-  }, [])
   
   const handleTabsChange = useCallback((event, value) => {
     const fs = {...filters};
