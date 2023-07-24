@@ -625,5 +625,177 @@ export const api = Object.freeze({
         }
       }
     }
-  }
+  },
+  support: {
+    list: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'support.list'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    get: async (id) => {
+      try {
+        const {result, error} = await fetch(root, init({params: {id: +id}, method: 'support.get'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    add: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'support.create'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    answer: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'support.answer'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    archive: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'support.archive'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    close: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'support.close'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    reopen: async (params) => {
+      try {
+        const {result, error} = await fetch(root, init({params: params, method: 'support.reopen'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    stats: async () => {
+      try {
+        const {result, error} = await fetch(root, init({method: 'support.stats'})).then(res => res.json());
+        return {
+          result, error
+        }
+      } catch (e) {
+        return {
+          error: e
+        }
+      }
+    },
+    moderation: {
+      accept: async (params) => {
+        try {
+          const {result, error} = await fetch(root, init({params: params, method: 'support.moderation.accept'})).then(res => res.json());
+          return {
+            result, error
+          }
+        } catch (e) {
+          return {
+            error: e
+          }
+        }
+      },
+      decline: async (params) => {
+        try {
+          const {result, error} = await fetch(root, init({params: params, method: 'support.moderation.decline'})).then(res => res.json());
+          return {
+            result, error
+          }
+        } catch (e) {
+          return {
+            error: e
+          }
+        }
+      },
+      get: async (params) => {
+        try {
+          const {result, error} = await fetch(root, init({params: params, method: 'support.moderation.get'})).then(res => res.json());
+          return {
+            result, error
+          }
+        } catch (e) {
+          return {
+            error: e
+          }
+        }
+      },
+      handle: async (params) => {
+        try {
+          const {result, error} = await fetch(root, init({params: params, method: 'support.moderation.handle'})).then(res => res.json());
+          return {
+            result, error
+          }
+        } catch (e) {
+          return {
+            error: e
+          }
+        }
+      },
+      list: async (params) => {
+        try {
+          const {result, error} = await fetch(root, init({params: params, method: 'support.moderation.list'})).then(res => res.json());
+          return {
+            result, error
+          }
+        } catch (e) {
+          return {
+            error: e
+          }
+        }
+      },
+      my: async (params) => {
+        try {
+          const {result, error} = await fetch(root, init({params: params, method: 'support.moderation.my'})).then(res => res.json());
+          return {
+            result, error
+          }
+        } catch (e) {
+          return {
+            error: e
+          }
+        }
+      },
+    }
+  },
 });

@@ -88,7 +88,7 @@ export const VerticalLayout = (props) => {
               px: 2
             }}
           >
-            <Container maxWidth={'xl'}>
+            <Container maxWidth={false} sx={{height: '100%'}}>
               {children}
             </Container>
           </Box>

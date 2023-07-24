@@ -114,7 +114,7 @@ export const getSections = (t, roles) => {
         },
         {
           title: t(tokens.nav.support),
-          path: paths.support,
+          path: paths.support.index,
           hidden: true,
           icon: (
             <SvgIcon fontSize="small">
