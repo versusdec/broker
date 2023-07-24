@@ -61,7 +61,6 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
   const {data, loading, error} = transactions;
   const [anchorEl, setAnchorEl] = useState(null);
   const periodOpen = Boolean(anchorEl);
-  const queryRef = useRef(null);
   
   const handleClick = useCallback((event) => {
     setAnchorEl(event.currentTarget);
@@ -104,42 +103,16 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
     }
   })
   
-  const handleQueryChange = useCallback((event) => {
-    event.preventDefault();
-    /*onFiltersChange((prevState) => ({
-      ...prevState,
-      q: queryRef.current?.value
-    }));*/
-  }, []);
-  
   return <>
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Stack
         alignItems="center"
         direction="row"
         flexWrap="nowrap"
+        justifyContent={'end'}
         spacing={3}
         sx={{p: 3}}
       >
-        <Box
-          component="form"
-          onSubmit={handleQueryChange}
-          sx={{flexGrow: 1}}
-        >
-          <OutlinedInput
-            defaultValue=""
-            fullWidth
-            inputProps={{ref: queryRef}}
-            placeholder="Search payments"
-            startAdornment={(
-              <InputAdornment position="start">
-                <SvgIcon>
-                  <SearchMdIcon/>
-                </SvgIcon>
-              </InputAdornment>
-            )}
-          />
-        </Box>
         <Button
           id={'period-button'}
           endIcon={<ArrowDropDown/>}
