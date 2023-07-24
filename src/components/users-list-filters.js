@@ -62,25 +62,6 @@ export const UsersListFilters = ({role, roles, ...props}) => {
   
   return (
     <>
-     {/* <Tabs
-        indicatorColor="primary"
-        onChange={handleTabsChange}
-        scrollButtons="auto"
-        sx={{px: 3}}
-        textColor="primary"
-        value={currentTab}
-        variant="scrollable"
-      >
-        {tabs.map((tab) => (
-          <Tab
-            key={tab.value}
-            label={tab.label}
-            value={tab.value}
-          />
-        ))}
-      </Tabs>
-      <Divider/>*/}
-      
       <Stack
         alignItems="center"
         direction="row"
