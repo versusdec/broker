@@ -58,7 +58,7 @@ const validationSchema = Yup.object({
 });
 
 export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClose, onSubmit, isAdmin, onPay, onCancel, filters}) => {
-  const [timestamp, setTimestamp] = useState(null);
+  const [timestamp, setTimestamp] = useState(filters.timestamp || null);
   const [confirmPay, setConfirmPay] = useState({item: null, open: false});
   const [confirmCancel, setConfirmCancel] = useState({item: null, open: false});
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
@@ -73,6 +73,12 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
   const handleClose = useCallback(() => {
     setAnchorEl(null);
   }, [])
+  
+  const applyTimestamp = useCallback(() => {
+    onFiltersChange({
+      timestamp: timestamp
+    })
+  }, [timestamp, onFiltersChange])
   
   useEffect(() => {
     onFiltersChange({
@@ -104,7 +110,6 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
     }
   })
   
-  
   return <>
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Stack
@@ -123,20 +128,25 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
             color: 'neutral.500',
             borderColor: 'neutral.200',
             height: 55,
-            width: 96,
+            width: filters.timestamp ? 120 : 96,
             borderRadius: '8px',
             transition: 'none',
             pl: '12px',
             ':hover': {borderColor: 'neutral.200'},
-            whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis'
+            justifyContent: 'space-between',
           }}
           aria-controls={periodOpen ? 'period-menu' : undefined}
           aria-haspopup="true"
           aria-expanded={periodOpen ? 'true' : undefined}
           onClick={handleClick}
         >
-          {'Period'}
+          {!filters.timestamp && 'Period'}
+          {filters.timestamp && !filters.timestamp.end && 'from'}
+          {filters.timestamp && !filters.timestamp.end && <br/>}
+          {filters.timestamp && filters.timestamp.start && format(filters.timestamp.start * 1000, 'dd/MM/yyyy')}
+          {filters.timestamp && filters.timestamp.start && filters.timestamp.end && <br/>}
+          {filters.timestamp && !filters.timestamp.start && 'to'}
+          {filters.timestamp && filters.timestamp.end && format(filters.timestamp.end * 1000, 'dd/MM/yyyy')}
         </Button>
         <Menu
           id="period-menu"
@@ -154,8 +164,21 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
           }}
         
         >
-          <Box p={2}>
+          <Box p={2} pt={1}>
             <Stack mb={2} direction={'column'} spacing={1}>
+              <Stack direction={'row'} justifyContent={'end'}>
+                <Button
+                  size={'small'}
+                  variant={'text'}
+                  p={1}
+                  onClick={()=>{
+                    delete filters.timestamp
+                    setTimestamp(null)
+                    onFiltersChange(filters)
+                    handleClose()
+                  }}
+                >Clear</Button>
+              </Stack>
               <DatePicker
                 label="From"
                 onChange={val => {
@@ -166,6 +189,7 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
                 }}
                 defaultValue={(timestamp?.start * 1000) || undefined}
                 views={['year', 'month', 'day']}
+                format={'dd/MM/yyyy'}
               />
               <DatePicker
                 label="To"
@@ -177,16 +201,18 @@ export const PaymentsTable = ({onFiltersChange, payments, dialogOpen, dialogClos
                 }}
                 defaultValue={(timestamp?.end * 1000) || undefined}
                 views={['year', 'month', 'day']}
+                format={'dd/MM/yyyy'}
               />
             </Stack>
             <Stack direction={'row'} spacing={2}>
               <Button
                 onClick={() => {
-                  onFiltersChange({timestamp: timestamp})
+                  applyTimestamp()
                   handleClose()
                 }}
                 fullWidth
                 variant={'contained'}
+                disabled={!timestamp?.start || !timestamp?.end}
               >
                 Apply
               </Button>
