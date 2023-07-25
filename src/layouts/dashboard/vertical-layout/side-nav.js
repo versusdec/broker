@@ -14,6 +14,8 @@ const SIDE_NAV_WIDTH = 280;
 
 const useCssVars = (color) => {
   const theme = useTheme();
+  //todo remove
+  console.log(theme.palette)
 
   return useMemo(() => {
     switch (color) {
@@ -214,17 +216,25 @@ export const SideNav = (props) => {
             <Stack spacing={1} >
               <Button
                 component={NextLink}
-                href={paths.support}
+                href={paths.support.index}
                 size={'small'}
                 startIcon={(
-                  <SvgIcon fontSize="small">
+                  <SvgIcon fontSize="small" color={pathname.split('/')[1] === 'support' ? 'primary' : ''}>
                     <QuestionAnswerOutlined/>
                   </SvgIcon>
                 )}
                 variant="text"
                 sx={{
                   color: 'var(--nav-section-title-color)',
-                  justifyContent: 'flex-start'
+                  ...(pathname.split('/')[1] === 'support' && {
+                    color: 'var(--nav-item-active-color)',
+                    ':hover': {
+                      backgroundColor: 'var(--nav-item-active-bg)'
+                    }
+                  }),
+                  justifyContent: 'flex-start',
+                  backgroundColor: pathname.split('/')[1] === 'support' ? 'var(--nav-item-active-bg)' : '',
+                  transition: 'none'
                 }}
               >
                 Support
@@ -234,14 +244,22 @@ export const SideNav = (props) => {
                 href={'#'}
                 size={'small'}
                 startIcon={(
-                  <SvgIcon fontSize="small">
+                  <SvgIcon fontSize="small" color={pathname === 'paths.docs.index' ? 'primary' : ''}>
                     <InsertDriveFileOutlined/>
                   </SvgIcon>
                 )}
                 variant="text"
                 sx={{
                   color: 'var(--nav-section-title-color)',
-                  justifyContent: 'flex-start'
+                  ...(pathname === 'paths.docs.index' && {
+                    color: 'var(--nav-item-active-color)',
+                    ':hover': {
+                      backgroundColor: 'var(--nav-item-active-bg)'
+                    }
+                  }),
+                  justifyContent: 'flex-start',
+                  backgroundColor: pathname === 'paths.docs.index' ? 'var(--nav-item-active-bg)' : '',
+                  transition: 'none'
                 }}
               >
                 Documentation
