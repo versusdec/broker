@@ -7,7 +7,7 @@ import XIcon from '@untitled-ui/icons-react/build/esm/X';
 export const FileUploader = (props) => {
   const {onClose, open = false, onUpload} = props;
   const [files, setFiles] = useState([]);
-  const multiple = !props.multiple ? props.multiple : true;
+  const multiple = props.multiple ?? false;
   const deny = Boolean(!multiple && files.length);
   
   useEffect(() => {
