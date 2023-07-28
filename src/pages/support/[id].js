@@ -321,7 +321,7 @@ const Page = () => {
                   {Boolean(files.length) && <Stack direction={'row'} spacing={1}>
                     {files.map((file, i) => (<Attachment key={i} onRemove={() => {
                       onFileRemove(i)
-                    }} key={i}>{file.name}</Attachment>))}
+                    }}>{file.name}</Attachment>))}
                   </Stack>}
                   <Stack direction={'row'} spacing={2}>
                     <Button
