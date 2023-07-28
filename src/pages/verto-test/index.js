@@ -1,5 +1,5 @@
 import {Box, Dialog, DialogContent, Stack, Typography} from "@mui/material";
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Verto} from 'vertojs';
 import {Button} from "../../components/button";
 
@@ -8,6 +8,7 @@ const Page = () => {
   const [call, setCall] = useState(null);
   const [hold, setHold] = useState(false);
   const [dialog, setDialog] = useState(false);
+  const video = useRef(null);
   
   useEffect(() => {
     const JsonRpcClientParams = {
@@ -55,8 +56,7 @@ const Page = () => {
         let stream = new MediaStream()
         stream.addTrack(track)
         
-        // let el = document.getElementById('video')
-        // el.srcObject = stream
+        video.current.srcObject = stream
       })
       
       setCall(call);
@@ -89,63 +89,66 @@ const Page = () => {
   };
   
   return (
-    <Stack direction={'row'} spacing={2}>
-      <Button onClick={makeCall}>Make Call</Button>
-      {!hold && <Button onClick={() => {
-        setHold(true)
-        holdCall()
-      }}>Hold Call</Button>}
-      {hold && <Button onClick={() => {
-        unholdCall()
-        setHold(false)
-      }}>Unhold Call</Button>}
-      <Button onClick={hangUpCall}>Hang Up</Button>
-      <Button onClick={() => setDialog(true)}>Send DTMF</Button>
-      <Dialog
-        open={dialog}
-        onClose={() => {
-          setDialog(false)
-        }}
-      >
-        <Stack direction={'row'} flexWrap={'wrap'} maxWidth={300}>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
-            sendDTMF('1')
-          }}>1</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
-            sendDTMF('2')
-          }}>2</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
-            sendDTMF('3')
-          }}>3</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
-            sendDTMF('4')
-          }}>4</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
-            sendDTMF('5')
-          }}>5</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
-            sendDTMF('6')
-          }}>6</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
-            sendDTMF('7')
-          }}>7</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
-            sendDTMF('8')
-          }}>8</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
-            sendDTMF('9')
-          }}>9</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
-            sendDTMF('*')
-          }}>*</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
-            sendDTMF('0')
-          }}>0</Button>
-          <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
-            sendDTMF('#')
-          }}>#</Button>
-        </Stack>
-      </Dialog>
+    <Stack spacing={2}>
+      <Stack direction={'row'} spacing={2}>
+        <Button onClick={makeCall}>Make Call</Button>
+        {!hold && <Button onClick={() => {
+          setHold(true)
+          holdCall()
+        }}>Hold Call</Button>}
+        {hold && <Button onClick={() => {
+          unholdCall()
+          setHold(false)
+        }}>Unhold Call</Button>}
+        <Button onClick={hangUpCall}>Hang Up</Button>
+        <Button onClick={() => setDialog(true)}>Send DTMF</Button>
+        <Dialog
+          open={dialog}
+          onClose={() => {
+            setDialog(false)
+          }}
+        >
+          <Stack direction={'row'} flexWrap={'wrap'} maxWidth={300}>
+            <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+              sendDTMF('1')
+            }}>1</Button>
+            <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+              sendDTMF('2')
+            }}>2</Button>
+            <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+              sendDTMF('3')
+            }}>3</Button>
+            <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+              sendDTMF('4')
+            }}>4</Button>
+            <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+              sendDTMF('5')
+            }}>5</Button>
+            <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+              sendDTMF('6')
+            }}>6</Button>
+            <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+              sendDTMF('7')
+            }}>7</Button>
+            <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+              sendDTMF('8')
+            }}>8</Button>
+            <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+              sendDTMF('9')
+            }}>9</Button>
+            <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+              sendDTMF('*')
+            }}>*</Button>
+            <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+              sendDTMF('0')
+            }}>0</Button>
+            <Button variant={'text'} sx={{width: 100, borderRadius: 0}} onClick={() => {
+              sendDTMF('#')
+            }}>#</Button>
+          </Stack>
+        </Dialog>
+      </Stack>
+      <video ref={video}/>
     </Stack>
   );
 };
