@@ -34,6 +34,7 @@ import {paths} from "../navigation/paths";
 import {Pagination} from "./pagination";
 import {usePagination} from "../hooks/usePagination";
 import SearchMdIcon from "@untitled-ui/icons-react/build/esm/SearchMd";
+import {format} from "date-fns";
 
 const initialValues = {
   type: 100,
@@ -55,13 +56,12 @@ const validationSchema = Yup.object({
 });
 
 export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, dialogClose, clients, onSubmit, isAdmin, filters}) => {
-  const [timestamp, setTimestamp] = useState(null)
+  const [timestamp, setTimestamp] = useState(filters.timestamp || null)
   const [client, setClient] = useState(null)
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const {data, loading, error} = transactions;
   const [anchorEl, setAnchorEl] = useState(null);
   const periodOpen = Boolean(anchorEl);
-  const queryRef = useRef(null);
   
   const handleClick = useCallback((event) => {
     setAnchorEl(event.currentTarget);
@@ -70,6 +70,12 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
   const handleClose = useCallback(() => {
     setAnchorEl(null);
   }, [])
+  
+  const applyTimestamp = useCallback(() => {
+    onFiltersChange({
+      timestamp: timestamp
+    })
+  }, [timestamp, onFiltersChange])
   
   useEffect(() => {
     onFiltersChange({
@@ -104,42 +110,16 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
     }
   })
   
-  const handleQueryChange = useCallback((event) => {
-    event.preventDefault();
-    /*onFiltersChange((prevState) => ({
-      ...prevState,
-      q: queryRef.current?.value
-    }));*/
-  }, []);
-  
   return <>
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Stack
         alignItems="center"
         direction="row"
         flexWrap="nowrap"
+        justifyContent={'end'}
         spacing={3}
         sx={{p: 3}}
       >
-        <Box
-          component="form"
-          onSubmit={handleQueryChange}
-          sx={{flexGrow: 1}}
-        >
-          <OutlinedInput
-            defaultValue=""
-            fullWidth
-            inputProps={{ref: queryRef}}
-            placeholder="Search payments"
-            startAdornment={(
-              <InputAdornment position="start">
-                <SvgIcon>
-                  <SearchMdIcon/>
-                </SvgIcon>
-              </InputAdornment>
-            )}
-          />
-        </Box>
         <Button
           id={'period-button'}
           endIcon={<ArrowDropDown/>}
@@ -148,7 +128,7 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
             color: 'neutral.500',
             borderColor: 'neutral.200',
             height: 55,
-            width: 96,
+            width: filters.timestamp ? 120 : 96,
             borderRadius: '8px',
             transition: 'none',
             pl: '12px',
@@ -161,7 +141,13 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
           aria-expanded={periodOpen ? 'true' : undefined}
           onClick={handleClick}
         >
-          {'Period'}
+          {!filters.timestamp && 'Period'}
+          {filters.timestamp && !filters.timestamp.end && 'from'}
+          {filters.timestamp && !filters.timestamp.end && <br/>}
+          {filters.timestamp && filters.timestamp.start && format(filters.timestamp.start * 1000, 'dd/MM/yyyy')}
+          {filters.timestamp && filters.timestamp.start && filters.timestamp.end && <br/>}
+          {filters.timestamp && !filters.timestamp.start && 'to'}
+          {filters.timestamp && filters.timestamp.end && format(filters.timestamp.end * 1000, 'dd/MM/yyyy')}
         </Button>
         <Menu
           id="period-menu"
@@ -179,8 +165,21 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
           }}
         
         >
-          <Box p={2}>
+          <Box p={2} pt={1}>
             <Stack mb={2} direction={'column'} spacing={1}>
+              <Stack direction={'row'} justifyContent={'end'}>
+                <Button
+                  size={'small'}
+                  variant={'text'}
+                  p={1}
+                  onClick={()=>{
+                    delete filters.timestamp
+                    setTimestamp(null)
+                    onFiltersChange(filters)
+                    handleClose()
+                  }}
+                >Clear</Button>
+              </Stack>
               <DatePicker
                 label="From"
                 onChange={val => {
@@ -191,6 +190,7 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
                 }}
                 defaultValue={(timestamp?.start * 1000) || undefined}
                 views={['year', 'month', 'day']}
+                format={'dd/MM/yyyy'}
               />
               <DatePicker
                 label="To"
@@ -202,16 +202,18 @@ export const TransactionsTable = ({onFiltersChange, transactions, dialogOpen, di
                 }}
                 defaultValue={(timestamp?.end * 1000) || undefined}
                 views={['year', 'month', 'day']}
+                format={'dd/MM/yyyy'}
               />
             </Stack>
             <Stack direction={'row'} spacing={2}>
               <Button
                 onClick={() => {
-                  onFiltersChange({timestamp: timestamp})
+                  applyTimestamp()
                   handleClose()
                 }}
                 fullWidth
                 variant={'contained'}
+                disabled={!timestamp?.start || !timestamp?.end}
               >
                 Apply
               </Button>
