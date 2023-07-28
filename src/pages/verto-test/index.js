@@ -8,7 +8,7 @@ const Page = () => {
   const [call, setCall] = useState(null);
   const [hold, setHold] = useState(false);
   const [dialog, setDialog] = useState(false);
-  const video = useRef(null);
+  const audioRef = useRef(null);
   
   useEffect(() => {
     const JsonRpcClientParams = {
@@ -55,8 +55,8 @@ const Page = () => {
         
         let stream = new MediaStream()
         stream.addTrack(track)
-        
-        video.current.srcObject = stream
+  
+        audioRef.current.srcObject = stream
       })
       
       setCall(call);
@@ -148,7 +148,7 @@ const Page = () => {
           </Stack>
         </Dialog>
       </Stack>
-      <video ref={video}/>
+      <audio ref={audioRef} controls autoPlay/>
     </Stack>
   );
 };
