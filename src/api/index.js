@@ -161,6 +161,20 @@ export const api = Object.freeze({
         }
       }
     },
+    tg: {
+      link: async () => {
+        try {
+          const {result, error} = await fetch(root, init({params: {}, method: 'users.tg.link'})).then(res => res.json());
+          return {
+            result, error
+          }
+        } catch (e) {
+          return {
+            error: e
+          }
+        }
+      },
+    }
     
   },
   roles: {

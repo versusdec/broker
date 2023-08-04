@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {
   Avatar,
   Box,
+  Button,
   Card,
   CardContent,
   MenuItem,
@@ -10,17 +11,12 @@ import {
   SvgIcon,
   Typography,
   Link,
-  Alert,
-  Unstable_Grid2 as Grid, Paper, TextField
+  Unstable_Grid2 as Grid, Paper, Autocomplete, TextField
 } from '@mui/material';
-import {Button} from '../button'
 import {Input} from "../input";
-import {useFormik} from "formik";
-import * as Yup from "yup";
-import {forwardRef, useCallback, useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {FileUploader} from "../file-uploader";
 import {DeleteOutlined, EditOutlined} from "@mui/icons-material";
-import Image from "next/image";
 
 const languageOptions = [
   {
@@ -35,43 +31,31 @@ const languageOptions = [
   }
 ]
 
-const validationSchema = Yup.object({
-  email: Yup
-    .string()
-    .email('Must be a valid email')
-    .max(255)
-    .required('Email is required'),
-  name: Yup
-    .string()
-    .max(255)
-    .required('Name is required'),
-  timezone: Yup
-    .number(),
-  language: Yup
-    .string()
-    .oneOf(['en', 'ru'])
-});
 
-export const AccountGeneralSettings = ({user, onSubmit, onUpload, onRemove, editGrant, isAdmin, ...props}) => {
+export const DetailsTab = (
+  {
+    user,
+    onUpload,
+    onRemove,
+    editGrant,
+    isAdmin,
+    roles,
+    client,
+    clients,
+    onClientChange,
+    manager,
+    managers,
+    onManagerChange,
+    formik,
+    validate,
+    ...props
+  }
+) => {
   const [uploaderOpen, setUploaderOpen] = useState(false);
   const [timezones, setTimezones] = useState(null);
   const [disabled, setDisabled] = useState(false);
-  const [verificationMailSent, setVerificationMailSent] = useState(false);
-  const [verificationCodeSent, setVerificationCodeSent] = useState(false);
   const isDisabled = !(isAdmin || editGrant);
-  const codeRef = useRef(null);
   
-  const sendVerificationMail = useCallback(() => {
-    setVerificationMailSent(true)
-  }, [])
-  
-  const sendVerificationCode = useCallback(() => {
-    setVerificationCodeSent(true)
-  }, [])
-  
-  const confirmCode = useCallback(() => {
-    console.log(codeRef.current.value)
-  }, [codeRef])
   
   useEffect(() => {
     const getTimezones = async () => {
@@ -95,32 +79,6 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, onRemove, edit
   const handleClose = useCallback(() => {
     setUploaderOpen(false)
   }, [])
-  
-  const initialValues = {
-    name: user?.name || '',
-    email: user?.email || '',
-    avatar: user?.avatar || '',
-    timezone: user?.timezone || 0,
-    language: user?.language || 'en',
-    phone: user?.phone || '',
-    company: user?.company || '',
-  };
-  
-  const formik = useFormik({
-    initialValues,
-    validationSchema,
-    onSubmit: (values, helpers) => {
-      try {
-        onSubmit(values)
-      } catch (err) {
-        console.error(err);
-        
-        helpers.setStatus({success: false});
-        helpers.setErrors({submit: err.message});
-        helpers.setSubmitting(false);
-      }
-    }
-  })
   
   return (
     <Stack
@@ -155,7 +113,6 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, onRemove, edit
                               onBlur={formik.handleBlur}
                               onChange={formik.handleChange}
                               value={formik.values.name}
-                              disabled={isDisabled}
                             />
                           </Grid>
                           <Grid xs={12} md={6}>
@@ -169,7 +126,6 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, onRemove, edit
                               onBlur={formik.handleBlur}
                               onChange={formik.handleChange}
                               value={formik.values.company}
-                              disabled={isDisabled}
                             />
                           </Grid>
                         </Grid>
@@ -187,8 +143,13 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, onRemove, edit
                               onBlur={formik.handleBlur}
                               onChange={formik.handleChange}
                               value={formik.values.email}
-                              disabled={isDisabled}
                             />
+                            <Box mt={2}>
+                              <Link href={'#'} fontSize={14} onClick={(e) => {
+                                e.preventDefault();
+                                console.log('email confirmation')
+                              }}>Confirm email address.</Link>
+                            </Box>
                           </Grid>
                           <Grid xs={12} md={6}>
                             <Input
@@ -201,69 +162,17 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, onRemove, edit
                               onBlur={formik.handleBlur}
                               onChange={formik.handleChange}
                               value={formik.values.phone}
-                              disabled={isDisabled}
                             />
+                            <Box mt={2}>
+                              <Link href={'#'} fontSize={14} onClick={(e) => {
+                              e.preventDefault();
+                              console.log('phone confirmation')
+                            }}>Confirm phone number</Link>
+                            </Box>
                           </Grid>
                         </Grid>
                       </Box>
-                      <Box>
-                        <Grid container spacing={2} p={0}>
-                          <Grid xs={12} md={6}>
-                            {!user.email_verified && !verificationMailSent && <Alert severity="info">
-                              To get access to all platform features you need to <Link href={'#'} onClick={(e) => {
-                              e.preventDefault();
-                              sendVerificationMail()
-                            }}>confirm email address</Link>.
-                            </Alert>}
-                            {verificationMailSent && <Alert severity="info">
-                              Confirmation link has been sent to your email address.
-                            </Alert>}
-                            {user.email_verified && <Alert severity="success">
-                              Email confirmed
-                            </Alert>}
-                          </Grid>
-                          <Grid xs={12} md={6}>
-                            {!user.phone_verified && !verificationCodeSent && <Alert severity="info">
-                              To get access to all platform features you need to <Link href={'#'} onClick={(e) => {
-                              e.preventDefault();
-                              sendVerificationCode()
-                            }}>confirm phone number</Link>.
-                            </Alert>}
-                            {verificationCodeSent && <Stack direction={'row'} alignItems={'center'} spacing={2} flexWrap={{
-                              xs: 'wrap',
-                              xl: 'nowrap'
-                            }}>
-                              <TextField
-                                type={'text'}
-                                inputRef={codeRef}
-                                fullWidth
-                                label={'Enter code from SMS'}
-                                defaultValue={''}
-                              />
-                              <Box>
-                                <Stack direction={'row'} spacing={2} mt={{xs: 2, xl: 0}}>
-                                  <Button
-                                    onClick={() => {
-                                      confirmCode()
-                                    }}
-                                  >Confirm</Button>
-                                  <Button
-                                    variant={'outlined'}
-                                    onClick={() => {
-                                      sendVerificationCode()
-                                    }}
-                                  >Resend</Button>
-                                </Stack>
-                              </Box>
-                            </Stack>}
-                            {user.phone_verified && <Alert severity="success">
-                              Phone confirmed
-                            </Alert>}
-                          </Grid>
-                        
-                        </Grid>
-                      </Box>
-                      <Stack direction={'row'} justifyContent={'start'}>
+                      {!isDisabled && <Stack direction={'row'} justifyContent={'start'}>
                         <Button
                           disabled={disabled}
                           variant={'contained'}
@@ -272,13 +181,97 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, onRemove, edit
                             setTimeout(() => {
                               setDisabled(false)
                             }, 500)
-                            formik.handleSubmit(e)
+                            validate()
                           }}
                         >
                           Save Changes
                         </Button>
-                      </Stack>
+                      </Stack>}
                     </Stack>
+                  </Stack>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent>
+                  <Stack spacing={3}>
+                    <Typography variant="h6">
+                      Role & Manager
+                    </Typography>
+                    <Box>
+                      <Grid container spacing={2} p={0}>
+                        <Grid xs={12} md={6}>
+                          {Boolean(roles?.length) && <Input
+                            fullWidth
+                            label="Role"
+                            name="role_id"
+                            onChange={formik.handleChange}
+                            select
+                            value={formik.values.role_id || roles[0] || ''}
+                            
+                          >
+                            {roles.map(item => {
+                              return <MenuItem key={item.id} value={item.id}>
+                                <Box sx={{textTransform: 'capitalize'}}>
+                                  {item.name}
+                                </Box>
+                              </MenuItem>
+                            })}
+                          </Input>}
+                        </Grid>
+                        <Grid xs={12} md={6}>
+                          {Boolean(managers?.length) && <Autocomplete
+                            disablePortal
+                            disableClearable
+                            options={managers}
+                            
+                            getOptionLabel={(i) => {
+                              return (i.name ? i.name + ' | ' : '') + i.email
+                            }}
+                            onChange={(e, val) => {
+                              onManagerChange(val)
+                            }}
+                            value={manager || managers[0] || ''}
+                            renderInput={(params) => <TextField {...params}
+                                                                fullWidth
+                                                                name="manager_id"
+                                                                label="Manager"/>}
+                          />}
+                        </Grid>
+                        {isAdmin ? !!clients.length && <Grid xs={12}>
+                          <Autocomplete
+                            disablePortal
+                            disableClearable
+                            options={clients}
+                            getOptionLabel={(i) => {
+                              return (i.name ? i.name + ' | ' : '') + i.email
+                            }}
+                            onChange={(e, val) => {
+                              onClientChange(val)
+                            }}
+                            value={client || clients[0] || undefined}
+                            renderInput={(params) => <TextField {...params}
+                                                                fullWidth
+                                                                name="client_id"
+                                                                label="Client"/>}
+                          />
+                        </Grid> : ''}
+                      </Grid>
+                    </Box>
+                    {!isDisabled && <Stack direction={'row'} justifyContent={'start'}>
+                      <Button
+                        disabled={disabled}
+                        variant={'contained'}
+                        onClick={(e) => {
+                          setDisabled(true);
+                          setTimeout(() => {
+                            setDisabled(false)
+                          }, 500)
+                          validate()
+                        }}
+                      >
+                        Save Changes
+                      </Button>
+                    </Stack>}
                   </Stack>
                 </CardContent>
               </Card>
@@ -299,10 +292,10 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, onRemove, edit
                             onChange={formik.handleChange}
                             select
                             value={timezones ? formik.values.timezone : ''}
-                            disabled={isDisabled}
+                            
                           >
                             {
-                              !timezones && <MenuItem value=""/>
+                              !timezones && <MenuItem value=""></MenuItem>
                             }
                             {
                               timezones && timezones.map(option => {
@@ -313,7 +306,7 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, onRemove, edit
                                 )
                               })
                             }
-                          
+      
                           </Input>
                         </Grid>
                         <Grid xs={12} md={6}>
@@ -325,7 +318,7 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, onRemove, edit
                             onChange={formik.handleChange}
                             select
                             value={formik.values.language}
-                            disabled={isDisabled}
+                            
                             size={'small'}
                             sx={{height: 55}}
                           >
@@ -334,11 +327,9 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, onRemove, edit
                                 return (
                                   <MenuItem key={option.value} value={option.value}>
                                     <Stack direction={'row'} spacing={2} alignItems={'center'}>
-                                      <Image
+                                      <img
                                         alt={option.label}
                                         src={option.icon}
-                                        width={36}
-                                        height={36}
                                       />
                                       <Box>
                                         {option.label}
@@ -352,7 +343,7 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, onRemove, edit
                         </Grid>
                       </Grid>
                     </Box>
-                    <Stack direction={'row'} justifyContent={'start'}>
+                    {!isDisabled && <Stack direction={'row'} justifyContent={'start'}>
                       <Button
                         disabled={disabled}
                         variant={'contained'}
@@ -361,12 +352,12 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, onRemove, edit
                           setTimeout(() => {
                             setDisabled(false)
                           }, 500)
-                          formik.handleSubmit(e)
+                          validate()
                         }}
                       >
                         Save Changes
                       </Button>
-                    </Stack>
+                    </Stack>}
                   </Stack>
                 </CardContent>
               </Card>
@@ -411,7 +402,7 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, onRemove, edit
                         </Box>
                       </Paper>
                       
-                      {(isAdmin || editGrant) && <Stack direction={{xs: 'column', sm: 'row', md: 'column', lg: 'column', xl: 'row'}} spacing={1}>
+                      {!isDisabled && <Stack direction={{xs: 'column', sm: 'row', md: 'column', lg: 'column', xl: 'row'}} spacing={1}>
                         <Button
                           onClick={handleOpen}
                           variant={'contained'}
@@ -421,7 +412,7 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, onRemove, edit
                         >
                           Upload New Picture
                         </Button>
-                        {Boolean(initialValues.avatar.length) && <Button
+                        {Boolean(user.avatar.length) && <Button
                           variant={'outlined'}
                           startIcon={(<SvgIcon>
                             <DeleteOutlined/>
@@ -455,8 +446,7 @@ export const AccountGeneralSettings = ({user, onSubmit, onUpload, onRemove, edit
   );
 };
 
-
-AccountGeneralSettings.propTypes = {
+DetailsTab.propTypes = {
   user: PropTypes.object,
   onSubmit: PropTypes.func,
   updateAvatar: PropTypes.func

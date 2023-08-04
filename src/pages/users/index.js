@@ -20,12 +20,12 @@ import {useRoles} from "../../hooks/useRoles";
 const Page = withUsersListGuard(() => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const {data} = useMe();
+  const me = useMe();
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const [filters, setFilters] = useState({});
-  const grants = useGrants(data?.role_id);
-  const isAdmin = data && data.role_id === 0;
-  const roles = useRoles(useMemo(()=>({limit: 1000, status: 'active'}), []))
+  const grants = useGrants(me?.data?.role_id);
+  const isAdmin = me?.data && me.data.role_id === 0;
+  const roles = useRoles(useMemo(() => ({limit: 1000, status: 'active'}), []))
   const role = router.query.id ?? ''
   
   const handleFiltersChange = useCallback((filters) => {
@@ -43,8 +43,8 @@ const Page = withUsersListGuard(() => {
     }
   }, [limit, offset, filters]);
   
-  const {users, loading, error} = useUsers(params);
-  const {items, total} = users || {items: [], limit: limit, total: 0};
+  const {data, loading, error} = useUsers(params);
+  const {items, total} = data || {items: [], limit: limit, total: 0};
   
   const handleStatus = useCallback(async (id, status) => {
     const res = await api.users.update({

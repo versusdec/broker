@@ -1,4 +1,4 @@
-import {useCallback, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {subDays, subHours, subMinutes, subMonths} from 'date-fns';
 import {Box, Divider, Stack, Tab, Tabs, Typography} from '@mui/material';
 import {AccountGeneralSettings} from '../../components/account/account-general-settings';
@@ -20,7 +20,7 @@ const tabs = [
 
 const setUserUpdate = (user, newValues) => {
   const newUser = {...user, ...newValues}
-  //todo phone validation
+  newUser.phone === '' ? delete newUser.phone : newUser.phone = newUser.phone.replace(/[^0-9]/g, '');
   for (const key in newUser) {
     if (newUser[key] === '' && key !== 'avatar')
       delete newUser[key]
@@ -42,42 +42,48 @@ const userUpdate = async (user, newValues, dispatch) => {
 
 const Page = () => {
   const [currentTab, setCurrentTab] = useState('general');
+  const [user, setUser] = useState(null);
   const {data} = useMe();
   const dispatch = useDispatch();
-  const grants = useGrants(data?.user_id);
+  const grants = useGrants(data?.role_id);
   const editGrant = grants.includes('users.write');
   const isAdmin = data && data.role_id === 0;
+  
+  useEffect(() => {
+    if (data) {
+      setUser({...data, email_verified: true, phone_verified: false})
+    }
+  }, [data])
   
   const handleTabsChange = useCallback((event, value) => {
     setCurrentTab(value);
   }, []);
   
   const handleGeneralSubmit = useCallback((values) => {
-    userUpdate(data, values, dispatch)
-    3
-  }, [data, dispatch])
+    userUpdate(user, values, dispatch)
+  }, [user, dispatch])
   
   const handleSecuritySubmit = useCallback((values) => {
-    userUpdate(data, values, dispatch)
-  }, [data, dispatch])
+    userUpdate(user, values, dispatch)
+  }, [user, dispatch])
   
   const handleAvatarUpload = useCallback((files) => {
-    userUpdate(data, {
+    userUpdate(user, {
       avatar: root + files[0].path
     }, dispatch)
-  }, [data, dispatch])
+  }, [user, dispatch])
   
   const handleAvatarRemove = useCallback(() => {
-    userUpdate(data, {
+    userUpdate(user, {
       avatar: ''
     }, dispatch)
-  }, [data, dispatch])
+  }, [user, dispatch])
   
   const accountGeneralSettingsProps = {
-    user: data, onSubmit: handleGeneralSubmit, onUpload: handleAvatarUpload, onRemove: handleAvatarRemove, editGrant, isAdmin
+    user: user, onSubmit: handleGeneralSubmit, onUpload: handleAvatarUpload, onRemove: handleAvatarRemove, editGrant, isAdmin
   }
   
-  return data && <>
+  return user && <>
     <Box>
       <Stack
         spacing={3}
@@ -113,7 +119,7 @@ const Page = () => {
       )}
       {currentTab === 'security' && (
         <AccountSecuritySettings
-          user={data}
+          user={user}
           onUpdate={handleSecuritySubmit}
           isAdmin={isAdmin}
           editGrant={editGrant}
@@ -121,7 +127,7 @@ const Page = () => {
       )}
       {currentTab === 'notifications' && (
         <AccountNotificationsSettings
-          user={data}
+          user={user}
         />
       )}
     
