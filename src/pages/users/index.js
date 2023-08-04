@@ -24,7 +24,7 @@ const Page = withUsersListGuard(() => {
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const [filters, setFilters] = useState({});
   const grants = useGrants(me?.data?.role_id);
-  const isAdmin = me?.data && me.data.role_id === 0;
+  const isAdmin = me?.data && me.data.role === 'admin';
   const roles = useRoles(useMemo(() => ({limit: 1000, status: 'active'}), []))
   const role = router.query.id ?? ''
   

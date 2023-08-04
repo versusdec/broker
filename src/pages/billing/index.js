@@ -22,7 +22,7 @@ const Page = withTransactionsListGuard(() => {
   const [currentTab, setCurrentTab] = useState('payments');
   const [clients, setClients] = useState(null);
   const grants = useGrants(data && data.role_id);
-  const isAdmin = data && data.role_id === 0;
+  const isAdmin = data && data.role === 'admin';
   
   const handleTabsChange = useCallback((event, value) => {
     setCurrentTab(value);

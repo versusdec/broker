@@ -90,7 +90,7 @@ const reduceChildRoutes = ({acc, depth, item, pathname, grants, isAdmin}) => {
 export const SideNavSection = (props) => {
   const {items = [], pathname, subheader = '', ...other} = props;
   const {data} = useMe();
-  const isAdmin = data && data.role_id === 0;
+  const isAdmin = data && data.role === 'admin';
   const grants = useGrants(data?.role_id);
 
   return (

@@ -47,7 +47,7 @@ const Page = () => {
   const dispatch = useDispatch();
   const grants = useGrants(data?.role_id);
   const editGrant = grants.includes('users.write');
-  const isAdmin = data && data.role_id === 0;
+  const isAdmin = data && data.role === 'admin';
   
   useEffect(() => {
     if (data) {
