@@ -46,7 +46,7 @@ const Page = withUsersAddGuard(() => {
   const me = useMe();
   const grants = useGrants(me.data?.role_id);
   const editGrant = grants.includes('users.write');
-  const isAdmin = me?.data && me.data.role_id === 0;
+  const isAdmin = me?.data && me.data.role === 'admin';
   const [projectsDialog, setProjectsDialog] = useState(false);
   const [projects, setProjects] = useState([]);
   const [selectedProjects, setSelectedProjects] = useState([]);
