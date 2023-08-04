@@ -37,7 +37,5 @@
   "tariffs.read",
   "transactions.read",
   "users.read",
-  "users.write",
-  "support.tickets.read",
-  "support.tickets.write"
+  "users.write"
 ]

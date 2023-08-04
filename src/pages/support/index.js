@@ -24,6 +24,7 @@ import {ticketsList} from "../../slices/ticketsSlice";
 import toast from "react-hot-toast";
 import {useDispatch} from "../../store";
 import {useTickets} from "../../hooks/useTickets";
+import {useMe} from "../../hooks/useMe";
 
 const tabs = [
   {
@@ -46,6 +47,7 @@ const Page = () => {
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const [filters, setFilters] = useState({status: 'active', theme: 'tech'});
   const [currentTab, setCurrentTab] = useState('tech');
+  const me = useMe();
   
   const handleTabsChange = useCallback((event, value) => {
     const fs = {...filters};
@@ -173,6 +175,7 @@ const Page = () => {
             handleStatus={handleArchive}
             handleClose={handleClose}
             handleReopen={handleReopen}
+            user={me.data}
           />
         </Card>
       </Stack>

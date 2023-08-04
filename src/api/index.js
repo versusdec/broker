@@ -689,9 +689,9 @@ export const api = Object.freeze({
         }
       }
     },
-    archive: async (params) => {
+    archive: async (id) => {
       try {
-        const {result, error} = await fetch(root, init({params: params, method: 'support.tickets.archive'})).then(res => res.json());
+        const {result, error} = await fetch(root, init({params: {id}, method: 'support.tickets.archive'})).then(res => res.json());
         return {
           result, error
         }
@@ -701,9 +701,9 @@ export const api = Object.freeze({
         }
       }
     },
-    close: async (params) => {
+    close: async (id) => {
       try {
-        const {result, error} = await fetch(root, init({params: params, method: 'support.tickets.close'})).then(res => res.json());
+        const {result, error} = await fetch(root, init({params: {id}, method: 'support.tickets.close'})).then(res => res.json());
         return {
           result, error
         }
@@ -713,9 +713,9 @@ export const api = Object.freeze({
         }
       }
     },
-    reopen: async (params) => {
+    reopen: async (id) => {
       try {
-        const {result, error} = await fetch(root, init({params: params, method: 'support.tickets.reopen'})).then(res => res.json());
+        const {result, error} = await fetch(root, init({params: {id}, method: 'support.tickets.reopen'})).then(res => res.json());
         return {
           result, error
         }
