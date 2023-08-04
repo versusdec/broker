@@ -24,128 +24,9 @@ import {FileUploader} from "../../components/file-uploader";
 import {Attachment} from "../../components/attachment";
 import {Message} from "../../components/message";
 import {Scrollbar} from "../../components/scrollbar";
+import {useTicket} from "../../hooks/useTicket";
+import {ticketsGet} from "../../slices/ticketsSlice";
 
-const ticket = {
-  "messages": [
-/*    {
-      "ticket_id": 9153,
-      "id": 968,
-      "created": 1689671944,
-      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Libero volutpat sed cras ornare arcu dui vivamus.",
-      "user": {
-        "id": 4662,
-        "second_name": "Fuck my duck",
-        "is_me": false,
-        "name": "Anila",
-        "email": "pidor@gmail.com",
-        "surname": "Motala"
-      }
-    },
-    {
-      "ticket_id": 9153,
-      "id": 969,
-      "created": 1689671944,
-      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Libero volutpat sed cras ornare arcu dui vivamus.",
-      "user": {
-        "id": 4662,
-        "second_name": "Fuck my duck",
-        "is_me": false,
-        "name": "Anila",
-        "email": "pidor@gmail.com",
-        "surname": "Motala"
-      }
-    },
-    {
-      "ticket_id": 9153,
-      "id": 970,
-      "created": 1689671944,
-      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Libero volutpat sed cras ornare arcu dui vivamus.",
-      "user": {
-        "id": 4662,
-        "second_name": "Fuck my duck",
-        "is_me": false,
-        "name": "Anila",
-        "email": "pidor@gmail.com",
-        "surname": "Motala"
-      }
-    },
-    {
-      "ticket_id": 9153,
-      "id": 971,
-      "created": 1689671944,
-      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Libero volutpat sed cras ornare arcu dui vivamus.",
-      "user": {
-        "id": 4662,
-        "second_name": "Fuck my duck",
-        "is_me": false,
-        "name": "Anila",
-        "email": "pidor@gmail.com",
-        "surname": "Motala"
-      }
-    },*/
-    {
-      "ticket_id": 9153,
-      "id": 972,
-      "created": 1689671944,
-      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Libero volutpat sed cras ornare arcu dui vivamus.",
-      "user": {
-        "id": 4662,
-        "second_name": "Fuck my duck",
-        "is_me": false,
-        "name": "Anila",
-        "email": "pidor@gmail.com",
-        "surname": "Motala"
-      }
-    },
-    {
-      "attachments": [
-        {
-          "data": {
-            "name": "cat.jpg",
-            "path": "/upload/5/1/9/8f01e8ad.jpg"
-          },
-          "type": "jpg"
-        }
-      ],
-      "id": 987,
-      "created": 1689673005,
-      "text": "This is Satana, he is my friend",
-      "ticket_id": 9153,
-      "user": {
-        "id": 4662,
-        "second_name": "Fuck my duck",
-        "is_me": false,
-        "name": "Anila",
-        "email": "pidor@gmail.com",
-        "surname": "Motala"
-      }
-    },
-    {
-      "attachments": {},
-      "id": 988,
-      "created": 1689940844,
-      "text": "waaaaaa",
-      "ticket_id": 9153,
-      "user": {
-        "is_me": true,
-        "name": "Peter",
-        "second_name": "",
-        "id": 1,
-        "email": "admin@example.com",
-        "surname": "Parker"
-      }
-    }
-  ],
-  "user_id": 5,
-  "settings": {
-    "manager_id": 5
-  },
-  "theme": "tech",
-  "name": "watafak",
-  "created": 1689671944,
-  "status": "active",
-  "id": 9153
-}
 
 const validationSchema = Yup.object({
   text: Yup
@@ -163,21 +44,32 @@ const Page = () => {
   const [uploaderOpen, setUploaderOpen] = useState(false);
   const [files, setFiles] = useState([]);
   const id = +router.query.id;
-  
   const topBlock = useRef(null)
   const botBlock = useRef(null)
   const chatBlock = useRef(null)
   const [height, setHeight] = useState('100%')
+  const [ticket, setTicket] = useState(null);
+  const {data, loading, error} = useTicket(id);
   
   useEffect(() => {
-    if (topBlock.current && botBlock.current) {
-      const innerHeight = window.innerHeight;
-      const offsetHeight = document.getElementsByTagName('body')[0].offsetHeight;
-      const top = topBlock.current.getBoundingClientRect().bottom + 48
-      const bottom = offsetHeight - botBlock.current.getBoundingClientRect().top + 24
-      
-      setHeight(innerHeight - bottom - top)
-    }
+    if (data) setTicket(data)
+  }, [data])
+  
+  useEffect(()=>{
+  
+  }, [])
+  
+  useEffect(() => {
+    setTimeout(()=>{
+      if (topBlock.current && botBlock.current) {
+        const innerHeight = window.innerHeight;
+        const offsetHeight = document.getElementsByTagName('body')[0].offsetHeight;
+        const top = topBlock.current.getBoundingClientRect().bottom + 48
+        const bottom = offsetHeight - botBlock.current.getBoundingClientRect().top + 24
+    
+        setHeight(innerHeight - bottom - top)
+      }
+    }, 500)
   }, [topBlock, botBlock])
   
   useEffect(() => {
@@ -189,14 +81,8 @@ const Page = () => {
     };
     
     scrollToBottom();
-  }, [height, chatBlock])
+  }, [height, chatBlock, ticket])
   
-  // const [ticket, setTicket] = useState(null);
-  // const {data, loading, error} = useTicket(id);
-  
-  /*useEffect(()=>{
-    if(data) setTicket(data)
-  }, [id, data])*/
   
   const handleOpen = useCallback(() => {
     setUploaderOpen(true)
@@ -208,7 +94,6 @@ const Page = () => {
   
   const onUpload = useCallback((files) => {
     setFiles(prev => ([...prev, ...files]))
-    console.log(files)
   }, [])
   
   const onFileRemove = useCallback((i) => {
@@ -239,7 +124,10 @@ const Page = () => {
       
       const {result, error} = await api.support.answer(values);
       if (result) {
-        // dispatch()
+        formik.setFieldValue('text', '');
+        formik.setFieldTouched('text', false)
+        setFiles([])
+        dispatch(ticketsGet(id))
       } else if (error) {
         console.log(error)
         toast.error('Something went wrong')
@@ -247,7 +135,7 @@ const Page = () => {
     }
   })
   
-  return (
+  return ticket && (
     <>
       <Stack display={'flex'} direction={'column'} spacing={3} height={'100%'}>
         <Stack ref={topBlock} spacing={4} mb={3}>
@@ -318,7 +206,7 @@ const Page = () => {
                     onChange={formik.handleChange}
                     value={formik.values.text}
                   />
-                  {Boolean(files.length) && <Stack direction={'row'} spacing={1}>
+                  {Boolean(files.length) && <Stack direction={'row'} gap={1}>
                     {files.map((file, i) => (<Attachment key={i} onRemove={() => {
                       onFileRemove(i)
                     }}>{file.name}</Attachment>))}

@@ -6,7 +6,7 @@ import {
   DeleteOutlined,
   FileOpenOutlined,
   QuestionAnswerOutlined,
-  } from '@mui/icons-material'
+} from '@mui/icons-material'
 import {
   Alert,
   Box,
@@ -129,7 +129,7 @@ export const TicketsListTable = (props) => {
                       {item.id}
                     </TableCell>
                     <TableCell>
-                      {item.name}
+                      {item.title}
                     </TableCell>
                     <TableCell>
                       {format(item.created * 1000, 'dd/MM/yyyy hh:mm')}
@@ -138,7 +138,8 @@ export const TicketsListTable = (props) => {
                       {<Alert severity={item.status === 'archived' ? 'warning' : item.status === 'closed' ? 'info' : 'success'}
                               sx={{
                                 '.MuiAlert-message': {padding: 0},
-                                textTransform: 'capitalize'
+                                textTransform: 'capitalize',
+                                width: 'fit-content'
                               }}
                               icon={false}
                       >

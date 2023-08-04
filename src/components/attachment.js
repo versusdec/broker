@@ -9,7 +9,7 @@ export const Attachment = ({children, onRemove, ...props}) => {
     spacing={1}
     py={1}
     px={2}
-    pr={1}
+    pr={2}
     alignItems={'center'}
     sx={{
       backgroundColor: 'primary.lightest',

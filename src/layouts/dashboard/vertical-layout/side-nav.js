@@ -9,11 +9,13 @@ import { Scrollbar } from '../../../components/scrollbar';
 import { paths } from '../../../navigation/paths';
 import { SideNavSection } from './side-nav-section';
 import {InsertDriveFileOutlined, QuestionAnswerOutlined} from "@mui/icons-material";
+import {useMe} from "../../../hooks/useMe";
 
 const SIDE_NAV_WIDTH = 280;
 
 const useCssVars = (color) => {
   const theme = useTheme();
+  const {me} = useMe();
   //todo remove
   console.log(theme.palette)
 

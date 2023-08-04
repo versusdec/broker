@@ -14,7 +14,6 @@ import {
   TableRow,
   Tabs,
   Typography,
-  Unstable_Grid2 as Grid
 } from '@mui/material';
 import {TicketsListTable} from '../../components/support/tickets-list-table';
 import NextLink from "next/link";
