@@ -1,34 +1,20 @@
-import {useCallback, useEffect, useRef, useState} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 import SearchMdIcon from '@untitled-ui/icons-react/build/esm/SearchMd';
-import {Box, Divider, InputAdornment, MenuItem, OutlinedInput, Stack, SvgIcon, Tab, Tabs} from '@mui/material';
+import {Box, InputAdornment, MenuItem, OutlinedInput, Stack, SvgIcon} from '@mui/material';
 import {Input} from "./input";
 import {paths} from "../navigation/paths";
 import {useRouter} from "next/router";
-
-const tabs = [
-  {
-    label: 'All',
-    value: 'all'
-  },
-  {
-    label: 'Active',
-    value: 'active'
-  },
-  {
-    label: 'Blocked',
-    value: 'blocked'
-  }
-];
 
 export const UsersListFilters = ({role, roles, ...props}) => {
   const {onFiltersChange} = props;
   const router = useRouter();
   const queryRef = useRef(null);
-  const [currentTab, setCurrentTab] = useState('all');
   const [filters, setFilters] = useState(props.initialFilters);
-  const theRole = roles && roles.find(r => (r.id === +role))
-
+  const theRole = useMemo(() => {
+    if (roles) return roles.find(r => (r.id === +role))
+  }, [roles, role])
+  
   const handleFiltersUpdate = useCallback(() => {
     onFiltersChange?.(filters);
   }, [filters, onFiltersChange]);
@@ -36,21 +22,6 @@ export const UsersListFilters = ({role, roles, ...props}) => {
   useEffect(() => {
     handleFiltersUpdate();
   }, [filters, handleFiltersUpdate]);
-  
-  const handleTabsChange = useCallback((event, value) => {
-    setCurrentTab(value);
-    setFilters((prevState) => {
-      const values = {
-        ...prevState,
-        status: value
-      }
-      
-      if (value === 'all')
-        delete values.status
-      
-      return values;
-    });
-  }, []);
   
   const handleQueryChange = useCallback((event) => {
     event.preventDefault();
@@ -89,7 +60,7 @@ export const UsersListFilters = ({role, roles, ...props}) => {
           />
         </Box>
         <Box width={82}>
-          <Input
+          {Boolean(roles?.length) && <Input
             fullWidth
             select
             value={role !== '' ? `${paths.users.index + theRole.name}/${role}/` : role}
@@ -100,8 +71,8 @@ export const UsersListFilters = ({role, roles, ...props}) => {
             options={roles}
           >
             <MenuItem value={paths.users.index}>All</MenuItem>
-            {roles && roles.map(item=>(<MenuItem key={item.id} value={paths.users.index + item.name + `/${item.id}/`}>{item.name}</MenuItem>))}
-          </Input>
+            {roles && roles.map(item => (<MenuItem key={item.id} value={paths.users.index + item.name + `/${item.id}/`}>{item.name}</MenuItem>))}
+          </Input>}
         </Box>
         <Box width={112}>
           <Input

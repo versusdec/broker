@@ -17,5 +17,5 @@ export const useUsers = (params) => {
     getUsers()
   }, [params, getUsers])
   
-  return {users: data, loading, error}
+  return {data, loading, error}
 }

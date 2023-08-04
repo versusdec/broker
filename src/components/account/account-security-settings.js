@@ -9,6 +9,7 @@ import {
   TextField,
   Typography,
   Unstable_Grid2 as Grid,
+  Link,
   Alert, Dialog, DialogTitle, DialogContent, DialogActions, AppBar, Toolbar, SvgIcon, Divider, Paper
 } from '@mui/material';
 import {Button} from '../button';
@@ -21,11 +22,12 @@ import {Input} from "../input";
 import {Loader} from "../loader";
 import {actions} from "../../slices/usersSlice";
 import {useDispatch} from "../../store";
+import NextLink from "next/link";
 
 const initialValues = {
   old_password: '',
   password: '',
-  confirm_password: ''
+  password_confirm: ''
 };
 
 const validationSchema = Yup.object({
@@ -38,7 +40,7 @@ const validationSchema = Yup.object({
     .min(8)
     .max(255)
     .required('Password is required'),
-  confirm_password: Yup
+  password_confirm: Yup
     .string()
     .oneOf([Yup.ref('password')], 'Passwords must match')
     .max(255)
@@ -53,6 +55,9 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
   const [key, setKey] = useState('');
   const [code, setCode] = useState('');
   const [dialog, setDialog] = useState(false);
+  const [tgDialog, setTgDialog] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [tgCode, setTgCode] = useState('');
   const [confirm, setConfirm] = useState(false);
   const [showTwofaPass, setShowTwofaPass] = useState(false);
   const [twofaPass, setTwofaPass] = useState('');
@@ -65,6 +70,23 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
   useEffect(() => {
     setTwa(user.twofa.status === 'enabled')
   }, [user])
+  
+  const getTgLink = useCallback(async () => {
+    try {
+      setLoading(true)
+      const {result, error} = await api.users.tg.link()
+      setLoading(false)
+      if (result) {
+        setTgCode(result)
+        setTgDialog(true)
+      }
+      if (error) {
+        toast.error('Something went wrong')
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }, [])
   
   const handleTwaStatus = useCallback(async (code, status) => {
     const {result, error} = await api.users.status2fa({code: code, status: status})
@@ -122,7 +144,7 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
     validationSchema,
     onSubmit: async (values, helpers) => {
       try {
-        if (values.password !== user.password) {
+        if (values.old_password !== user.password) {
           toast.error('You entered wrong password')
         } else {
           onUpdate(values)
@@ -139,10 +161,15 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
   useEffect(() => {
     if (formik.values.old_password.length > 7)
       setNewPassDisabled(false)
-    if (formik.values.password.length > 7 && formik.values.confirm_password > 7)
+    else {
+      formik.setFieldValue('password', '')
+      formik.setFieldValue('password_confirm', '')
+      setNewPassDisabled(true)
+    }
+    if (formik.values.password.length > 7 && formik.values.password_confirm.length > 7)
       setDisabled(false)
     else setDisabled(true)
-  }, [formik])
+  }, [formik.values])
   
   return (
     <Stack spacing={4}>
@@ -197,15 +224,15 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
                     disabled={isDisabled || newPassDisabled}
                   />
                   <TextField
-                    error={!!(formik.touched.confirm_password && formik.errors.confirm_password)}
+                    error={!!(formik.touched.password_confirm && formik.errors.password_confirm)}
                     fullWidth
-                    helperText={formik.touched.confirm_password && formik.errors.confirm_password}
+                    helperText={formik.touched.password_confirm && formik.errors.password_confirm}
                     label="Confirm password"
-                    name="confirm_password"
+                    name="password_confirm"
                     onBlur={formik.handleBlur}
                     onChange={formik.handleChange}
                     type="password"
-                    value={formik.values.confirm_password}
+                    value={formik.values.password_confirm}
                     disabled={isDisabled || newPassDisabled}
                   />
                   <Stack justifyContent={'start'} direction={'row'} spacing={2}>
@@ -260,16 +287,11 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
                 </Stack>
               </CardContent>
             </Card>
-            <Card>
+            {user?.role === 'client' && <Card>
               <CardContent>
                 <Stack spacing={2}>
                   <Stack spacing={2} direction={'row'} alignItems={'center'}>
                     <Typography variant="h6">Telegram Bot</Typography>
-                    <Alert severity={'error'} icon={false} sx={{
-                      '.MuiAlert-message': {padding: 0}
-                    }}>
-                      <Typography color={'error'}>Disabled</Typography>
-                    </Alert>
                   </Stack>
                   <Typography
                     color="text.secondary"
@@ -279,6 +301,9 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
                   <Box>
                     <Button
                       variant={"contained"}
+                      onClick={() => {
+                        getTgLink()
+                      }}
                     >
                       Connect to Telegram bot
                     </Button>
@@ -286,11 +311,55 @@ export const AccountSecuritySettings = ({user, isAdmin, editGrant, ...props}) =>
                 
                 </Stack>
               </CardContent>
-            </Card>
+            </Card>}
           
           </Stack>
         </Grid>
       </Grid>
+      {loading && <Loader backdrop={true}/>}
+      <Dialog
+        open={tgDialog}
+        onClose={() => {
+          setTgDialog(false)
+        }}
+        scroll={'paper'}
+        maxWidth={'sm'}
+        fullWidth
+      >
+        <DialogTitle sx={{pr: 10}}>
+          <IconButton
+            aria-label="close"
+            onClick={() => {
+              setTgDialog(false)
+            }}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.primary.main,
+            }}
+          >
+            <Close/>
+          </IconButton>
+          Your Telegram bot link
+        </DialogTitle>
+        <DialogContent dividers>
+          <Stack alignItems={'center'}>
+            <Typography variant={'h6'} mb={0}><Link component={NextLink} href={'https://t.me/KoalaCallCommunicationsBot?start=' + tgCode}>https://t.me/KoalaCallCommunicationsBot?start={tgCode}</Link></Typography>
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            type={'button'}
+            variant={'outlined'}
+            onClick={() => {
+              setTgDialog(false)
+            }}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Dialog
         open={confirm}
         onClose={() => {

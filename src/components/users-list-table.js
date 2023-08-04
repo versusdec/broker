@@ -160,7 +160,7 @@ export const UsersListTable = (props) => {
                           component={NextLink}
                           href={`${paths.users.index}edit/${user.id}`}
                         >
-                          <SvgIcon sx={{':hover': {color: 'primary'}}} fontSize={'small'}>
+                          <SvgIcon sx={{':hover': {color: 'primary.main'}}} fontSize={'small'}>
                             <EditOutlined/>
                           </SvgIcon>
                         </IconButton>
