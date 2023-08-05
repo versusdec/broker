@@ -12,7 +12,7 @@ export const UsersListFilters = ({role, roles, ...props}) => {
   const queryRef = useRef(null);
   const [filters, setFilters] = useState(props.initialFilters);
   const theRole = useMemo(() => {
-    if (roles) return roles.find(r => (r.id === +role))
+    if (roles && Array.isArray(roles)) return roles.find(r => (r.id === +role))
   }, [roles, role])
   
   const handleFiltersUpdate = useCallback(() => {

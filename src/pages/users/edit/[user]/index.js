@@ -66,7 +66,6 @@ const Page = withUsersAddGuard(() => {
     "status": "active",
     "projects": [],
     "users": [],
-    "role_id": 1
   });
   
   useEffect(() => {
@@ -117,7 +116,7 @@ const Page = withUsersAddGuard(() => {
       status: 'active',
       limit: 1000
     })
-    if (result) {
+    if (result && result.items && Array.isArray(result.items)) {
       setRoles(result.items)
     }
   }, [])
@@ -166,6 +165,33 @@ const Page = withUsersAddGuard(() => {
   
   const onClientChange = useCallback((client) => {
     setClient(client)
+  }, [])
+  
+  const onRoleChange = useCallback((role) => {
+    if (role < 0) {
+      delete user.role_id;
+      let r;
+      switch (role) {
+        case -1:
+          r = 'admin'
+          break;
+        case -2:
+          r = 'client'
+          break;
+        case -3:
+          r = 'manager'
+          break;
+        case -4:
+          r = 'support'
+          break;
+        default:
+          break;
+      }
+      setUser(prev => ({...prev, role: r}))
+    } else {
+      delete user.role;
+      setUser(prev => ({...prev, role_id: role}))
+    }
   }, [])
   
   const onManagerChange = useCallback((manager) => {
@@ -257,10 +283,7 @@ const Page = withUsersAddGuard(() => {
     password: Yup
       .string()
       .min(8)
-      .required('Password is required'),
-    role_id: Yup
-      .number()
-      .required('Role is required'),
+      .required('Password is required')
   });
   
   const initialValues = useMemo(() => ({
@@ -271,7 +294,6 @@ const Page = withUsersAddGuard(() => {
     language: user?.language || 'en',
     phone: user?.phone || '',
     company: user?.company || '',
-    role_id: user?.role_id || '',
     projects: user?.projects || [],
     password: user?.password || ''
   }), [user]);
@@ -314,6 +336,7 @@ const Page = withUsersAddGuard(() => {
     client,
     onManagerChange,
     onClientChange,
+    onRoleChange,
     validate
   }
   
