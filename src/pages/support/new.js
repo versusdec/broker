@@ -23,7 +23,6 @@ import {
 } from '@mui/material';
 import {paths} from '../../navigation/paths';
 import {useRouter} from 'next/router'
-import {useDispatch} from "../../store";
 import * as Yup from "yup";
 import {useFormik} from "formik";
 import {Input} from "../../components/input";
@@ -34,11 +33,11 @@ import {FileUploader} from "../../components/file-uploader";
 import {Attachment} from "../../components/attachment";
 
 const validationSchema = Yup.object({
-  name: Yup
+  title: Yup
     .string()
     .max(255)
     .required('Name is required'),
-  message: Yup
+  text: Yup
     .string().required('Message is required'),
   theme: Yup
     .string()
@@ -47,12 +46,11 @@ const validationSchema = Yup.object({
 
 const initialValues = {
   theme: 'tech',
-  name: '',
-  message: ''
+  title: '',
+  text: ''
 }
 
 const Page = () => {
-  const dispatch = useDispatch();
   const router = useRouter();
   const [disabled, setDisabled] = useState(false);
   const [uploaderOpen, setUploaderOpen] = useState(false);
@@ -106,8 +104,8 @@ const Page = () => {
         values.attachments = attachments;
       }
       
-      const {result, error} = await api.support.create(values);
-      if (result) router.replace(paths.support.new + result);
+      const {result, error} = await api.support.add(values);
+      if (result) router.replace(paths.support.index + result);
       else if (error) {
         console.log(error)
         toast.error('Something went wrong')
@@ -187,26 +185,26 @@ const Page = () => {
                       <Input
                         fullWidth
                         label="Title of Your Problem"
-                        name="name"
+                        name="title"
                         type="text"
-                        error={!!(formik.touched.name && formik.errors.name)}
-                        helperText={formik.touched.name && formik.errors.name}
+                        error={!!(formik.touched.title && formik.errors.title)}
+                        helperText={formik.touched.title && formik.errors.title}
                         onBlur={formik.handleBlur}
                         onChange={formik.handleChange}
-                        value={formik.values.name}
+                        value={formik.values.title}
                       />
                       <Input
                         fullWidth
                         label="Your Message"
-                        name="message"
+                        name="text"
                         type="text"
                         multiline
                         rows={3}
-                        error={!!(formik.touched.message && formik.errors.message)}
-                        helperText={formik.touched.message && formik.errors.message}
+                        error={!!(formik.touched.text && formik.errors.text)}
+                        helperText={formik.touched.text && formik.errors.text}
                         onBlur={formik.handleBlur}
                         onChange={formik.handleChange}
-                        value={formik.values.message}
+                        value={formik.values.text}
                       />
                       {Boolean(files.length) && <Stack direction={'row'} spacing={1}>
                         {files.map((file, i) => (<Attachment onRemove={() => {
