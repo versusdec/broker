@@ -21,7 +21,7 @@ const Page = withProjectsListGuard(() => {
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const [filters, setFilters] = useState({status: 'active'});
   const grants = useGrants(me.data?.role_id);
-  const isAdmin = me.data && me.data.role_id === 0;
+  const isAdmin = me.data && me.data.role === 'admin';
   
   const handleFiltersChange = useCallback((filters) => {
     setFilters(filters)
