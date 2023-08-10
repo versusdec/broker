@@ -66,7 +66,7 @@ const Page = withUsersAddGuard(() => {
     "status": "active",
     "projects": [],
     "users": [],
-    "role_id": 1
+    "role": "manager"
   });
   
   useEffect(() => {
@@ -117,7 +117,7 @@ const Page = withUsersAddGuard(() => {
       status: 'active',
       limit: 1000
     })
-    if (result) {
+    if (result && result.items && Array.isArray(result.items)) {
       setRoles(result.items)
     }
   }, [])
@@ -168,6 +168,33 @@ const Page = withUsersAddGuard(() => {
     setClient(client)
   }, [])
   
+  const onRoleChange = useCallback((role) => {
+    if (role < 0) {
+      delete user.role_id;
+      let r;
+      switch (role) {
+        case -1:
+          r = 'admin'
+          break;
+        case -2:
+          r = 'client'
+          break;
+        case -3:
+          r = 'manager'
+          break;
+        case -4:
+          r = 'support'
+          break;
+        default:
+          break;
+      }
+      setUser(prev => ({...prev, role: r}))
+    } else {
+      delete user.role;
+      setUser(prev => ({...prev, role_id: role}))
+    }
+  }, [])
+  
   const onManagerChange = useCallback((manager) => {
     setManager(manager)
   }, [])
@@ -183,11 +210,15 @@ const Page = withUsersAddGuard(() => {
   }, [user])
   
   const handleSubmit = useCallback(async (values) => {
-    const data = {...values}
+    const data = {...user, ...values}
     
     data.phone === '' ? delete isNew.phone : data.phone = data.phone.replace(/[^0-9]/g, '');
     
     isAdmin ? data.client_id = client.id : delete data.client_id;
+
+    if(data.role !== 'manager' && manager){
+      data.manager_id = manager.id
+    }
     
     if (isNew) {
       try {
@@ -210,7 +241,7 @@ const Page = withUsersAddGuard(() => {
         toast.error('Something went wrong')
       }
     }
-  }, [dispatch, client, isAdmin, isNew, router, user])
+  }, [dispatch, client, isAdmin, isNew, router, user, manager])
   
   const handleAvatarUpload = useCallback(async (files) => {
     setUser(state => ({
@@ -257,10 +288,7 @@ const Page = withUsersAddGuard(() => {
     password: Yup
       .string()
       .min(8)
-      .required('Password is required'),
-    role_id: Yup
-      .number()
-      .required('Role is required'),
+      .required('Password is required')
   });
   
   const initialValues = useMemo(() => ({
@@ -271,7 +299,6 @@ const Page = withUsersAddGuard(() => {
     language: user?.language || 'en',
     phone: user?.phone || '',
     company: user?.company || '',
-    role_id: user?.role_id || '',
     projects: user?.projects || [],
     password: user?.password || ''
   }), [user]);
@@ -314,6 +341,7 @@ const Page = withUsersAddGuard(() => {
     client,
     onManagerChange,
     onClientChange,
+    onRoleChange,
     validate
   }
   

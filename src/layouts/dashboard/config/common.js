@@ -10,7 +10,6 @@ import {
   LayersOutlined,
   TableRowsOutlined
 } from '@mui/icons-material';
-import {useRoles} from "../../../hooks/useRoles";
 
 
 export const getSections = (t, roles) => {
@@ -22,13 +21,16 @@ export const getSections = (t, roles) => {
     }
   ]
   
-  roles?.map(item => {
-    r.push({
-      title: item.name,
-      path: paths.users.index + item.name + `/${item.id}/`,
-      grants: 'users.read',
+  if (Array.isArray(roles)) {
+    roles.map(item => {
+      r.push({
+        title: item.name,
+        path: paths.users.index + item.name + `/${item.id}/`,
+        grants: 'users.read',
+      })
     })
-  })
+  }
+  
   
   return [
     {
