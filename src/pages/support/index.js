@@ -3,18 +3,12 @@ import PlusIcon from '@untitled-ui/icons-react/build/esm/Plus';
 import {
   Button,
   Card,
-  CardContent,
-  Divider, Paper,
+  Divider,
   Stack,
   SvgIcon,
   Tab,
-  Table,
-  TableCell,
-  TableContainer,
-  TableRow,
   Tabs,
   Typography,
-  Unstable_Grid2 as Grid
 } from '@mui/material';
 import {TicketsListTable} from '../../components/support/tickets-list-table';
 import NextLink from "next/link";
@@ -25,6 +19,7 @@ import {ticketsList} from "../../slices/ticketsSlice";
 import toast from "react-hot-toast";
 import {useDispatch} from "../../store";
 import {useTickets} from "../../hooks/useTickets";
+import {useMe} from "../../hooks/useMe";
 
 const tabs = [
   {
@@ -45,8 +40,9 @@ const tabs = [
 const Page = () => {
   const dispatch = useDispatch();
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
-  const [filters, setFilters] = useState({status: 'active', theme: 'tech'});
+  const [filters, setFilters] = useState({theme: 'tech'});
   const [currentTab, setCurrentTab] = useState('tech');
+  const me = useMe();
   
   const handleTabsChange = useCallback((event, value) => {
     const fs = {...filters};
@@ -57,7 +53,7 @@ const Page = () => {
         break;
       case 'finance':
       case 'tech':
-        fs.status = 'active';
+        delete fs.status;
         fs.theme = value;
         break;
       default:
@@ -67,50 +63,23 @@ const Page = () => {
     setFilters(fs);
   }, [filters]);
   
-  const params = useMemo(() => ({
-    limit: limit, offset: offset,
-    ...filters
-  }), [limit, offset, filters]);
+  const params = useMemo(() => {
+    console.log(filters)
+    return {
+      limit: limit, offset: offset,
+      ...filters
+    }
+  }, [limit, offset, filters]);
   
   const {data, loading, error} = useTickets(params);
   const {items, total} = data && data || {items: [], limit: limit, total: 0};
   
-  const handleArchive = useCallback(async (id, cb) => {
-    const res = await api.support.archive({
-      id: +id
-    })
-    if (res) {
-      cb();
+  const onStatusChange = useCallback(async (dialog) => {
+    const {result, error} = await api.support[dialog.action](dialog.item.id);
+    if (result) {
       dispatch(ticketsList(params))
-    } else {
-      toast.error('Something went wrong')
-    }
-  }, [dispatch, params])
-  
-  const handleClose = useCallback(async (id, cb) => {
-    const res = await api.support.close({
-      id: +id,
-    })
-    if (res) {
-      cb();
-      dispatch(ticketsList(params))
-    } else {
-      toast.error('Something went wrong')
-    }
-  }, [dispatch, params])
-  
-  const handleReopen = useCallback(async (id, cb) => {
-    const res = await api.support.reopen({
-      id: +id,
-    })
-    if (res) {
-      cb();
-      dispatch(ticketsList(params))
-    } else {
-      toast.error('Something went wrong')
-    }
-  }, [dispatch, params])
-  
+    } else toast.error('Something went wrong')
+  }, [])
   
   return (
     <>
@@ -171,9 +140,8 @@ const Page = () => {
             limit={limit}
             page={page}
             loading={loading}
-            handleStatus={handleArchive}
-            handleClose={handleClose}
-            handleReopen={handleReopen}
+            handleStatus={onStatusChange}
+            user={me.data}
           />
         </Card>
       </Stack>

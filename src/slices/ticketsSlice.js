@@ -2,12 +2,12 @@ import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {api} from "../api";
 
 export const ticketsList = createAsyncThunk('tickets/list', async (params) => {
-  const {result, error} = await api.tickets.list(params);
+  const {result, error} = await api.support.list(params);
   return {result, error}
 })
 
 export const ticketsGet = createAsyncThunk('tickets/get', async (id) => {
-  const {result, error} = await api.tickets.get(id);
+  const {result, error} = await api.support.get(id);
   return {result, error}
 })
 

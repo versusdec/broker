@@ -1,5 +1,5 @@
 import {useDispatch, useSelector} from "../store";
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect} from "react";
 import {ticketsList} from "../slices/ticketsSlice";
 
 export const useTickets = (params) => {
