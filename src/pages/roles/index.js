@@ -17,7 +17,7 @@ import {actions} from '../../slices/rolesSlice';
 const Page = withRolesListGuard(() => {
   const dispatch = useDispatch();
   const me = useMe();
-  const userRole = me.data && me.data.role_id;
+  const isAdmin = me.data && me.data.role === 'admin';
   const {page, limit, offset, handlePageChange, handleLimitChange} = usePagination();
   const [filters, setFilters] = useState({});
   
@@ -82,10 +82,10 @@ const Page = withRolesListGuard(() => {
           </Stack>
         </Stack>
         <Card>
-          <RolesListFilters
+          {isAdmin && <RolesListFilters
             onFiltersChange={handleFiltersChange}
             initialFilters={filters}
-          />
+          />}
           <RolesListTable
             items={items}
             total={total}
@@ -95,7 +95,7 @@ const Page = withRolesListGuard(() => {
             page={page}
             loading={loading}
             handleStatus={handleStatus}
-            userRole={userRole}
+            isAdmin={isAdmin}
           />
         </Card>
       </Stack>
