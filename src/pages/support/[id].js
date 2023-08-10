@@ -55,18 +55,18 @@ const Page = () => {
     if (data) setTicket(data)
   }, [data])
   
-  useEffect(()=>{
+  useEffect(() => {
   
   }, [])
   
   useEffect(() => {
-    setTimeout(()=>{
+    setTimeout(() => {
       if (topBlock.current && botBlock.current) {
         const innerHeight = window.innerHeight;
         const offsetHeight = document.getElementsByTagName('body')[0].offsetHeight;
         const top = topBlock.current.getBoundingClientRect().bottom + 48
         const bottom = offsetHeight - botBlock.current.getBoundingClientRect().top + 24
-    
+        
         setHeight(innerHeight - bottom - top)
       }
     }, 500)
@@ -172,11 +172,9 @@ const Page = () => {
               direction="row"
               spacing={2}
             >
-              <Stack>
-                <Typography variant="h4">
-                  Ticket #{ticket.id}
-                </Typography>
-              </Stack>
+              <Typography variant="h4">
+                Ticket #{ticket.id}
+              </Typography>
             </Stack>
           </Stack>
         </Stack>
@@ -200,6 +198,7 @@ const Page = () => {
                     type="text"
                     multiline
                     maxRows={3}
+                    disabled={ticket.status === 'closed'}
                     error={!!(formik.touched.text && formik.errors.text)}
                     helperText={formik.touched.text && formik.errors.text}
                     onBlur={formik.handleBlur}
@@ -215,7 +214,7 @@ const Page = () => {
                     <Button
                       type="submit"
                       variant="contained"
-                      disabled={disabled}
+                      disabled={disabled || ticket.status === 'closed'}
                       onClick={(e) => {
                         setDisabled(true)
                         setTimeout(() => {
@@ -230,6 +229,7 @@ const Page = () => {
                       variant="outlined"
                       startIcon={(<AttachFileOutlined sx={{transform: 'rotate(45deg)'}}/>)}
                       onClick={handleOpen}
+                      disabled={ticket.status === 'closed'}
                     >
                       Attach File
                     </Button>

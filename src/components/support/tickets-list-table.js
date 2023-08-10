@@ -30,10 +30,7 @@ import {Pagination} from "../pagination";
 import {Loader} from "../loader";
 import {format} from 'date-fns';
 import {paths} from "../../navigation/paths";
-import {api} from "../../api";
-import toast from "react-hot-toast";
-import {dispatch} from "react-hot-toast/src/core/store";
-import {ticketsList} from "../../slices/ticketsSlice";
+
 
 export const TicketsListTable = (props) => {
   const {
@@ -54,7 +51,6 @@ export const TicketsListTable = (props) => {
   const userId = user && user.id;
   
   const handleDialogOpen = useCallback((item, action) => {
-    console.log(item)
     setDialog({
       open: true,
       item: item,
@@ -62,19 +58,12 @@ export const TicketsListTable = (props) => {
     })
   }, [])
   
-  const handleDialogClose = useCallback(async (action) => {
+  const handleDialogClose = useCallback(() => {
     setDialog({
       open: false,
       item: null,
       action: undefined
     })
-  }, [])
-  
-  const onStatusChange = useCallback(async () => {
-    const {result, error} = await api.support[action](dialog.item.id);
-    if (result) {
-      handleStatus()
-    } else toast.error('Something went wrong')
   }, [])
   
   return (
@@ -252,7 +241,7 @@ export const TicketsListTable = (props) => {
           Confirm action
         </DialogTitle>
         <DialogContent dividers>
-          {dialog.item && dialog.action === 'archive' && ` ${<Typography variant={'subtitle1'}>Archive ticket <b>{dialog.item.title}</b>?</Typography>}?`}
+          {dialog.item && dialog.action === 'archive' && <Typography variant={'subtitle1'}>Archive ticket <b>{dialog.item.title}</b>?</Typography>}
           {dialog.item && dialog.action === 'close' && <Typography variant={'subtitle1'}>Close ticket <b>{dialog.item.title}</b>?</Typography>}
           {dialog.item && dialog.action === 'reopen' && <Typography variant={'subtitle1'}>Reopen ticket <b>{dialog.item.title}?</b></Typography>}
         </DialogContent>
@@ -268,7 +257,8 @@ export const TicketsListTable = (props) => {
             type={'button'}
             variant={'contained'}
             onClick={() => {
-              handleDialogClose(dialog.action)
+              handleStatus(dialog)
+              handleDialogClose()
             }}
           >
             Confirm
