@@ -66,6 +66,7 @@ const Page = withUsersAddGuard(() => {
     "status": "active",
     "projects": [],
     "users": [],
+    "role": "manager"
   });
   
   useEffect(() => {
@@ -209,11 +210,15 @@ const Page = withUsersAddGuard(() => {
   }, [user])
   
   const handleSubmit = useCallback(async (values) => {
-    const data = {...values}
+    const data = {...user, ...values}
     
     data.phone === '' ? delete isNew.phone : data.phone = data.phone.replace(/[^0-9]/g, '');
     
     isAdmin ? data.client_id = client.id : delete data.client_id;
+
+    if(data.role !== 'manager' && manager){
+      data.manager_id = manager.id
+    }
     
     if (isNew) {
       try {
@@ -236,7 +241,7 @@ const Page = withUsersAddGuard(() => {
         toast.error('Something went wrong')
       }
     }
-  }, [dispatch, client, isAdmin, isNew, router, user])
+  }, [dispatch, client, isAdmin, isNew, router, user, manager])
   
   const handleAvatarUpload = useCallback(async (files) => {
     setUser(state => ({

@@ -56,10 +56,16 @@ export const DetailsTab = (
   const [timezones, setTimezones] = useState(null);
   const [role, setRole] = useState(-3);
   const [disabled, setDisabled] = useState(false);
+  const [disableClient, setDisableClient] = useState(false);
+  const [disableManager, setDisableManager] = useState(false);
   const isDisabled = !(isAdmin || editGrant);
   
+  useEffect(() => {
+    setDisableClient(user.role === 'client')
+    setDisableManager(user.role === 'manager')
+  }, [user])
+  
   const handleRoleChange = useCallback((val) => {
-    // setRole(val)
     onRoleChange(val)
   }, [])
   
@@ -278,7 +284,6 @@ export const DetailsTab = (
                               else return (i.name ? i.name + ' | ' : '') + i.email
                             }}
                             isOptionEqualToValue={(option, value) => {
-                              console.log(value === '')
                               if (value === '') return true;
                               else return option.id === value.id
                             }}
@@ -286,6 +291,7 @@ export const DetailsTab = (
                               onManagerChange(val)
                             }}
                             value={manager || ''}
+                            disabled={disableManager}
                             renderInput={(params) => <TextField {...params}
                                                                 fullWidth
                                                                 name="manager_id"
@@ -303,6 +309,7 @@ export const DetailsTab = (
                             onChange={(e, val) => {
                               onClientChange(val)
                             }}
+                            disabled={disableClient}
                             value={client || clients[0] || undefined}
                             renderInput={(params) => <TextField {...params}
                                                                 fullWidth
