@@ -11,7 +11,7 @@ import {
   SvgIcon,
   Typography,
   Link,
-  Unstable_Grid2 as Grid, Paper, Autocomplete, TextField
+  Unstable_Grid2 as Grid, Paper, Autocomplete, TextField, List
 } from '@mui/material';
 import {Input} from "../input";
 import {useCallback, useEffect, useState} from "react";
@@ -48,14 +48,48 @@ export const DetailsTab = (
     onManagerChange,
     formik,
     validate,
+    onRoleChange,
     ...props
   }
 ) => {
   const [uploaderOpen, setUploaderOpen] = useState(false);
   const [timezones, setTimezones] = useState(null);
+  const [role, setRole] = useState(-3);
   const [disabled, setDisabled] = useState(false);
+  const [disableClient, setDisableClient] = useState(false);
+  const [disableManager, setDisableManager] = useState(false);
   const isDisabled = !(isAdmin || editGrant);
   
+  useEffect(() => {
+    setDisableClient(user.role === 'client')
+    setDisableManager(user.role === 'manager')
+  }, [user])
+  
+  const handleRoleChange = useCallback((val) => {
+    onRoleChange(val)
+  }, [])
+  
+  useEffect(() => {
+    if (user.role_id) setRole(user.role_id)
+    else {
+      switch (user.role) {
+        case 'admin':
+          setRole(-1)
+          break;
+        case 'client':
+          setRole(-2)
+          break;
+        case 'manager':
+          setRole(-3)
+          break;
+        case 'support':
+          setRole(-4)
+          break;
+        default:
+          break;
+      }
+    }
+  }, [user])
   
   useEffect(() => {
     const getTimezones = async () => {
@@ -165,9 +199,9 @@ export const DetailsTab = (
                             />
                             <Box mt={2}>
                               <Link href={'#'} fontSize={14} onClick={(e) => {
-                              e.preventDefault();
-                              console.log('phone confirmation')
-                            }}>Confirm phone number</Link>
+                                e.preventDefault();
+                                console.log('phone confirmation')
+                              }}>Confirm phone number</Link>
                             </Box>
                           </Grid>
                         </Grid>
@@ -200,42 +234,69 @@ export const DetailsTab = (
                     <Box>
                       <Grid container spacing={2} p={0}>
                         <Grid xs={12} md={6}>
-                          {Boolean(roles?.length) && <Input
+                          <Input
                             fullWidth
                             label="Role"
-                            name="role_id"
-                            onChange={formik.handleChange}
+                            name="role"
+                            onChange={(e) => {
+                              handleRoleChange(e.target.value)
+                            }}
                             select
-                            value={formik.values.role_id || roles[0] || ''}
-                            
+                            value={role}
                           >
-                            {roles.map(item => {
+                            {isAdmin &&
+                            <MenuItem key={'admin'} value={-1}>
+                              <Box sx={{textTransform: 'capitalize'}}>
+                                Admin
+                              </Box>
+                            </MenuItem>}
+                            {isAdmin &&
+                            <MenuItem key={'client'} value={-2}>
+                              <Box sx={{textTransform: 'capitalize'}}>
+                                Client
+                              </Box>
+                            </MenuItem>}
+                            <MenuItem key={'manager'} value={-3}>
+                              <Box sx={{textTransform: 'capitalize'}}>
+                                Manager
+                              </Box>
+                            </MenuItem>
+                            <MenuItem key={'support'} value={-4}>
+                              <Box sx={{textTransform: 'capitalize'}}>
+                                Support
+                              </Box>
+                            </MenuItem>
+                            {Boolean(roles?.length) && roles.map(item => {
                               return <MenuItem key={item.id} value={item.id}>
                                 <Box sx={{textTransform: 'capitalize'}}>
                                   {item.name}
                                 </Box>
                               </MenuItem>
                             })}
-                          </Input>}
+                          </Input>
                         </Grid>
                         <Grid xs={12} md={6}>
-                          {Boolean(managers?.length) && <Autocomplete
+                          <Autocomplete
                             disablePortal
-                            disableClearable
                             options={managers}
-                            
                             getOptionLabel={(i) => {
-                              return (i.name ? i.name + ' | ' : '') + i.email
+                              if (i === '') return '';
+                              else return (i.name ? i.name + ' | ' : '') + i.email
+                            }}
+                            isOptionEqualToValue={(option, value) => {
+                              if (value === '') return true;
+                              else return option.id === value.id
                             }}
                             onChange={(e, val) => {
                               onManagerChange(val)
                             }}
-                            value={manager || managers[0] || ''}
+                            value={manager || ''}
+                            disabled={disableManager}
                             renderInput={(params) => <TextField {...params}
                                                                 fullWidth
                                                                 name="manager_id"
                                                                 label="Manager"/>}
-                          />}
+                          />
                         </Grid>
                         {isAdmin ? !!clients.length && <Grid xs={12}>
                           <Autocomplete
@@ -248,6 +309,7 @@ export const DetailsTab = (
                             onChange={(e, val) => {
                               onClientChange(val)
                             }}
+                            disabled={disableClient}
                             value={client || clients[0] || undefined}
                             renderInput={(params) => <TextField {...params}
                                                                 fullWidth
@@ -292,7 +354,7 @@ export const DetailsTab = (
                             onChange={formik.handleChange}
                             select
                             value={timezones ? formik.values.timezone : ''}
-                            
+                          
                           >
                             {
                               !timezones && <MenuItem value=""></MenuItem>
@@ -306,7 +368,7 @@ export const DetailsTab = (
                                 )
                               })
                             }
-      
+                          
                           </Input>
                         </Grid>
                         <Grid xs={12} md={6}>
