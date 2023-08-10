@@ -1,13 +1,12 @@
 import {useCallback, useState} from 'react';
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
-import {ArchiveOutlined, Close, EditOutlined, UnarchiveOutlined} from '@mui/icons-material'
+import {ArchiveOutlined, Circle, Close, EditOutlined, UnarchiveOutlined} from '@mui/icons-material'
 import {Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Link, Stack, SvgIcon, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Typography} from '@mui/material';
 import {Scrollbar} from '../scrollbar';
 import {paths} from '../../navigation/paths';
 import {Pagination} from "../pagination";
 import {Loader} from "../loader";
-import {useMe} from "../../hooks/useMe";
 
 export const RolesListTable = (props) => {
   const {
@@ -19,12 +18,12 @@ export const RolesListTable = (props) => {
     limit,
     loading,
     handleStatus,
-    userRole,
+    isAdmin,
     ...other
   } = props;
   const [dialog, setDialog] = useState({open: false, item: null});
   const [grantsDialog, setGrantsDialog] = useState({open: false, item: null});
-  const {data} = useMe()
+
   
   const handleDialogOpen = useCallback((item) => {
     setDialog({
@@ -91,23 +90,18 @@ export const RolesListTable = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell>
-                  ID
+                  Tag
                 </TableCell>
                 <TableCell>
-                  Name
+                  Role
                 </TableCell>
                 <TableCell>
-                  Description
+                  Members
                 </TableCell>
                 <TableCell>
-                  Grants
+                  Accesses given
                 </TableCell>
-                <TableCell>
-                  Status
-                </TableCell>
-                {userRole === 0 && <TableCell align="right">
-                  Actions
-                </TableCell>}
+                {isAdmin && <TableCell/>}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -119,10 +113,12 @@ export const RolesListTable = (props) => {
                     key={item.id}
                   >
                     <TableCell>
-                      {item.id}
+                      <SvgIcon color={'primary'}>
+                        <Circle/>
+                      </SvgIcon>
                     </TableCell>
                     <TableCell>
-                      {userRole === 0 ? <Link
+                      {isAdmin ? <Link
                         color="inherit"
                         component={NextLink}
                         href={`${paths.roles.index}/${item.id}`}
@@ -132,7 +128,7 @@ export const RolesListTable = (props) => {
                       </Link> : item.name}
                     </TableCell>
                     <TableCell>
-                      {item.description}
+                    
                     </TableCell>
                     <TableCell>
                       <Link
@@ -142,37 +138,27 @@ export const RolesListTable = (props) => {
                           handleGrantsDialogOpen(item)
                         }}
                         variant={'text'}
-                      >Show</Link>
+                      >{item.grants.length} accesses</Link>
                     </TableCell>
-                    <TableCell>
-                      <Typography
-                        sx={{
-                          textTransform: 'capitalize',
-                          color: (item.status === 'active') ? 'success.main' : 'error.main'
-                        }}
-                      >
-                        {item.status}
-                      </Typography>
-                    </TableCell>
-                    {userRole === 0 && <TableCell align="right">
-                      <Tooltip title={item.status === 'active' ? 'Archive' : 'Unzip'}>
-                        <IconButton
-                          onClick={() => {
-                            handleDialogOpen(item)
-                          }}
-                        >
-                          <SvgIcon color={item.status === 'archived' ? 'success' : 'error'}>
-                            {item.status === 'archived' ? <UnarchiveOutlined/> : <ArchiveOutlined/>}
-                          </SvgIcon>
-                        </IconButton>
-                      </Tooltip>
+                    {isAdmin && <TableCell align="right">
                       <Tooltip title={'Edit'}>
                         <IconButton
                           component={NextLink}
                           href={`${paths.roles.index}/${item.id}`}
                         >
-                          <SvgIcon color={'primary'}>
+                          <SvgIcon sx={{':hover': {color: 'primary.main'}}} fontSize={'small'}>
                             <EditOutlined/>
+                          </SvgIcon>
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title={item.status === 'active' ? 'Archive' : 'Unarchive'}>
+                        <IconButton
+                          onClick={() => {
+                            handleDialogOpen(item)
+                          }}
+                        >
+                          <SvgIcon sx={{':hover': {color: 'primary.main'}}} fontSize={'small'}>
+                            {item.status === 'archived' ? <UnarchiveOutlined/> : <ArchiveOutlined/>}
                           </SvgIcon>
                         </IconButton>
                       </Tooltip>
