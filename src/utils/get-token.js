@@ -5,7 +5,6 @@ export const getToken = () => {
       cookies[item.split('=')[0].trim()] = item.split('=')[1].trim()
     })
   }
-  
-  let token = cookies['__token'];
-  return token
+
+  return cookies['__token']
 }

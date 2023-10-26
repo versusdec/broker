@@ -1,6 +1,6 @@
-import {root} from './config';
-import {getToken} from "../utils/get-token";
-import {wait} from "../utils/wait";
+import { root } from './config';
+import { getToken } from "../utils/get-token";
+import { wait } from "../utils/wait";
 
 const init = (body) => {
   const token = getToken()
@@ -20,7 +20,10 @@ export const api = Object.freeze({
   auth: {
     login: async (params) => {
       try {
-        return await fetch(root, init({params: params, method: 'auth.login'}));
+        // return await fetch(root, init({params: params, method: 'auth.login'}));
+        return {
+          result: true, error: false
+        }
       } catch (e) {
         return {
           error: e
@@ -38,7 +41,10 @@ export const api = Object.freeze({
     },
     register: async (params) => {
       try {
-        return await fetch(root, init({params: params, method: 'auth.register'}));
+        // return await fetch(root, init({params: params, method: 'auth.register'}));
+        return {
+          result: true, error: false
+        }
       } catch (e) {
         return {
           error: e
@@ -47,7 +53,10 @@ export const api = Object.freeze({
     },
     reset: async (params) => {
       try {
-        return await fetch(root, init({params: params, method: 'auth.restore'}));
+        // return await fetch(root, init({params: params, method: 'auth.restore'}));
+        return {
+          result: true, error: false
+        }
       } catch (e) {
         return {
           error: e
@@ -56,7 +65,10 @@ export const api = Object.freeze({
     },
     restore: async (params) => {
       try {
-        return await fetch(root, init({params: params, method: 'auth.password'}));
+        // return await fetch(root, init({params: params, method: 'auth.password'}));
+        return {
+          result: true, error: false
+        }
       } catch (e) {
         return {
           error: e
@@ -67,7 +79,65 @@ export const api = Object.freeze({
   users: {
     me: async () => {
       try {
-        const {result, error} = await fetch(root, init({params: {}, method: 'users.me'})).then(res => res.json());
+        // const {result, error} = await fetch(root, init({params: {}, method: 'users.me'})).then(res => res.json());
+        return {
+          result: {
+            "status": "active",
+            "settings": {
+              "manager_id": 2,
+              "tariff_id": 1
+            },
+            "tariff_id": 1,
+            "created": 1624466445,
+            "lastname": "",
+            "avatar": "/assets/avatars/cat.jpg",
+            "tariff": {
+              "limits": {
+                "max_rent_phones": 50,
+                "call_speed": 12000,
+                "max_mailings": 3
+              },
+              "status": "active",
+              "updated": 1691563795,
+              "created": 1607937822,
+              "id": 1,
+              "prices": {
+                "tts": 0.007,
+                "sms": 5,
+                "income_calls": 0,
+                "inner_score": 0.2,
+                "operator_score": 0.2,
+                "outcome_calls": 3.8,
+                "phone_rent": 20,
+                "premium_tts": 0.007,
+                "stt": 0.4
+              },
+              "name": "Базовый",
+              "is_default": true,
+              "user_id": 5
+            },
+            "phone": 79606784055,
+            "name": "Platform",
+            "api_key": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwicm9sZSI6ImFkbWluIn0.w_QkjbufKVOUZHj_OWBZoLNvkv81GuwT_RbXc8gE2vA",
+            "surname": "Botto",
+            "email": "admin@botto.ru",
+            "gender": "male",
+            "language": "ru",
+            "phones": 0,
+            "id": 1,
+            "manager": {
+              "email": "testemail@mail.ru",
+              "second_name": "r",
+              "avatar": "",
+              "phone": 79887654321,
+              "name": "Test",
+              "id": 4600,
+              "surname": "Test"
+            },
+            "role": "admin",
+            "balance": -29
+          }, error: false
+        }
         return {
           result, error
         }

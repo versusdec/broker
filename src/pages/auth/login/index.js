@@ -1,20 +1,18 @@
 import * as Yup from 'yup';
-import {useFormik} from 'formik';
+import { useFormik } from 'formik';
 import NextLink from 'next/link';
 import {
   Box,
-  Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton,
+  Button,
   Stack,
   Link,
   Typography, TextField
 } from '@mui/material';
-import {Layout as AuthLayout} from '../../../layouts/auth';
-import {paths} from '../../../navigation/paths';
-import {Loader} from '../../../components/loader';
-import {Input} from "../../../components/input";
+import { Layout as AuthLayout } from '../../../layouts/auth';
+import { paths } from '../../../navigation/paths';
 import toast from 'react-hot-toast';
-import {useAuth} from "../../../hooks/useAuth";
-import {useEffect, useState} from "react";
+import { useAuth } from "../../../hooks/useAuth";
+import { useEffect, useState } from "react";
 
 const initialValues = {
   email: '',
@@ -33,23 +31,13 @@ const validationSchema = Yup.object({
     .required('Password is required')
 });
 
-const useModal = () => {
-  const [modalOpen, setModalOpen] = useState(false)
-  const handleModal = () => {
-    setModalOpen(true)
-  }
-  return {modalOpen, handleModal}
-}
-
 const Page = () => {
-  const {loading, error, login, login2fa} = useAuth();
-  const [tfaValues, setTfaValues] = useState({})
-  const {modalOpen, handleModal} = useModal();
+  const {error, login} = useAuth();
   
   useEffect(() => {
     error
       ? toast.error(error.message ? error.message
-      : 'En error has occurred') : void 0;
+      : 'Something went wrong') : void 0;
   }, [error])
   
   const formik = useFormik({
@@ -58,11 +46,7 @@ const Page = () => {
     onSubmit: async (values, helpers) => {
       try {
         const res = await login(values);
-
-        if (res && res.method === 'login2fa') {
-          setTfaValues(values);
-          handleModal();
-        }
+        
       } catch (err) {
         console.error(err);
         
@@ -73,72 +57,9 @@ const Page = () => {
     }
   });
   
-  const formik2fa = useFormik({
-    initialValues: {
-      code: ''
-    },
-    validationSchema: Yup.object({
-      code: Yup.string().required('Code is required')
-    }),
-    onSubmit: async (values, helpers) => {
-      try {
-        values = {
-          ...values,
-          ...tfaValues
-        }
-        login2fa(values);
-      } catch (err) {
-        console.error(err);
-        
-        helpers.setStatus({success: false});
-        helpers.setErrors({submit: err.message});
-        helpers.setSubmitting(false);
-      }
-    }
-  })
-  
-  
   return (
     <>
       <div>
-        {loading && <Loader backdrop/>}
-        <Dialog
-          open={modalOpen}
-          scroll={'paper'}
-          maxWidth={'lg'}
-        >
-          <DialogTitle sx={{pr: 10}}>
-            Enter Google Authenticator code
-          </DialogTitle>
-          <form
-            noValidate
-            onSubmit={formik2fa.handleSubmit}
-          >
-            <DialogContent dividers>
-              <Input
-                error={!!(formik2fa.touched.code && formik2fa.errors.code)}
-                fullWidth
-                helperText={formik2fa.touched.code && formik2fa.errors.code}
-                label="Code"
-                name="code"
-                onBlur={formik2fa.handleBlur}
-                onChange={formik2fa.handleChange}
-                type="text"
-                value={formik2fa.values.email}
-                sx={{mb: 1}}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button
-                size="large"
-                type="submit"
-                variant="contained"
-              >
-                Continue
-              </Button>
-            </DialogActions>
-          </form>
-        </Dialog>
         <Stack
           sx={{mb: 4}}
           spacing={1}
